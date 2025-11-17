@@ -1,0 +1,130 @@
+/* Luxury Home Page Enhancements */
+
+/* Hero Section Specific */
+.hero-luxury .hero-image-luxury img {
+    transition: transform 0.3s ease;
+}
+
+.hero-luxury:hover .hero-image-luxury img {
+    transform: scale(1.02);
+}
+
+/* Category Sale Badge */
+.category-sale-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: var(--gold);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    z-index: 2;
+    box-shadow: 0 2px 8px rgba(212, 175, 55, 0.3);
+}
+
+/* Product Cards on Homepage */
+.card-luxury img {
+    transition: transform 0.5s ease;
+}
+
+.card-luxury:hover img {
+    transform: scale(1.1);
+}
+
+/* Responsive Hero Image */
+@media (max-width: 991px) {
+    .hero-luxury .hero-image-luxury {
+        margin-top: 3rem;
+    }
+}
+
+/* Luxury Mobile Adjustments */
+@media (max-width: 767px) {
+    .hero-luxury {
+        padding: 3rem 0 !important;
+    }
+    
+    .luxury-title {
+        font-size: 2rem !important;
+    }
+    
+    .category-grid-luxury {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+    
+    .divider-luxury {
+        height: 1px !important;
+    }
+}
+
+/* Animation for Hero Content */
+@keyframes fadeInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.hero-content-luxury {
+    animation: fadeInLeft 0.8s ease-out;
+}
+
+/* Gold Hover Effects */
+.btn-luxury-gold,
+.btn-luxury-outline {
+    transition: all 0.3s ease;
+}
+
+.btn-luxury-gold:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(212, 175, 55, 0.4);
+}
+
+.btn-luxury-outline:hover {
+    background: var(--gold);
+    color: white;
+    transform: translateY(-2px);
+}
+
+/* Card Luxury Hover Enhancement */
+.card-luxury {
+    overflow: hidden;
+}
+
+/* Instagram Grid Responsive */
+@media (max-width: 576px) {
+    section > div > div[style*="grid-template-columns"] {
+        grid-template-columns: repeat(3, 1fr) !important;
+    }
+}
+
+/* Newsletter Button Hover */
+.newsletter-luxury .btn-luxury-gold {
+    box-shadow: 0 4px 16px rgba(212, 175, 55, 0.2);
+}
+
+/* Smooth Scroll Behavior */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Luxury Section Spacing */
+section {
+    position: relative;
+}
+
+/* Trust Badge Hover */
+.hero-luxury [style*="align-items: center"] {
+    transition: transform 0.3s ease;
+}
+
+.hero-luxury [style*="align-items: center"]:hover {
+    transform: translateY(-2px);
+}

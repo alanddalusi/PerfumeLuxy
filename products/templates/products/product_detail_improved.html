@@ -1,0 +1,649 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'products/css/products.css' %}">
+  <link rel="stylesheet" href="{% static 'products/css/product-detail-improved.css' %}">
+{% endblock %}
+
+{% block content %}
+  <!-- Breadcrumb Navigation -->
+  <section class="breadcrumb-section bg-light py-3">
+    <div class="container">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb mb-0">
+          <li class="breadcrumb-item"><a href="{% url 'home' %}"><i class="fas fa-home"></i> Inicio</a></li>
+          <li class="breadcrumb-item"><a href="{% url 'products' %}">Productos</a></li>
+          {% if product.gender %}
+            <li class="breadcrumb-item"><a href="{% url 'products' %}?gender={{ product.gender.db_name }}">{{ product.gender.name }}</a></li>
+          {% endif %}
+          <li class="breadcrumb-item active" aria-current="page">{{ product.name }}</li>
+        </ol>
+      </nav>
+    </div>
+  </section>
+
+  <!-- Product Detail Main Section -->
+  <section class="product-detail-section py-5">
+    <div class="container">
+      <div class="row">
+        <!-- Product Gallery - Lado Izquierdo -->
+        <div class="col-lg-6 mb-4">
+          <div class="product-gallery">
+            <!-- Main Image with Zoom -->
+            <div class="main-image-container mb-3">
+              {% if product.image %}
+                <img id="mainProductImage" src="{{ product.image.url }}" alt="{{ product.brand.name }} {{ product.name }}" class="img-fluid main-product-image" />
+                <!-- Zoom Icon -->
+                <button class="zoom-btn" data-bs-toggle="modal" data-bs-target="#imageZoomModal">
+                  <i class="fas fa-search-plus"></i>
+                </button>
+              {% else %}
+                <img id="mainProductImage" src="{% static 'img/noimage.png' %}" alt="Sin imagen" class="img-fluid main-product-image" />
+              {% endif %}
+              
+              <!-- Badges de Producto -->
+              <div class="product-badges">
+                {% if product.is_new %}
+                  <span class="badge bg-success">Nuevo</span>
+                {% endif %}
+                {% if product.has_discount %}
+                  <span class="badge bg-danger">-{{ product.discount_percentage }}%</span>
+                {% endif %}
+                {% if not product.in_stock %}
+                  <span class="badge bg-warning">Agotado</span>
+                {% endif %}
+                {% if product.is_original %}
+                  <span class="badge bg-primary">100% Original</span>
+                {% endif %}
+              </div>
+            </div>
+            
+            <!-- Thumbnail Images -->
+            <div class="thumbnail-images">
+              <div class="row g-2">
+                {% if product.image %}
+                  <div class="col-3">
+                    <img src="{{ product.image.url }}" alt="Vista 1" class="img-fluid thumbnail-img active" data-image="{{ product.image.url }}" />
+                  </div>
+                  <!-- Aquí se podrían agregar más imágenes del producto -->
+                {% endif %}
+              </div>
+            </div>
+          </div>
+
+          <!-- Trust Indicators -->
+          <div class="trust-section mt-4 p-4 bg-light rounded">
+            <h5 class="mb-3"><i class="fas fa-shield-alt text-gold me-2"></i>Garantías</h5>
+            <div class="trust-items">
+              <div class="trust-item mb-2">
+                <i class="fas fa-check-circle text-success me-2"></i>
+                <span>100% Producto Auténtico Verificado</span>
+              </div>
+              <div class="trust-item mb-2">
+                <i class="fas fa-truck text-success me-2"></i>
+                <span>Envío Gratis en Pedidos +50€</span>
+              </div>
+              <div class="trust-item mb-2">
+                <i class="fas fa-undo text-success me-2"></i>
+                <span>Devolución Gratis 30 Días</span>
+              </div>
+              <div class="trust-item">
+                <i class="fas fa-box text-success me-2"></i>
+                <span>Empaque Original y Sellado</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Product Info - Lado Derecho -->
+        <div class="col-lg-6">
+          <!-- Brand and Title -->
+          <div class="product-header mb-4">
+            <a href="{% url 'products' %}?brand={{ product.brand.id }}" class="brand-link">
+              <h6 class="text-muted text-uppercase mb-2">{{ product.brand.name }}</h6>
+            </a>
+            <h1 class="product-title h2 mb-3">{{ product.name }}</h1>
+            
+            <!-- Rating and Reviews -->
+            <div class="rating-section mb-3">
+              {% if product.average_rating %}
+                <div class="d-flex align-items-center">
+                  <div class="star-rating me-2">
+                    {% for i in "12345" %}
+                      {% if forloop.counter <= product.average_rating %}
+                        <i class="fas fa-star text-warning"></i>
+                      {% elif forloop.counter == product.average_rating|add:"1" and product.average_rating|floatformat:"1"|slice:"-1" != "0" %}
+                        <i class="fas fa-star-half-alt text-warning"></i>
+                      {% else %}
+                        <i class="far fa-star text-warning"></i>
+                      {% endif %}
+                    {% endfor %}
+                  </div>
+                  <span class="rating-number fw-bold">{{ product.average_rating|floatformat:1 }}</span>
+                  <a href="#reviews-section" class="ms-2 text-decoration-none">({{ product.review_count }} Reseñas)</a>
+                </div>
+              {% else %}
+                <p class="text-muted">Sin reseñas aún - <a href="#reviews-section">Sé el primero en opinar</a></p>
+              {% endif %}
+            </div>
+
+            <!-- Stock Status -->
+            <div class="stock-status mb-3">
+              {% if product.in_stock %}
+                <span class="badge bg-success"><i class="fas fa-check me-1"></i> En Stock ({{ product.stock }} unidades)</span>
+              {% else %}
+                <span class="badge bg-danger"><i class="fas fa-times me-1"></i> Agotado</span>
+              {% endif %}
+            </div>
+          </div>
+
+          <!-- Price Section -->
+          <div class="price-section mb-4 p-4 bg-light rounded">
+            <div class="d-flex align-items-center justify-content-between">
+              <div>
+                {% if product.has_discount %}
+                  <span class="original-price text-decoration-line-through text-muted fs-5 me-2">€{{ product.price }}</span>
+                  <span class="current-price text-gold fw-bold fs-2">€{{ product.discounted_price }}</span>
+                  <span class="save-badge badge bg-danger ms-2">Ahorras €{{ product.price|floatformat:2|add:"-"|add:product.discounted_price|floatformat:2 }}</span>
+                {% else %}
+                  <span class="current-price text-gold fw-bold fs-2 product-price">€{{ product.price }}</span>
+                {% endif %}
+              </div>
+            </div>
+            {% if product.has_sizes %}
+              <div class="mt-2">
+                <small class="text-muted">Precio por 50 ML</small>
+              </div>
+            {% endif %}
+          </div>
+
+          <!-- Quick Info Pills -->
+          <div class="quick-info mb-4">
+            <div class="d-flex flex-wrap gap-2">
+              {% if product.fragrance_family %}
+                <span class="info-pill"><i class="fas fa-leaf me-1"></i> {{ product.fragrance_family.name }}</span>
+              {% endif %}
+              {% if product.intensity %}
+                <span class="info-pill"><i class="fas fa-chart-bar me-1"></i> {{ product.get_intensity_display }}</span>
+              {% endif %}
+              {% if product.duration %}
+                <span class="info-pill"><i class="fas fa-clock me-1"></i> Duración: {{ product.get_duration_display }}</span>
+              {% endif %}
+              {% if product.season %}
+                <span class="info-pill"><i class="fas fa-sun me-1"></i> {{ product.get_season_display }}</span>
+              {% endif %}
+            </div>
+          </div>
+
+          <!-- Add to Cart Form -->
+          <form action="{% url 'add_to_bag' product.id %}" method="POST" class="add-to-cart-form">
+            {% csrf_token %}
+            
+            <!-- Size Selection -->
+            {% if product.has_sizes %}
+              <div class="size-selection mb-4">
+                <label class="form-label fw-bold">Tamaño:</label>
+                <div class="btn-group w-100" role="group" aria-label="Size selection">
+                  <input type="radio" class="btn-check size-radio" name="product_size" id="size-30" value="30ML" data-price="{{ product.price|floatformat:2|add:'-'|add:'0.66'|floatformat:2 }}">
+                  <label class="btn btn-outline-gold" for="size-30">
+                    <div class="size-option">
+                      <span class="size-name">30 ML</span>
+                      <span class="size-price">€{{ product.price|floatformat:2|add:'-'|add:'0.66'|floatformat:2 }}</span>
+                    </div>
+                  </label>
+
+                  <input type="radio" class="btn-check size-radio" name="product_size" id="size-50" value="50ML" checked data-price="{{ product.price }}">
+                  <label class="btn btn-outline-gold" for="size-50">
+                    <div class="size-option">
+                      <span class="size-name">50 ML</span>
+                      <span class="size-price">€{{ product.price }}</span>
+                    </div>
+                  </label>
+
+                  <input type="radio" class="btn-check size-radio" name="product_size" id="size-100" value="100ML" data-price="{{ product.price|floatformat:2|add:'*2' }}">
+                  <label class="btn btn-outline-gold" for="size-100">
+                    <div class="size-option">
+                      <span class="size-name">100 ML</span>
+                      <span class="size-price">€{{ product.price|floatformat:2|add:'*2' }}</span>
+                    </div>
+                  </label>
+                </div>
+              </div>
+            {% else %}
+              <input type="hidden" name="product_size" value="onesize">
+            {% endif %}
+
+            <!-- Quantity Selector -->
+            <div class="quantity-section mb-4">
+              <label class="form-label fw-bold">Cantidad:</label>
+              <div class="input-group quantity-input-group">
+                <button class="btn btn-outline-secondary decrement-qty" type="button" data-item_id="{{ product.id }}">
+                  <i class="fas fa-minus"></i>
+                </button>
+                <input type="number" class="form-control text-center qty_input id_qty_{{ product.id }}" name="quantity" value="1" min="1" max="6" data-item_id="{{ product.id }}">
+                <button class="btn btn-outline-secondary increment-qty" type="button" data-item_id="{{ product.id }}">
+                  <i class="fas fa-plus"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons mb-4">
+              <div class="row g-2">
+                <div class="col-12 col-md-8">
+                  <button type="submit" class="btn btn-gold btn-lg w-100" {% if not product.in_stock %}disabled{% endif %}>
+                    <i class="fas fa-shopping-cart me-2"></i>
+                    {% if product.in_stock %}
+                      Añadir al Carrito
+                    {% else %}
+                      No Disponible
+                    {% endif %}
+                  </button>
+                </div>
+                <div class="col-12 col-md-4">
+                  <button type="button" class="btn btn-outline-gold btn-lg w-100 wishlist-btn" data-product-id="{{ product.id }}">
+                    <i class="far fa-heart"></i> <span class="d-none d-md-inline">Lista</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Sample Option -->
+            <div class="sample-option p-3 bg-light rounded mb-4">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="add_sample" id="addSample" value="yes">
+                <label class="form-check-label" for="addSample">
+                  <i class="fas fa-vial me-2 text-gold"></i>
+                  <strong>Añadir muestra de 2ml (+€3.99)</strong>
+                  <p class="text-muted small mb-0 ms-4">Prueba antes de comprar el frasco completo</p>
+                </label>
+              </div>
+            </div>
+
+            <input type="hidden" name="redirect_url" value="{{ request.path }}" />
+          </form>
+
+          <!-- Product Meta Info -->
+          <div class="product-meta mt-4 pt-4 border-top">
+            <div class="meta-item mb-2">
+              <span class="meta-label">SKU:</span>
+              <span class="meta-value">{{ product.sku }}</span>
+            </div>
+            {% if product.category %}
+              <div class="meta-item mb-2">
+                <span class="meta-label">Categoría:</span>
+                <span class="meta-value"><a href="{% url 'products' %}?category={{ product.category.id }}">{{ product.category.name }}</a></span>
+              </div>
+            {% endif %}
+            {% if product.gender %}
+              <div class="meta-item mb-2">
+                <span class="meta-label">Para:</span>
+                <span class="meta-value">{{ product.gender.name }}</span>
+              </div>
+            {% endif %}
+          </div>
+
+          <!-- Share Buttons -->
+          <div class="share-section mt-4 pt-4 border-top">
+            <h6 class="mb-3">Compartir:</h6>
+            <div class="share-buttons">
+              <a href="#" class="btn btn-sm btn-outline-secondary me-2"><i class="fab fa-facebook-f"></i></a>
+              <a href="#" class="btn btn-sm btn-outline-secondary me-2"><i class="fab fa-twitter"></i></a>
+              <a href="#" class="btn btn-sm btn-outline-secondary me-2"><i class="fab fa-pinterest"></i></a>
+              <a href="#" class="btn btn-sm btn-outline-secondary"><i class="fas fa-envelope"></i></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Product Details Tabs -->
+  <section class="product-tabs-section py-5 bg-light">
+    <div class="container">
+      <ul class="nav nav-tabs nav-fill mb-4" id="productTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="description-tab" data-bs-toggle="tab" data-bs-target="#description" type="button" role="tab">
+            <i class="fas fa-align-left me-2"></i>Descripción
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="notes-tab" data-bs-toggle="tab" data-bs-target="#notes" type="button" role="tab">
+            <i class="fas fa-flask me-2"></i>Pirámide Olfativa
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="details-tab" data-bs-toggle="tab" data-bs-target="#details" type="button" role="tab">
+            <i class="fas fa-info-circle me-2"></i>Detalles
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews" type="button" role="tab">
+            <i class="fas fa-star me-2"></i>Reseñas ({{ product.review_count }})
+          </button>
+        </li>
+      </ul>
+
+      <div class="tab-content" id="productTabsContent">
+        <!-- Description Tab -->
+        <div class="tab-pane fade show active" id="description" role="tabpanel">
+          <div class="card border-0 shadow-sm">
+            <div class="card-body p-4">
+              <h4 class="mb-4">Sobre {{ product.name }}</h4>
+              <p class="lead">{{ product.description }}</p>
+              
+              {% if product.occasion %}
+                <div class="mt-4">
+                  <h5>Ocasión Ideal</h5>
+                  <p><i class="fas fa-calendar-check text-gold me-2"></i>{{ product.get_occasion_display }}</p>
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <!-- Fragrance Notes Tab -->
+        <div class="tab-pane fade" id="notes" role="tabpanel">
+          <div class="card border-0 shadow-sm">
+            <div class="card-body p-4">
+              <h4 class="mb-4"><i class="fas fa-leaf text-gold me-2"></i>Pirámide Olfativa</h4>
+              
+              {% if product.fragrance_notes.all %}
+                <div class="fragrance-pyramid">
+                  <!-- Top Notes -->
+                  <div class="note-layer mb-4 p-4 rounded" style="background: linear-gradient(135deg, #fff9e6 0%, #fff 100%);">
+                    <h5 class="text-gold mb-3"><i class="fas fa-arrow-up me-2"></i>Notas de Salida</h5>
+                    <div class="notes-list">
+                      {% for note in product.fragrance_notes.all %}
+                        {% if note.note_type == 'top' %}
+                          <span class="note-badge badge bg-warning text-dark me-2 mb-2">{{ note.name }}</span>
+                        {% endif %}
+                      {% endfor %}
+                    </div>
+                    <p class="text-muted small mt-2">Las primeras impresiones, duran 15-30 minutos</p>
+                  </div>
+
+                  <!-- Heart Notes -->
+                  <div class="note-layer mb-4 p-4 rounded" style="background: linear-gradient(135deg, #ffe6f0 0%, #fff 100%);">
+                    <h5 class="text-danger mb-3"><i class="fas fa-heart me-2"></i>Notas de Corazón</h5>
+                    <div class="notes-list">
+                      {% for note in product.fragrance_notes.all %}
+                        {% if note.note_type == 'heart' %}
+                          <span class="note-badge badge bg-danger me-2 mb-2">{{ note.name }}</span>
+                        {% endif %}
+                      {% endfor %}
+                    </div>
+                    <p class="text-muted small mt-2">El carácter principal, duran 2-4 horas</p>
+                  </div>
+
+                  <!-- Base Notes -->
+                  <div class="note-layer p-4 rounded" style="background: linear-gradient(135deg, #e6f2ff 0%, #fff 100%);">
+                    <h5 class="text-primary mb-3"><i class="fas fa-arrow-down me-2"></i>Notas de Fondo</h5>
+                    <div class="notes-list">
+                      {% for note in product.fragrance_notes.all %}
+                        {% if note.note_type == 'base' %}
+                          <span class="note-badge badge bg-primary me-2 mb-2">{{ note.name }}</span>
+                        {% endif %}
+                      {% endfor %}
+                    </div>
+                    <p class="text-muted small mt-2">La impresión duradera, hasta 6+ horas</p>
+                  </div>
+                </div>
+              {% else %}
+                <p class="text-muted">Las notas olfativas de este producto se actualizarán pronto.</p>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <!-- Details Tab -->
+        <div class="tab-pane fade" id="details" role="tabpanel">
+          <div class="card border-0 shadow-sm">
+            <div class="card-body p-4">
+              <h4 class="mb-4">Información Detallada</h4>
+              
+              <div class="details-grid">
+                <div class="row g-4">
+                  {% if product.fragrance_family %}
+                    <div class="col-md-6">
+                      <div class="detail-item">
+                        <h6 class="text-muted mb-2">Familia Olfativa</h6>
+                        <p class="fw-bold">{{ product.fragrance_family.name }}</p>
+                      </div>
+                    </div>
+                  {% endif %}
+                  
+                  {% if product.intensity %}
+                    <div class="col-md-6">
+                      <div class="detail-item">
+                        <h6 class="text-muted mb-2">Intensidad</h6>
+                        <p class="fw-bold">{{ product.get_intensity_display }}</p>
+                        <div class="intensity-bar">
+                          <div class="intensity-fill" style="width: {% if product.intensity == 'light' %}25%{% elif product.intensity == 'moderate' %}50%{% elif product.intensity == 'strong' %}75%{% else %}100%{% endif %};"></div>
+                        </div>
+                      </div>
+                    </div>
+                  {% endif %}
+                  
+                  {% if product.duration %}
+                    <div class="col-md-6">
+                      <div class="detail-item">
+                        <h6 class="text-muted mb-2">Duración Estimada</h6>
+                        <p class="fw-bold"><i class="fas fa-clock text-gold me-2"></i>{{ product.get_duration_display }}</p>
+                      </div>
+                    </div>
+                  {% endif %}
+                  
+                  {% if product.projection %}
+                    <div class="col-md-6">
+                      <div class="detail-item">
+                        <h6 class="text-muted mb-2">Proyección</h6>
+                        <p class="fw-bold">{{ product.get_projection_display }}</p>
+                      </div>
+                    </div>
+                  {% endif %}
+                  
+                  {% if product.season %}
+                    <div class="col-md-6">
+                      <div class="detail-item">
+                        <h6 class="text-muted mb-2">Mejor Temporada</h6>
+                        <p class="fw-bold"><i class="fas fa-calendar-alt text-gold me-2"></i>{{ product.get_season_display }}</p>
+                      </div>
+                    </div>
+                  {% endif %}
+                  
+                  {% if product.occasion %}
+                    <div class="col-md-6">
+                      <div class="detail-item">
+                        <h6 class="text-muted mb-2">Ocasión Recomendada</h6>
+                        <p class="fw-bold">{{ product.get_occasion_display }}</p>
+                      </div>
+                    </div>
+                  {% endif %}
+
+                  <div class="col-md-6">
+                    <div class="detail-item">
+                      <h6 class="text-muted mb-2">Autenticidad</h6>
+                      <p class="fw-bold">
+                        {% if product.is_original %}
+                          <i class="fas fa-check-circle text-success me-2"></i>100% Original
+                        {% endif %}
+                        {% if product.is_tester %}
+                          <span class="badge bg-info ms-2">Tester</span>
+                        {% endif %}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reviews Tab -->
+        <div class="tab-pane fade" id="reviews" role="tabpanel" id="reviews-section">
+          <div class="card border-0 shadow-sm">
+            <div class="card-body p-4">
+              <h4 class="mb-4">Reseñas de Clientes</h4>
+              
+              <!-- Reviews Summary -->
+              <div class="reviews-summary p-4 bg-light rounded mb-4">
+                <div class="row align-items-center">
+                  <div class="col-md-4 text-center border-end">
+                    <div class="overall-rating">
+                      <h2 class="display-3 mb-0">{{ product.average_rating|floatformat:1|default:"0.0" }}</h2>
+                      <div class="stars mb-2">
+                        {% for i in "12345" %}
+                          <i class="fas fa-star text-warning fs-5"></i>
+                        {% endfor %}
+                      </div>
+                      <p class="text-muted mb-0">Basado en {{ product.review_count }} reseñas</p>
+                    </div>
+                  </div>
+                  <div class="col-md-8">
+                    <!-- Rating Distribution -->
+                    <div class="rating-distribution">
+                      {% for rating in "54321" %}
+                        <div class="rating-bar mb-2">
+                          <div class="d-flex align-items-center">
+                            <span class="me-2">{{ rating }} <i class="fas fa-star text-warning small"></i></span>
+                            <div class="progress flex-grow-1 me-2">
+                              <div class="progress-bar bg-warning" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                            <span class="text-muted small">0</span>
+                          </div>
+                        </div>
+                      {% endfor %}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Write Review Button -->
+              <div class="text-center mb-4">
+                <button class="btn btn-gold" data-bs-toggle="modal" data-bs-target="#writeReviewModal">
+                  <i class="fas fa-pen me-2"></i>Escribir una Reseña
+                </button>
+              </div>
+
+              <!-- Reviews List -->
+              <div class="reviews-list">
+                {% if product.reviews.all %}
+                  {% for review in product.reviews.all %}
+                    {% if review.is_approved %}
+                      <div class="review-item p-4 mb-3 border rounded">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                          <div>
+                            <h6 class="mb-1">{{ review.user.username }}</h6>
+                            <div class="review-stars">
+                              {% for i in "12345" %}
+                                {% if forloop.counter <= review.rating %}
+                                  <i class="fas fa-star text-warning"></i>
+                                {% else %}
+                                  <i class="far fa-star text-warning"></i>
+                                {% endif %}
+                              {% endfor %}
+                            </div>
+                          </div>
+                          <small class="text-muted">{{ review.created_at|date:"d M Y" }}</small>
+                        </div>
+                        <p class="mb-2">{{ review.comment }}</p>
+                        {% if review.verified_purchase %}
+                          <span class="badge bg-success small"><i class="fas fa-check me-1"></i>Compra Verificada</span>
+                        {% endif %}
+                      </div>
+                    {% endif %}
+                  {% endfor %}
+                {% else %}
+                  <div class="text-center py-5">
+                    <i class="fas fa-comments fs-1 text-muted mb-3"></i>
+                    <p class="text-muted">Aún no hay reseñas para este producto.</p>
+                    <p class="text-muted">¡Sé el primero en compartir tu opinión!</p>
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Similar Products Section -->
+  <section class="similar-products-section py-5">
+    <div class="container">
+      <div class="section-header text-center mb-5">
+        <h2 class="section-title">También Te Puede Gustar</h2>
+        <p class="text-muted">Productos similares seleccionados para ti</p>
+      </div>
+      
+      <div class="row g-4">
+        <!-- Aquí irían productos similares basados en la familia olfativa o marca -->
+        <div class="col-12 text-center text-muted">
+          <p>Los productos similares se mostrarán aquí</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Image Zoom Modal -->
+  <div class="modal fade" id="imageZoomModal" tabindex="-1" aria-labelledby="imageZoomModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header border-0">
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-0">
+          {% if product.image %}
+            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid w-100" />
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Write Review Modal -->
+  <div class="modal fade" id="writeReviewModal" tabindex="-1" aria-labelledby="writeReviewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="writeReviewModalLabel">Escribir Reseña</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form method="POST" action="#">
+            {% csrf_token %}
+            <div class="mb-3">
+              <label class="form-label">Tu Valoración</label>
+              <div class="rating-input">
+                <input type="radio" name="rating" value="5" id="star5">
+                <label for="star5"><i class="fas fa-star"></i></label>
+                <input type="radio" name="rating" value="4" id="star4">
+                <label for="star4"><i class="fas fa-star"></i></label>
+                <input type="radio" name="rating" value="3" id="star3">
+                <label for="star3"><i class="fas fa-star"></i></label>
+                <input type="radio" name="rating" value="2" id="star2">
+                <label for="star2"><i class="fas fa-star"></i></label>
+                <input type="radio" name="rating" value="1" id="star1">
+                <label for="star1"><i class="fas fa-star"></i></label>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="reviewComment" class="form-label">Tu Opinión</label>
+              <textarea class="form-control" id="reviewComment" name="comment" rows="4" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-gold w-100">Enviar Reseña</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}
+
+{% block postloadjs %}
+  {{ block.super }}
+  <script src="{% static 'products/js/product-detail-improved.js' %}"></script>
+  {% include 'products/includes/quantity_input_script.html' %}
+{% endblock %}

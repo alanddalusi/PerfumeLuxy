@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+    .comparison-table {
+        overflow-x: auto;
+    }
+    .comparison-table table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+    .comparison-table th,
+    .comparison-table td {
+        padding: 15px;
+        text-align: center;
+        border: 1px solid #dee2e6;
+    }
+    .comparison-table th {
+        background-color: var(--gold-light);
+        font-weight: 600;
+    }
+    .product-image-compare {
+        width: 150px;
+        height: 150px;
+        object-fit: contain;
+        margin: 0 auto;
+    }
+    .feature-label {
+        background-color: #f8f9fa;
+        font-weight: 600;
+        text-align: left;
+        padding-left: 20px !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="overlay"></div>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col text-center mt-3">
+            <h2 class="logo-font">Comparar Perfumes</h2>
+            <hr class="w-50 mb-1">
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12 mt-4">
+            <div class="comparison-table">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th style="width: 20%;">Característica</th>
+                            {% for product in products %}
+                            <th>
+                                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image-compare">
+                                <h5 class="mt-3">{{ product.name }}</h5>
+                                <p class="text-muted">{{ product.brand.name }}</p>
+                            </th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="feature-label">Precio</td>
+                            {% for product in products %}
+                            <td>
+                                <strong class="text-gold">€{{ product.price }}</strong>
+                            </td>
+                            {% endfor %}
+                        </tr>
+                        
+                        <tr>
+                            <td class="feature-label">Familia Olfativa</td>
+                            {% for product in products %}
+                            <td>{{ product.fragrance_family.name|default:"No especificada" }}</td>
+                            {% endfor %}
+                        </tr>
+                        
+                        <tr>
+                            <td class="feature-label">Intensidad</td>
+                            {% for product in products %}
+                            <td>{{ product.get_intensity_display|default:"No especificada" }}</td>
+                            {% endfor %}
+                        </tr>
+                        
+                        <tr>
+                            <td class="feature-label">Duración</td>
+                            {% for product in products %}
+                            <td>{{ product.get_duration_display|default:"No especificada" }}</td>
+                            {% endfor %}
+                        </tr>
+                        
+                        <tr>
+                            <td class="feature-label">Proyección</td>
+                            {% for product in products %}
+                            <td>{{ product.get_projection_display|default:"No especificada" }}</td>
+                            {% endfor %}
+                        </tr>
+                        
+                        <tr>
+                            <td class="feature-label">Ocasión</td>
+                            {% for product in products %}
+                            <td>{{ product.get_occasion_display|default:"No especificada" }}</td>
+                            {% endfor %}
+                        </tr>
+                        
+                        <tr>
+                            <td class="feature-label">Temporada</td>
+                            {% for product in products %}
+                            <td>{{ product.get_season_display|default:"Todo el año" }}</td>
+                            {% endfor %}
+                        </tr>
+                        
+                        <tr>
+                            <td class="feature-label">Valoración</td>
+                            {% for product in products %}
+                            <td>
+                                {% if product.average_rating > 0 %}
+                                    <i class="fas fa-star text-gold"></i> {{ product.average_rating|floatformat:1 }} / 5
+                                {% else %}
+                                    <span class="text-muted">Sin valoraciones</span>
+                                {% endif %}
+                            </td>
+                            {% endfor %}
+                        </tr>
+                        
+                        <tr>
+                            <td class="feature-label">Stock</td>
+                            {% for product in products %}
+                            <td>
+                                {% if product.in_stock %}
+                                    <span class="badge badge-success">Disponible</span>
+                                {% else %}
+                                    <span class="badge badge-danger">Agotado</span>
+                                {% endif %}
+                            </td>
+                            {% endfor %}
+                        </tr>
+                        
+                        <tr>
+                            <td class="feature-label">Tipo</td>
+                            {% for product in products %}
+                            <td>
+                                {% if product.is_tester %}
+                                    <span class="badge badge-info">Tester</span>
+                                {% elif product.is_original %}
+                                    <span class="badge badge-primary">Original</span>
+                                {% endif %}
+                            </td>
+                            {% endfor %}
+                        </tr>
+                        
+                        <tr>
+                            <td class="feature-label"></td>
+                            {% for product in products %}
+                            <td>
+                                <a href="{% url 'product_detail' product.id %}" class="btn btn-gold btn-sm rounded-0 mb-2">
+                                    Ver Detalles
+                                </a>
+                            </td>
+                            {% endfor %}
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-4 mb-5">
+        <div class="col text-center">
+            <a href="{% url 'products' %}" class="btn btn-outline-black rounded-0">
+                <span class="icon">
+                    <i class="fas fa-chevron-left"></i>
+                </span>
+                <span class="text-uppercase">Volver a Productos</span>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

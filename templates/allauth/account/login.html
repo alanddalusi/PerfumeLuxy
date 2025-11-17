@@ -10,7 +10,7 @@
   <section class="my-5 d-flex justify-content-center">
     <div class="col-10 col-lg-3 d-flex justify-content-center flex-column">
       <h1 class="text-center mb-5">
-        {% trans "Sign In" %}
+        Iniciar Sesión
       </h1>
       
       {% get_providers as socialaccount_providers %}
@@ -50,8 +50,8 @@
                 </div>
               {% endif %}
               <div class="my-2">
-                <label class="form-label" for="{{ form.login.id_for_label }}">Email Address</label>
-                <input class="form-control" autofocus="autofocus" name="login" type="text" id="{{ form.login.id_for_label }}" placeholder="example@email.com" autocomplete="email" required >
+                <label class="form-label" for="{{ form.login.id_for_label }}">Correo Electrónico</label>
+                <input class="form-control" autofocus="autofocus" name="login" type="text" id="{{ form.login.id_for_label }}" placeholder="ejemplo@email.com" autocomplete="email" required >
                 {% for error in form.login.errors %}
                   <ul class="list-inline list-unstyled text-danger my-3">
                     <li>{{ error }}</li>
@@ -59,7 +59,7 @@
                 {% endfor %}
               </div>
               <div class="my-2">
-                <label class="form-label" for="{{ form.password.id_for_label }}">Password</label>
+                <label class="form-label" for="{{ form.password.id_for_label }}">Contraseña</label>
                 <input class="form-control" name="password" type="password" id="{{ form.password.id_for_label }}" placeholder="•••••••••" autocomplete="current-password" required >
                 {% for error in form.password.errors %}
                   <ul class="list-inline list-unstyled text-danger my-3">
@@ -68,7 +68,7 @@
                 {% endfor %}
               </div>
               <div class="my-2 form-check">
-                <label class="form-check-label" for="{{ form.remember.id_for_label }}">Remember Me</label>
+                <label class="form-check-label" for="{{ form.remember.id_for_label }}">Recordarme</label>
                 <input name="remember" class="form-check-input" type="checkbox" value="" id="{{ form.remember.id_for_label }}">
               </div>
               <div class="my-2">
@@ -77,16 +77,16 @@
                 {% endif %}
               </div>
               <div class="my-2">
-                <a href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
+                <a href="{% url 'account_reset_password' %}">¿Olvidaste tu Contraseña?</a>
               </div>
               <div class="my-2">
-                <p>{% blocktrans %}
-                  Don't have an account?
-                  <a class="fw-bold" href="{{ signup_url }}">sign up</a>
-                  first.{% endblocktrans %}</p>
+                <p>
+                  ¿No tienes una cuenta?
+                  <a class="fw-bold" href="{{ signup_url }}">regístrate</a>
+                  primero.</p>
               </div>
               <div class="my-2 mx-auto">
-                <button class="button primaryAction btn btn-xl btn-dark bg-dp text-lv" type="submit">{% trans "Sign In" %}</button>
+                <button class="button primaryAction btn btn-xl btn-dark bg-dp text-lv" type="submit">Iniciar Sesión</button>
               </div>
             </div>
           </div>

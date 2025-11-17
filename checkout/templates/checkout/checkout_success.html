@@ -6,13 +6,13 @@
   <link rel="stylesheet" href="{% static 'checkout/css/checkout.css' %}"/>
 {% endblock %}
 
-{% block extra_title %}| Order Complete{% endblock %}
+{% block extra_title %}| Pedido Completado{% endblock %}
 
 {% block content %}
   <section class="container-lg text-dp">
     <div class="row text-center">
       <div class="col-12 py-2">
-        <h6 class="text-uppercase mt-2">Order Complete</h6>
+        <h6 class="text-uppercase mt-2">Pedido Completado</h6>
       </div>
     </div>
     <div class="row mb-5">
@@ -26,25 +26,25 @@
               <div class="dot bg-dp d-flex justify-content-center align-items-center mx-auto">
                 <p class="h3 mb-0 text-white">1</p>
               </div>
-              <p class="mb-0">Details</p>
+              <p class="mb-0">Detalles</p>
             </div>
             <div>
               <div class="dot bg-dp d-flex justify-content-center align-items-center mx-auto">
                 <p class="h3 mb-0 text-white">2</p>
               </div>
-              <p class="mb-0">Delivery</p>
+              <p class="mb-0">Envío</p>
             </div>
             <div>
               <div class="dot bg-dp d-flex justify-content-center align-items-center mx-auto">
                 <p class="h3 mb-0 text-white">3</p>
               </div>
-              <p class="mb-0">Payment</p>
+              <p class="mb-0">Pago</p>
             </div>
             <div>
               <div class="dot bg-dp d-flex justify-content-center align-items-center align-self mx-auto">
                 <p class="h3 mb-0 text-white">4</p>
               </div>
-              <p class="mb-0">Complete</p>
+              <p class="mb-0">Completado</p>
             </div>
           </div>
         </div>
@@ -56,7 +56,7 @@
           <div class="accordion-item">
             <h2 class="accordion-header" id="panelsStayOpen-order-items">
               <button class="accordion-button h6 text-dp text-uppercase mb-0" type="button" data-bs-toggle="collapse" data-bs-target="#bag-items-checkout" aria-expanded="true" aria-controls="bag-items-checkout">
-                Your Order
+                Tu Pedido
               </button>
             </h2>
             <div id="bag-items-checkout" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-order-items">
@@ -64,27 +64,27 @@
                 <div class="bg-lv-20 py-2 px-3 mb-2">
                   <div class="row">
                     <div class="col-6">
-                      <p class="mb-0 text-black font-weight-bold">Item Total</p>
+                      <p class="mb-0 text-black font-weight-bold">Subtotal Artículos</p>
                     </div>
                     <div class="col-6 text-end">
-                      <p class="mb-0">£{{ order.order_total }}</p>
+                      <p class="mb-0">€{{ order.order_total }}</p>
                     </div>
                   </div>
                   <div class="row">
                     <div class="col-6">
-                      <p class="mb-0 text-black font-weight-bold">Delivery</p>
+                      <p class="mb-0 text-black font-weight-bold">Envío</p>
                     </div>
                     <div class="col-6 text-end">
-                      <p class="mb-0">£{{ order.delivery_cost }}</p>
+                      <p class="mb-0">€{{ order.delivery_cost }}</p>
                     </div>
                   </div>
                   <div class="row">
                     <div class="col-6">
-                      <p class="mb-0 text-black font-weight-bold">Discount</p>
+                      <p class="mb-0 text-black font-weight-bold">Descuento</p>
                     </div>
 
                     <div class="col-6 text-end">
-                      <p class="mb-0">£{{ discount|floatformat:2 }}</p>
+                      <p class="mb-0">€{{ discount|floatformat:2 }}</p>
                     </div>
                   </div>
                   <div class="row">
@@ -92,7 +92,7 @@
                       <p class="mb-0 text-black font-weight-bold">Total</p>
                     </div>
                     <div class="col-6 text-end">
-                      <p class="mb-0">£{{ order.total }}</p>
+                      <p class="mb-0">€{{ order.total }}</p>
                     </div>
                   </div>
                 </div>
@@ -116,18 +116,18 @@
                             <p>{{ item.product.name }}</p>
                           </div>
                           <div class="d-flex justify-content-between align-items-center">
-                            <p class="text-muted">SIZE:
+                            <p class="text-muted">TAMAÑO:
                               {% if item.product_size %}
                                 {{ item.product_size }}
                               {% else %}
                                 N/A
                               {% endif %}
                             </p>
-                            <p class="text-muted">&pound;{{ item.cartitem_price|floatformat:2 }}</p>
+                            <p class="text-muted">€{{ item.cartitem_price|floatformat:2 }}</p>
                           </div>
                           <div class="d-flex justify-content-between align-items-center">
-                            <p class="text-muted mb-0">QTY: {{ item.quantity }}</p>
-                            <p class="mb-0">&pound;{{ item.cartitem_total|floatformat:2 }}</p>
+                            <p class="text-muted mb-0">CANT: {{ item.quantity }}</p>
+                            <p class="mb-0">€{{ item.cartitem_total|floatformat:2 }}</p>
                           </div>
                         </div>
                       </div>
@@ -146,21 +146,21 @@
         <div class="bg-lv-20 shadow">
           <div class="d-flex flex-column justify-content-evenly align-items-center p-3">
             <div>
-              <h6 class="text-center">Thank you!</h6>
+              <h6 class="text-center">¡Gracias por tu compra!</h6>
               <br>
               <p class="text-center">
-                A confirmation email has been sent to
+                Se ha enviado un email de confirmación a
                 <strong>{{ order.email }}</strong>.
               </p>
               <p class="text-center fw-bolder">
-                Order Number:
+                Número de Pedido:
                 <small>{{ order.order_number }}</small>
               </p>
               <p class="text-center">
-                Order Date:
+                Fecha del Pedido:
                 {{ order.date }}
               </p>
-              <p class="text-center fw-bolder">Deliver to:</p>
+              <p class="text-center fw-bolder">Enviar a:</p>
             </div>
             <div class="row">
               <div class="col-8">
@@ -190,46 +190,46 @@
               <span class="icon">
                 <i class="fas fa-chevron-left fs-4"></i>
               </span>
-              <span class="text-capitalize">Back to Profile</span>
+              <span class="text-capitalize">Volver al Perfil</span>
             </a>
           {% endif %}
           <a class="btn btn-dp d-flex justify-content-center align-items-center" href="{% url 'home' %}" role="button">
             <span class="icon">
               <i class="fas fa-house fs-4"></i>
             </span>
-            <span class="text-capitalize">Home</span>
+            <span class="text-capitalize">Inicio</span>
           </a>
         </div>
       </div>
       <div class="d-none d-md-block col-md-5" id="checkout-items">
         <div class="text-center my-2">
-          <h6 class="text-dp text-uppercase">Your Order</h6>
+          <h6 class="text-dp text-uppercase">Tu Pedido</h6>
         </div>
         <hr class="default-hr w-100 border-2 mx-auto mt-1">
         <div class="bg-lv-20 py-2 px-3 mb-2">
           <div class="row">
             <div class="col-12 col-md-6">
-              <p class="mb-0 text-black font-weight-bold">Item Total</p>
+              <p class="mb-0 text-black font-weight-bold">Subtotal Artículos</p>
             </div>
             <div class="col-12 col-md-6 text-end">
-              <p class="mb-0">£{{ order.order_total }}</p>
+              <p class="mb-0">€{{ order.order_total }}</p>
             </div>
           </div>
           <div class="row">
             <div class="col-12 col-md-6">
-              <p class="mb-0 text-black font-weight-bold">Delivery</p>
+              <p class="mb-0 text-black font-weight-bold">Envío</p>
             </div>
             <div class="col-12 col-md-6 text-end">
-              <p class="mb-0">£{{ order.delivery_cost }}</p>
+              <p class="mb-0">€{{ order.delivery_cost }}</p>
             </div>
           </div>
           <div class="row">
             <div class="col-12 col-md-6">
-              <p class="mb-0 text-black font-weight-bold">Discount</p>
+              <p class="mb-0 text-black font-weight-bold">Descuento</p>
             </div>
 
             <div class="col-12 col-md-6 text-end">
-              <p class="mb-0">£{{ discount|floatformat:2 }}</p>
+              <p class="mb-0">€{{ discount|floatformat:2 }}</p>
             </div>
           </div>
 
@@ -238,7 +238,7 @@
               <p class="mb-0 text-black font-weight-bold">Total</p>
             </div>
             <div class="col-12 col-md-6 text-end">
-              <p class="mb-0">£{{ order.total }}</p>
+              <p class="mb-0">€{{ order.total }}</p>
             </div>
           </div>
         </div>
@@ -259,20 +259,20 @@
                       <p>{{ item.product.name }}</p>
                     </div>
                     <div class="d-flex justify-content-between align-items-center">
-                      <p class="text-muted">SIZE:
+                      <p class="text-muted">TAMAÑO:
                         {% if item.product_size %}
                           {{ item.product_size }}
                         {% else %}
                           N/A
                         {% endif %}
                       </p>
-                      <p class="text-muted">&pound;{{ item.cartitem_price|floatformat:2 }}</p>
+                      <p class="text-muted">€{{ item.cartitem_price|floatformat:2 }}</p>
                     </div>
                     <div class="d-flex justify-content-between align-items-center">
                       <p class="text-muted mb-0">
-                        QTY:
+                        CANT:
                         {{ item.quantity }}</p>
-                      <p class="mb-0">&pound;
+                      <p class="mb-0">€
                         {{ item.cartitem_total|floatformat:2 }}</p>
                     </div>
                   </div>

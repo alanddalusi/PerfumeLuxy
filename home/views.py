@@ -1,12 +1,18 @@
 from django.shortcuts import render, redirect, reverse
 from django.contrib import messages
 from .forms import SubscribeForm
+from products.models import Product
 
 
 def index(request):
     """View to return homepage"""
 
     template = "home/index.html"
+
+    # Get featured/top selling products
+    top_products = Product.objects.filter(
+        stock__gt=0
+    ).order_by('-rating')[:8]  # Top 8 rated products
 
     if request.method == "POST":
         form = SubscribeForm(request.POST)
@@ -25,7 +31,10 @@ def index(request):
     else:
         form = SubscribeForm()
 
-    context = {"form": form}
+    context = {
+        "form": form,
+        "top_products": top_products,
+    }
 
     return render(request, template, context)
 

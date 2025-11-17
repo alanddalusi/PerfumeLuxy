@@ -13,131 +13,362 @@
 {% endblock %}
 
 {% block content %}
-  <section class="container-fluid products-dropdown">
-    <div class="row text-center bg-dp">
-      <div class="col py-2">
-        {% if 'category' in request.GET %}
-          {% for c in current_categories %}
-            <h4 class="text-lv text-uppercase mt-2">{{ c.name }}</h4>
-          {% endfor %}
-        {% elif 'gender' in request.GET %}
-          {% for g in current_genders %}
-            <h4 class="text-lv text-uppercase mt-2">{{ g.name }}</h4>
-          {% endfor %}
-        {% elif 'has_discount' in request.GET %}
-          <h4 class="text-lv text-uppercase mt-2">Sale</h4>
-        {% else %}
-          <h4 class="text-lv text-uppercase mt-2">All products</h4>
-        {% endif %}
+  <section class="container-fluid bg-white shadow-sm mb-4">
+    <div class="container-lg">
+      <div class="row align-items-center py-4">
+        <div class="col-md-8">
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+              <li class="breadcrumb-item">
+                <a href="{% url 'home' %}"><i class="fas fa-home"></i> Inicio</a>
+              </li>
+              {% if request.get_full_path == "/products/" %}
+                <li class="breadcrumb-item active" aria-current="page">Todos los Productos</li>
+              {% endif %}
+              {% if search_term or current_categories or current_genders or current_discounts or current_sorting != 'None_None' %}
+                <li class="breadcrumb-item">
+                  <a href="{% url 'products' %}">Todos los Productos</a>
+                </li>
+                {% for c in current_categories %}
+                  <li class="breadcrumb-item active" aria-current="page">{{ c.name }}</li>
+                {% endfor %}
+                {% for g in current_genders %}
+                  <li class="breadcrumb-item">
+                    <a href="{% url 'products' %}?category=perfumes">Perfumes</a>
+                  </li>
+                  <li class="breadcrumb-item text-capitalize active" aria-current="page">{{ g.name }}</li>
+                {% endfor %}
+                {% if 'has_discount' in request.GET %}
+                  <li class="breadcrumb-item active" aria-current="page">Rebajas</li>
+                {% endif %}
+              {% endif %}
+            </ol>
+          </nav>
+          
+          <h1 class="h3 mb-2 mt-3">
+            {% if 'category' in request.GET %}
+              {% for c in current_categories %}
+                {{ c.name }}
+              {% endfor %}
+            {% elif 'gender' in request.GET %}
+              {% for g in current_genders %}
+                Perfumes para {{ g.name }}
+              {% endfor %}
+            {% elif 'has_discount' in request.GET %}
+              Artículos en Rebaja
+            {% elif search_term %}
+              Resultados de Búsqueda
+            {% else %}
+              Todos los Productos
+            {% endif %}
+          </h1>
+          
+          <p class="text-muted mb-0">
+            <i class="fas fa-layer-group"></i>
+            Mostrando <strong>{{ products|length }}</strong> 
+            {% if search_term %}
+              resultados para "<strong>{{ search_term }}</strong>"
+            {% else %}
+              productos
+            {% endif %}
+            de <strong>{{ total_products }}</strong>
+          </p>
+        </div>
+        
+        <div class="col-md-4 text-end mt-3 mt-md-0">
+          <button class="btn btn-gold" id="toggleFiltersBtn">
+            <i class="fas fa-filter"></i> Filtros
+          </button>
+        </div>
       </div>
-    </div>
-    <div class="d-block d-md-none">
-      {% include 'products/includes/mobile_sorting.html' %}
     </div>
   </section>
-  <section id="product-list-section" class="pb-5 text-dp products-dropdown">
-    <h2 class="d-none">Eau royal products</h2>
-    <div class="container-lg">
-      <div class="d-none d-md-block">
-        {% include 'products/includes/default_sorting.html' %}
-      </div>
-      <div class="row gx-2 gx-l-5">
-        <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
-          <ol class="breadcrumb">
-            <li class="breadcrumb-item">
-              <a href="{% url 'home' %}">Home</a>
-            </li>
-            {% if request.get_full_path == "/products/" %}
-              <li class="breadcrumb-item active" aria-current="page">All products</li>
-            {% endif %}
-            {% if search_term or current_categories or current_genders or current_discounts or current_sorting != 'None_None' %}
-              <li class="breadcrumb-item">
-                <a href="{% url 'products' %}">All products</a>
-              </li>
-              {% for c in current_categories %}
-                <li class="breadcrumb-item active" aria-current="page">{{ c.name }}</li>
-              {% endfor %}
-              {% for g in current_genders %}
-                <li class="breadcrumb-item">
-                  <a href="{% url 'products' %}?category=perfumes">Perfumes</a>
-                </li>
-                <li class="breadcrumb-item text-capitalize active" aria-current="page">{{ g.name }}</li>
-              {% endfor %}
-              {% if 'has_discount' in request.GET %}
-                <li class="breadcrumb-item text-capitalize active" aria-current="page">Sale</li>
-              {% endif %}
-            {% else %}
 
-            {% endif %}
-          </ol>
-        </nav>
-        <p class="text-muted text-center text-md-left">
-          Showing
-          {{ products|length }}
-          products
-          {% if search_term %}
-            found for "{{ search_term }}"
-          {% endif %}
-          out of
-          {{ total_products }}
-        </p>
-      </div>
-      <div id="product-detail-container" class="infinite-container row gx-2 gx-lg-5 row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 row-cols-xxl-6 justify-content-start">
+  <section id="product-list-section" class="pb-5">
+    <div class="container-lg">
+      <div class="row">
+        <!-- Filters Sidebar -->
+        <aside class="col-lg-3 mb-4" id="filtersSidebar">
+          <div class="filter-panel">
+            <div class="filter-header d-flex justify-content-between align-items-center mb-3">
+              <h5 class="mb-0"><i class="fas fa-sliders-h"></i> Filtros</h5>
+              <button class="btn btn-sm btn-outline-secondary" id="clearFiltersBtn">Limpiar Todo</button>
+            </div>
+
+            <!-- Active Filters -->
+            <div id="activeFilters" class="mb-3">
+              <!-- Filter chips will be added here by JavaScript -->
+            </div>
+
+            <!-- Price Range -->
+            <div class="filter-section">
+              <h6 class="filter-title">Rango de Precio</h6>
+              <div class="price-range-slider">
+                <input type="text" id="priceRange" name="price_range" />
+              </div>
+            </div>
+
+            <!-- Fragrance Family -->
+            <div class="filter-section">
+              <h6 class="filter-title">Familia de Fragancia</h6>
+              <div class="filter-options">
+                <label class="filter-option">
+                  <input type="checkbox" name="family" value="floral">
+                  <span>Floral</span>
+                </label>
+                <label class="filter-option">
+                  <input type="checkbox" name="family" value="oriental">
+                  <span>Oriental</span>
+                </label>
+                <label class="filter-option">
+                  <input type="checkbox" name="family" value="woody">
+                  <span>Amaderado</span>
+                </label>
+                <label class="filter-option">
+                  <input type="checkbox" name="family" value="fresh">
+                  <span>Fresco</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Intensity -->
+            <div class="filter-section">
+              <h6 class="filter-title">Intensidad</h6>
+              <div class="filter-options">
+                <label class="filter-option">
+                  <input type="checkbox" name="intensity" value="light">
+                  <span>Ligera</span>
+                </label>
+                <label class="filter-option">
+                  <input type="checkbox" name="intensity" value="moderate">
+                  <span>Moderada</span>
+                </label>
+                <label class="filter-option">
+                  <input type="checkbox" name="intensity" value="strong">
+                  <span>Fuerte</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Occasion -->
+            <div class="filter-section">
+              <h6 class="filter-title">Ocasión</h6>
+              <div class="filter-options">
+                <label class="filter-option">
+                  <input type="checkbox" name="occasion" value="daily">
+                  <span>Uso Diario</span>
+                </label>
+                <label class="filter-option">
+                  <input type="checkbox" name="occasion" value="office">
+                  <span>Oficina</span>
+                </label>
+                <label class="filter-option">
+                  <input type="checkbox" name="occasion" value="evening">
+                  <span>Noche</span>
+                </label>
+                <label class="filter-option">
+                  <input type="checkbox" name="occasion" value="special">
+                  <span>Eventos Especiales</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- In Stock -->
+            <div class="filter-section">
+              <h6 class="filter-title">Disponibilidad</h6>
+              <div class="filter-options">
+                <label class="filter-option">
+                  <input type="checkbox" name="in_stock" value="true" checked>
+                  <span>Solo en Stock</span>
+                </label>
+                <label class="filter-option">
+                  <input type="checkbox" name="has_discount" value="true">
+                  <span>En Rebaja</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Sorting -->
+            <div class="filter-section">
+              <h6 class="filter-title">Ordenar por</h6>
+              <select class="form-select" name="sort" id="sortSelect">
+                <option value="name_asc">Nombre (A-Z)</option>
+                <option value="name_desc">Nombre (Z-A)</option>
+                <option value="price_asc">Precio (Menor a Mayor)</option>
+                <option value="price_desc">Precio (Mayor a Menor)</option>
+                <option value="rating_desc">Valoración (Mayor a Menor)</option>
+              </select>
+            </div>
+          </div>
+        </aside>
+
+        <!-- Products Grid -->
+        <div class="col-lg-9" id="productsContainer">
+      <div id="product-detail-container" class="infinite-container product-grid">
         {% for product in products %}
-          <div class="infinite-item col shadow mb-2">
-            <div class="card h-100 border-white">
-              <a href="{% url 'product_detail' product.id %}" class="btn p-0">
+          <div class="infinite-item product-card" data-product-id="{{ product.id }}">
+            <!-- Badges -->
+            {% if product.has_discount %}
+              <span class="badge badge-danger product-card-badge">-{{ product.discount_percentage }}%</span>
+            {% elif not product.in_stock %}
+              <span class="badge badge-warning product-card-badge">Sin Stock</span>
+            {% elif product.is_new %}
+              <span class="badge badge-success product-card-badge">Nuevo</span>
+            {% endif %}
+
+            <!-- Product Image -->
+            {% if product.id %}
+            <a href="{% url 'product_detail' product.id %}" class="product-card-link">
+              <div class="product-card-image">
                 {% if product.image %}
-                  <img class="card-img-top" src="{{ product.image.url }}" alt="{{ product.brand.name|lower }} {{ product.name|lower }}"/>
+                  <img data-src="{{ product.image.url }}" src="{{ product.image.url }}" alt="{{ product.brand.name }} {{ product.name }}" loading="lazy"/>
                 {% else %}
-                  <img class="card-img-top" src="{{ MEDIA_URL }}noimage.png" alt="{{ product.brand.name|lower }} {{ product.name|lower }}"/>
+                  <img data-src="{% static 'img/noimage.png' %}" src="{% static 'img/noimage.png' %}" alt="{{ product.brand.name }} {{ product.name }}" loading="lazy"/>
                 {% endif %}
-                <div class="card-body text-center product-body">
-                  <div class="d-flex flex-column justify-content-between">
-                    <p class="mb-1">{{ product.brand.name }}</p>
-                    <h6 class="fw-bold">{{ product.name }}</h6>
-                  </div>
+              </div>
+            </a>
+            {% else %}
+            <div class="product-card-image">
+              {% if product.image %}
+                <img data-src="{{ product.image.url }}" src="{{ product.image.url }}" alt="{{ product.brand.name }} {{ product.name }}" loading="lazy"/>
+              {% else %}
+                <img data-src="{% static 'img/noimage.png' %}" src="{% static 'img/noimage.png' %}" alt="{{ product.brand.name }} {{ product.name }}" loading="lazy"/>
+              {% endif %}
+            </div>
+            {% endif %}
+
+            <!-- Quick Actions -->
+            <div class="product-card-actions">
+              <button 
+                class="product-card-action-btn wishlist-toggle" 
+                data-product-id="{{ product.id }}"
+                title="Añadir a favoritos"
+                aria-label="Añadir {{ product.name }} a favoritos">
+                <i class="far fa-heart"></i>
+              </button>
+              <button 
+                class="product-card-action-btn quick-view-btn" 
+                data-product-id="{{ product.id }}"
+                title="Vista rápida"
+                aria-label="Vista rápida {{ product.name }}">
+                <i class="fas fa-eye"></i>
+              </button>
+              <label class="product-card-action-btn comparison-checkbox-label" title="Comparar">
+                <input 
+                  type="checkbox" 
+                  class="comparison-checkbox" 
+                  data-product-id="{{ product.id }}"
+                  aria-label="Añadir {{ product.name }} a comparación">
+                <i class="fas fa-balance-scale"></i>
+              </label>
+            </div>
+
+            <!-- Product Info -->
+            <div class="product-card-content">
+              {% if product.id %}
+              <a href="{% url 'product_detail' product.id %}" class="product-card-link">
+              {% else %}
+              <div class="product-card-disabled">
+              {% endif %}
+                <div class="product-card-brand">{{ product.brand.name }}</div>
+                <h3 class="product-card-title">{{ product.name }}</h3>
+                
+                <!-- Rating -->
+                <div class="product-card-rating">
+                  {% if product.average_rating %}
+                    <div class="star-rating">
+                      {% for i in "12345" %}
+                        {% if forloop.counter <= product.average_rating %}
+                          <i class="fas fa-star"></i>
+                        {% elif forloop.counter == product.average_rating|add:"1" and product.average_rating|floatformat:"1"|slice:"-1" != "0" %}
+                          <i class="fas fa-star-half-alt"></i>
+                        {% else %}
+                          <i class="far fa-star"></i>
+                        {% endif %}
+                      {% endfor %}
+                    </div>
+                    <span class="rating-count">({{ product.review_count|default:"0" }})</span>
+                  {% else %}
+                    <span class="text-muted small">Sin reseñas aún</span>
+                  {% endif %}
                 </div>
-                <div class="card-body p-0 text-center">
-                  <div class="mb-2 text-center">
-                    {% if product.rating %}
-                    <i class="fas fa-star fa-1x text-lv"></i>
-                      <small class="text-muted ms-2">
-                        {{ product.rating }} / 5
-                      </small>
-                    {% else %}
-                      <small class="text-muted">No Rating</small>
-                    {% endif %}
+
+                <!-- Fragrance Family -->
+                {% if product.fragrance_family %}
+                  <div class="product-card-meta">
+                    <i class="fas fa-leaf"></i>
+                    <span>{{ product.fragrance_family.name }}</span>
                   </div>
-                  <p class="mb-1">£{{ product.price }}</p>
+                {% endif %}
+
+                <!-- Price -->
+                <div class="product-card-price">
+                  {% if product.has_discount %}
+                    <span class="price-original">£{{ product.price }}</span>
+                    <span class="price-current">£{{ product.discounted_price }}</span>
+                  {% else %}
+                    <span class="price-current">£{{ product.price }}</span>
+                  {% endif %}
                 </div>
+              {% if product.id %}
               </a>
+              {% else %}
+              </div>
+              {% endif %}
+
+              <!-- Admin Actions -->
               {% if request.user.is_superuser %}
-                <div class="card-footer bg-white px-2">
-                  <div class="row">
-                    <div class="col-6 p-1">
-                      <a class="btn btn-dp w-100" href="{% url 'edit_product' product.id %}">Edit</a>
-                    </div>
-                    <div class="col-6 p-1">
-                      <a class="btn btn-outline-danger w-100" href="{% url 'delete_product' product.id %}">Delete</a>
-                    </div>
-                  </div>
+                <div class="product-card-admin">
+                  <a class="btn btn-sm btn-gold" href="{% url 'edit_product' product.id %}">
+                    <i class="fas fa-edit"></i> Editar
+                  </a>
+                  <a class="btn btn-sm btn-outline-danger" href="{% url 'delete_product' product.id %}">
+                    <i class="fas fa-trash"></i> Eliminar
+                  </a>
                 </div>
               {% endif %}
             </div>
           </div>
         {% endfor %}
       </div>
+
+      <!-- Comparison Bar (Fixed Bottom) -->
+      <div id="comparisonBar" class="comparison-bar" style="display: none;">
+        <div class="container-lg">
+          <div class="row align-items-center">
+            <div class="col-md-8">
+              <span class="comparison-bar-title">
+                <i class="fas fa-balance-scale"></i>
+                <span id="comparisonCount">0</span> productos seleccionados para comparar
+              </span>
+            </div>
+            <div class="col-md-4 text-end">
+              <button class="btn btn-sm btn-outline-light me-2" id="clearComparisonBtn">
+                Limpiar
+              </button>
+              <a href="#" class="btn btn-sm btn-gold" id="compareNowBtn">
+                Comparar Ahora
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Loading Indicator -->
       <div class="row mt-5">
-        <div class=" mb-4 mb-md-3 d-grid gap-2 col-8 col-md-3 mx-auto">
-          <div id="loading" class="spinner-border text-dp mx-auto" role="status" style="display: none;">
-            <span class="visually-hidden">Loading...</span>
+        <div class="col-12 text-center">
+          <div id="loading" class="loading-spinner" style="display: none;">
+            <div class="spinner-border text-gold" role="status">
+              <span class="visually-hidden">Cargando más productos...</span>
+            </div>
           </div>
           {% if products.has_next %}
-            <a class="infinite-more-link btn btn-dp" href="?page={{ products.next_page_number }}" role="button">
-              Loading ...
+            <a class="infinite-more-link btn btn-gold" href="?page={{ products.next_page_number }}" role="button">
+              <i class="fas fa-arrow-down"></i> Cargar Más
             </a>
           {% endif %}
+        </div>
+      </div>
         </div>
       </div>
     </div>
@@ -147,6 +378,7 @@
 {% block postloadjs %}
   {{ block.super }}
   <script src="https://cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.3.1/js/ion.rangeSlider.min.js"></script>
+  <script src="{% static 'js/products-page.js' %}" defer></script>
 
   {% include 'products/includes/products_script.html' %}
   

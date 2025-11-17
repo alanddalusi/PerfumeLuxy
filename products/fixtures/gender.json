@@ -2,16 +2,16 @@
   {
     "pk": 1,
     "model": "products.gender",
-    "fields": { "name": "male", "db_name": "M" }
+    "fields": { "name": "Hombre", "db_name": "M" }
   },
   {
     "pk": 2,
     "model": "products.gender",
-    "fields": { "name": "female", "db_name": "F" }
+    "fields": { "name": "Mujer", "db_name": "F" }
   },
   {
     "pk": 3,
     "model": "products.gender",
-    "fields": { "name": "unisex", "db_name": "U" }
+    "fields": { "name": "Unisex", "db_name": "U" }
   }
 ]

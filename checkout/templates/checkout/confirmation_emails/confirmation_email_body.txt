@@ -1,23 +1,23 @@
-Hi {{ order.full_name }}!
+¡Hola {{ order.full_name }}!
 
-Your Eau Royal order has been received!
+¡Tu pedido de PerfumeLuxe ha sido recibido!
 
-We have received your order and we will contact you as soon as your order has been shipped. Your purchase information is show below:
+Hemos recibido tu pedido y te contactaremos tan pronto como sea enviado. A continuación se muestra la información de tu compra:
 
-##Order Summary:
+##Resumen del Pedido:
 ********
-Order date: {{ order.date }}
-Order Number: {{ order.order_number }}
+Fecha del pedido: {{ order.date }}
+Número de Pedido: {{ order.order_number }}
 
-Order Total: £{{ order.order_total }}
-Delivery: £{{ order.delivery_cost }}
-Grand Total: £{{ order.total }}
+Total del Pedido: {{ order.order_total }}€
+Envío: {{ order.delivery_cost }}€
+Total General: {{ order.total }}€
 
 
-Billing and Shipping 
+Facturación y Envío 
 *****
 
-Shipping address:
+Dirección de envío:
 ***
 
 {{ order.full_name }}
@@ -28,8 +28,8 @@ Shipping address:
 {{ order.postcode }}
 {{ order.country }}
 
-If you have any questions, please contact us at {{ contact_email }}
+Si tienes alguna pregunta, contáctanos en {{ contact_email }}
 
-Thank you for your order!
+¡Gracias por tu pedido!
 
-Eau Royal 
+PerfumeLuxe 

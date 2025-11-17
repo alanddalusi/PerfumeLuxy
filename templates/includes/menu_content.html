@@ -9,59 +9,75 @@
 </div>
 <div class="offcanvas-body" id="menu-offcanvas-body">
   <ul class="navbar-nav justify-content-end flex-grow-1 pe-3 text-dp">
-    <li class="nav-item ">
+    <!-- Inicio -->
+    <li class="nav-item">
       <a class="nav-link d-flex align-items-center justify-content-between text-dp" href="{% url 'home' %}">
-        Home
+        <span><i class="fas fa-home me-2"></i>Inicio</span>
         <i class="fa-solid fa-chevron-right icon"></i>
       </a>
     </li>
+    <li class="nav-item"><hr class="text-lv canvas-hr"></li>
+    
+    <!-- Categoría Principal: Por Género -->
     <li class="nav-item">
-      <hr class="text-lv canvas-hr">
+      <div class="nav-category-header px-3 py-2">
+        <small class="text-muted text-uppercase fw-bold">Por Género</small>
+      </div>
     </li>
     <li class="nav-item">
-      <a class="nav-link" aria-label="subscription card" href="#">
-        Subscription <small class="text-muted">Coming soon...</small>
-      </a>
-    </li>
-    <li class="nav-item">
-      <hr class="text-lv canvas-hr">
-    </li>
-    <li class="nav-item ">
       <a class="nav-link d-flex align-items-center justify-content-between text-dp" href="{% url 'products' %}?gender=F">
-        Hers
+        <span><i class="fas fa-venus me-2 text-gold"></i>Fragancias Para Ella</span>
         <i class="fa-solid fa-chevron-right icon"></i>
       </a>
     </li>
     <li class="nav-item">
-      <hr class="text-lv canvas-hr">
-    </li>
-    <li class="nav-item ">
       <a class="nav-link d-flex align-items-center justify-content-between text-dp" href="{% url 'products' %}?gender=M">
-        His
+        <span><i class="fas fa-mars me-2 text-gold"></i>Fragancias Para Él</span>
         <i class="fa-solid fa-chevron-right icon"></i>
       </a>
     </li>
     <li class="nav-item">
-      <hr class="text-lv canvas-hr">
+      <a class="nav-link d-flex align-items-center justify-content-between text-dp" href="{% url 'products' %}?gender=U">
+        <span><i class="fas fa-genderless me-2 text-gold"></i>Fragancias Unisex</span>
+        <i class="fa-solid fa-chevron-right icon"></i>
+      </a>
     </li>
-    <li class="nav-item ">
+    <li class="nav-item"><hr class="text-lv canvas-hr"></li>
+    
+    <!-- Categoría: Por Tipo -->
+    <li class="nav-item">
+      <div class="nav-category-header px-3 py-2">
+        <small class="text-muted text-uppercase fw-bold">Por Tipo</small>
+      </div>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link d-flex align-items-center justify-content-between text-dp" href="{% url 'products' %}?category=perfumes">
+        <span><i class="fas fa-spray-can me-2"></i>Perfumes</span>
+        <i class="fa-solid fa-chevron-right icon"></i>
+      </a>
+    </li>
+    <li class="nav-item">
       <a class="nav-link d-flex align-items-center justify-content-between text-dp" href="{% url 'products' %}?category=candles">
-        Candles
+        <span><i class="fas fa-fire me-2"></i>Velas Aromáticas</span>
         <i class="fa-solid fa-chevron-right icon"></i>
       </a>
     </li>
+    <li class="nav-item"><hr class="text-lv canvas-hr"></li>
+    
+    <!-- Ofertas y Destacados -->
     <li class="nav-item">
-      <hr class="text-lv canvas-hr">
-    </li>
-    <li class="nav-item ">
       <a class="nav-link d-flex align-items-center justify-content-between text-dp" href="{% url 'products' %}?has_discount=True">
-        Sale
-        <i class="fa-solid fa-chevron-right icon"></i>
+        <span><i class="fas fa-tags me-2 text-danger"></i>Ofertas Especiales</span>
+        <span class="badge bg-danger">Sale</span>
       </a>
     </li>
     <li class="nav-item">
-      <hr class="text-lv canvas-hr">
+      <a class="nav-link d-flex align-items-center justify-content-between text-dp" href="{% url 'products' %}?new_arrivals=true">
+        <span><i class="fas fa-star me-2 text-warning"></i>Novedades</span>
+        <span class="badge bg-success">Nuevo</span>
+      </a>
     </li>
+    <li class="nav-item"><hr class="text-lv canvas-hr"></li>
   </ul>
 </div>
 <div class="offcanvas-header bg-dp">
@@ -130,7 +146,7 @@
   </div>
   <a href="{% url 'home' %}" class="nav-link">
     <h1 class="logo-text my-0 text-lv fs-3 text-center">
-      <strong>Eau Royal</strong>
+      <strong>PerfumeLuxe</strong>
     </h1>
   </a>
   <a href="{% url 'view_bag' %}" class="btn btn-nav-dp" aria-label="view bag">

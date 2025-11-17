@@ -5,13 +5,13 @@
   <link rel="stylesheet" href="{% static 'products/css/products.css' %}">
 {% endblock %}
 
-{% block extra_title %}| Add Product{% endblock %} 
+{% block extra_title %}| Añadir Producto{% endblock %} 
 
 {% block content %}
   <section class="container-fluid">
     <div class="row text-center bg-dp">
       <div class="col py-2">
-        <h4 class="text-lv text-uppercase mt-2">Product Management</h4>
+        <h4 class="text-lv text-uppercase mt-2">Gestión de Productos</h4>
       </div>
     </div>
   </section>
@@ -19,7 +19,7 @@
     <div class="container px-4 px-lg-5 mb-5">
       <div class="row text-center">
         <div class="col-12 py-2">
-          <h6 class="text-uppercase mt-2">Add a Product</h6>
+          <h6 class="text-uppercase mt-2">Añadir un Producto</h6>
         </div>
       </div>
       <div class="row gx-4 mb-2 justify-content-center">
@@ -34,8 +34,8 @@
               {% endif %}
             {% endfor %}
             <div class="d-grid gap-2">
-              <a class="btn btn-outline-danger" role="button" href="{% url 'products' %}">Cancel</a>
-              <button class="btn btn-dp" type="submit">Add Product</button>
+              <a class="btn btn-outline-danger" role="button" href="{% url 'products' %}">Cancelar</a>
+              <button class="btn btn-dp" type="submit">Añadir Producto</button>
             </div>
           </form>
         </div>   
@@ -49,7 +49,7 @@
   <script>
     $('#new-image').change(function() {
       var file = $('#new-image')[0].files[0];
-      $('#filename').text(`Image will be set to: ${file.name}`);
+      $('#filename').text(`La imagen será: ${file.name}`);
     });
   </script>
 {% endblock %}

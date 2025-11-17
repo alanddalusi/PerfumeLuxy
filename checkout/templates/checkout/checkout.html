@@ -6,7 +6,7 @@
   <link rel="stylesheet" href="{% static 'checkout/css/checkout.css' %}" />
 {% endblock %} 
 
-{% block extra_title %}| Checkout{% endblock %} 
+{% block extra_title %}| Pago{% endblock %} 
 
 {% block navigation %}
 <nav class="container-fluid bg-dp">
@@ -14,7 +14,7 @@
     <div class="col-12">
       <a href="{% url 'home' %}" class="nav-link">
         <h1 class="text-center my-0 fs-3 text-lv logo-text ">
-          Eau Royal
+          PerfumeLuxe
         </h1>
       </a>
     </div>
@@ -26,7 +26,7 @@
   <section class="container-lg text-dp min-height">
     <div class="row text-center">
       <div class="col-12 py-2">
-        <h6 class="text-uppercase mt-2">Checkout</h6>
+        <h6 class="text-uppercase mt-2">Proceso de Pago</h6>
       </div>
     </div>
     <div class="row mb-5">
@@ -40,25 +40,25 @@
               <div class="dot bg-dp d-flex justify-content-center align-items-center mx-auto">
                 <p class="h3 mb-0 text-white">1</p>
               </div>
-              <p class="mb-0">Details</p>
+              <p class="mb-0">Detalles</p>
             </div>
             <div>
               <div class="dot delivery-dot bg-lv-80 d-flex justify-content-center align-items-center mx-auto">
                 <p class="h3 mb-0 text-white">2</p>
               </div>
-              <p class="mb-0">Delivery</p>
+              <p class="mb-0">Envío</p>
             </div>
             <div>
               <div class="dot payment-dot bg-lv-80 d-flex justify-content-center align-items-center mx-auto">
                 <p class="h3 mb-0 text-white">3</p>
               </div>
-              <p class="mb-0">Payment</p>
+              <p class="mb-0">Pago</p>
             </div>
             <div>
               <div class="dot bg-lv-80 d-flex justify-content-center align-items-center align-self mx-auto">
                 <p class="h3 mb-0 text-white">4</p>
               </div>
-              <p class="mb-0">Complete</p>
+              <p class="mb-0">Completado</p>
             </div>
           </div>
         </div>
@@ -71,14 +71,14 @@
             <h2 class="accordion-header" id="panelsStayOpen-order-items">
               <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#bag-items-checkout" aria-expanded="true" aria-controls="bag-items-checkout">
                 <h6 class="text-dp text-uppercase">
-                  Your Order
+                  Tu Pedido
                   <br>
                   <small>
                     {{ product_count }} 
-                    {% if product_count < 2 %} item {% else %} items {% endif %}
+                    {% if product_count < 2 %} artículo {% else %} artículos {% endif %}
                   </small>
                   <br>
-                  <p class="fw-bold mt-1">Total: £{{ total|floatformat:2 }}</p>
+                  <p class="fw-bold mt-1">Total: €{{ total|floatformat:2 }}</p>
                 </h6>
               </button>
             </h2>
@@ -88,13 +88,13 @@
                   <div class="my-2 d-flex justify-content-between align-items-center">
                     <p class="text-uppercase fs-6 mb-0">
                       {{ product_count }} 
-                      {% if product_count < 2 %} item {% else %} items {% endif %}
+                      {% if product_count < 2 %} artículo {% else %} artículos {% endif %}
                     </p>
                     <a
                       class="btn btn-dp d-flex justify-content-center align-items-center"
                       href="{% url 'view_bag' %}"
                       role="button">
-                      <span class="text-capitalize">Edit Bag</span>
+                      <span class="text-capitalize">Editar Carrito</span>
                     </a>
                   </div>
                   <div class="mt-2">
@@ -126,18 +126,18 @@
                                 <p>{{ item.product.name }}</p>
                               </div>
                               <div class="d-flex justify-content-between align-items-center">
-                                <p class="text-muted">SIZE: 
+                                <p class="text-muted">TAMAÑO: 
                                   {% if item.product.has_sizes %}
                                     {{ item.size }}
                                     {% else %}
                                     N/A
                                   {% endif %}
                                 </p>
-                                <p class="text-muted">&pound;{{ item.item_price|floatformat:2 }}</p>
+                                <p class="text-muted">€{{ item.item_price|floatformat:2 }}</p>
                               </div>
                               <div class="d-flex justify-content-between align-items-center">
-                                <p class="text-muted mb-0"> QTY: {{ item.quantity }}</p>
-                                <p class="mb-0">&pound; {{ item.item_total|floatformat:2 }}</p>
+                                <p class="text-muted mb-0"> CANT: {{ item.quantity }}</p>
+                                <p class="mb-0">€ {{ item.item_total|floatformat:2 }}</p>
                               </div>
                             </div>
                           </div>
@@ -149,42 +149,42 @@
                   <div class="col-12 mx-auto mb-3 d-grid gap-2">
                     <div class="text-center bg-lv-40 p-2">
                       <div class="d-flex justify-content-between align-items-center">
-                        <p class="fw-bold fs-5">Sub-total:</p>
-                        <p>£{{ sub_total|floatformat:2 }}</p>
+                        <p class="fw-bold fs-5">Subtotal:</p>
+                        <p>€{{ sub_total|floatformat:2 }}</p>
                       </div>
                       <div class="d-flex justify-content-between align-items-center">
-                        <p class="fw-bold fs-5">Delivery</p>
-                        <p> £{{ delivery_price|floatformat:2 }}</p>
+                        <p class="fw-bold fs-5">Envío</p>
+                        <p> €{{ delivery_price|floatformat:2 }}</p>
                       </div>
                       <div class="mb-2">
-                        <h4 class="fw-bolder mb-0">Discounts:</h4>
+                        <h4 class="fw-bolder mb-0">Descuentos:</h4>
                       </div>
                       {% if sub_total >= discount_threshold  %}
                         <div class="d-flex justify-content-between align-items-center">
-                          <p>{{ discount_percentage }}% OFF &pound;{{ discount_threshold }}</p>
-                          <p class="text-danger">- £{{ discount|floatformat:2 }}</p>
+                          <p>{{ discount_percentage }}% DTO en €{{ discount_threshold }}</p>
+                          <p class="text-danger">- €{{ discount|floatformat:2 }}</p>
                         </div>
                         {% if pre_delivery >= delivery_threshold %}
                           <div class="d-flex justify-content-between align-items-center">
-                            <p>FREE Delivery</p>
+                            <p>Envío GRATIS</p>
                             <p class="text-danger">- {{ delivery_price|floatformat:2 }}</p>
                           </div>
                         {% else %}
                           <div class="d-flex justify-content-between align-items-center">
-                            <p class="fw-bold fs-5">Delivery</p>
-                            <p> £{{ delivery|floatformat:2 }}</p>
+                            <p class="fw-bold fs-5">Envío</p>
+                            <p> €{{ delivery|floatformat:2 }}</p>
                           </div>
                         {% endif %}
                       {% else %}
                       <div>
                         <p class="text-center mb-0">
-                          Spend £{{ discount_delta|floatformat:2 }} more to get {{ discount_percentage }}% OFF
+                          Gasta €{{ discount_delta|floatformat:2 }} más para obtener {{ discount_percentage }}% DTO
                         </p>
                       </div>
                       {% endif %}
                       <div class="d-flex justify-content-between align-items-center">
                         <p class="fw-bold">Total:</p>
-                        <p class="text-start">£{{ total|floatformat:2 }}</p>
+                        <p class="text-start">€{{ total|floatformat:2 }}</p>
                       </div>
                     </div>      
                   </div>
@@ -199,7 +199,7 @@
         <form method="POST" action="{% url 'checkout' %}" class="mb-5" id="payment-form">
           {% csrf_token %}
           <fieldset class="shadow bg-lv-20 p-3 mb-3" id="details-field">
-            <legend class="text-center mt-2">Details</legend>
+            <legend class="text-center mt-2">Detalles</legend>
             <div class="row g-2 align-items-center">
               <div class="col-12">
                 {{ order_form.full_name | as_crispy_field }}
@@ -215,12 +215,12 @@
               <div class="mb-3 text-danger d-flex align-items-center" id="phone-number-error"></div>
             </div>
             <div class="d-grid mt-3">
-              <button type="button" class="btn btn-dp save-details" id="save-details">Save & Continue</button>
-              <button type="button" class="btn btn-dp edit-details d-none">Edit</button>
+              <button type="button" class="btn btn-dp save-details" id="save-details">Guardar y Continuar</button>
+              <button type="button" class="btn btn-dp edit-details d-none">Editar</button>
             </div>
           </fieldset>
           <fieldset class="shadow bg-lv-20 p-3 mb-3 delivery-progress d-none" id="delivery-field">
-            <legend class="text-center mt-2">Delivery</legend>
+            <legend class="text-center mt-2">Envío</legend>
             {{ order_form.street_address1 | as_crispy_field }}
             <div class="mb-3 text-danger d-flex align-items-center" id="address1-error"></div>
             {{ order_form.street_address2 | as_crispy_field }}
@@ -235,22 +235,22 @@
             <div class="mb-3 text-danger d-flex align-items-center" id="country-error"></div>
             <div>
               {% if user.is_authenticated %}
-                <label class="form-check-label" for="id-save-info">Save this delivery information to my profile</label>
+                <label class="form-check-label" for="id-save-info">Guardar esta información de envío en mi perfil</label>
                 <input class="form-check-input ml-2 mr-0" type="checkbox" id="id-save-info" name="save-info" checked>
               {% else %}
                 <label class="form-check-label" for="id-save-info">
-                  <a class="text-primary fw-bold" href="{% url 'account_signup' %}">Create an account</a> or 
-                  <a class="text-primary fw-bold" href="{% url 'account_login' %}">login</a> to save this information
+                  <a class="text-primary fw-bold" href="{% url 'account_signup' %}">Crear una cuenta</a> o 
+                  <a class="text-primary fw-bold" href="{% url 'account_login' %}">iniciar sesión</a> para guardar esta información
                 </label>
               {% endif %}
             </div>
             <div class="d-grid mt-3">
-              <button type="button" class="btn btn-dp save-delivery" id="save-delivery">Save & Continue</button>
-              <button type="button" class="btn btn-dp edit-delivery d-none">Edit</button>
+              <button type="button" class="btn btn-dp save-delivery" id="save-delivery">Guardar y Continuar</button>
+              <button type="button" class="btn btn-dp edit-delivery d-none">Editar</button>
             </div>
           </fieldset>
           <fieldset class="shadow bg-lv-20 p-3 payment-progress d-none" id="payment-field">
-            <legend class="text-center mt-2">Payment</legend>
+            <legend class="text-center mt-2">Pago</legend>
             <!-- A Stripe card element will go here -->
             <div class="mb-3" id="card-element"></div>
             <!-- Used to display form errors -->
@@ -262,10 +262,10 @@
                 <span class="icon me-2">
                   <i class="fas fa-exclamation-circle"></i>
                 </span>
-                <span>Your card will be charged <strong>£{{ total|floatformat:2 }}</strong></span>
+                <span>Se cobrará a tu tarjeta <strong>€{{ total|floatformat:2 }}</strong></span>
               </p>
               <div class="d-grid mt-3">
-                <button type="submit" class="btn btn-dp" id="submit-button">Place Order</button>
+                <button type="submit" class="btn btn-dp" id="submit-button">Realizar Pedido</button>
               </div>
             </div>
           </fieldset>
@@ -273,19 +273,19 @@
       </div>
       <div class="d-none d-md-block col-md-5 sidebar-bag">
         <div class="text-center my-2">
-          <h6 class="text-dp text-uppercase">Your Order</h6>
+          <h6 class="text-dp text-uppercase">Tu Pedido</h6>
         </div>
         {% if bag_items %}
         <div class="my-2 d-flex justify-content-between align-items-center">
           <p class="text-uppercase fs-6 mb-0">
             {{ product_count }} 
-            {% if product_count < 2 %} item {% else %} items {% endif %}
+            {% if product_count < 2 %} artículo {% else %} artículos {% endif %}
           </p>
           <a
             class="btn btn-dp d-flex justify-content-center align-items-center"
             href="{% url 'view_bag' %}"
             role="button">
-            <span class="text-capitalize">Edit Bag</span>
+            <span class="text-capitalize">Editar Carrito</span>
           </a>
         </div>
         <div class="mt-2">
@@ -310,18 +310,18 @@
                       <p>{{ item.product.name }}</p>
                     </div>
                     <div class="d-flex justify-content-between align-items-center">
-                      <p class="text-muted">SIZE: 
+                      <p class="text-muted">TAMAÑO: 
                         {% if item.product.has_sizes %}
                           {{ item.size }}
                           {% else %}
                           N/A
                         {% endif %}
                       </p>
-                      <p class="text-muted">&pound;{{ item.item_price|floatformat:2 }}</p>
+                      <p class="text-muted">€{{ item.item_price|floatformat:2 }}</p>
                     </div>
                     <div class="d-flex justify-content-between align-items-center">
-                      <p class="text-muted mb-0"> QTY: {{ item.quantity }}</p>
-                      <p class="mb-0">&pound; {{ item.item_total|floatformat:2 }}</p>
+                      <p class="text-muted mb-0"> CANT: {{ item.quantity }}</p>
+                      <p class="mb-0">€ {{ item.item_total|floatformat:2 }}</p>
                     </div>
                   </div>
                 </div>
@@ -333,42 +333,42 @@
         <div class="col-12 mx-auto mb-3 d-grid gap-2">
           <div class="bg-lv-40 p-2">
             <div class="d-flex justify-content-between align-items-center">
-              <p class="fw-bold fs-5">Sub-total:</p>
-              <p>£{{ sub_total|floatformat:2 }}</p>
+              <p class="fw-bold fs-5">Subtotal:</p>
+              <p>€{{ sub_total|floatformat:2 }}</p>
             </div>
             <div class="d-flex justify-content-between align-items-center">
-              <p class="fw-bold fs-5">Delivery</p>
-              <p> £{{ delivery_price|floatformat:2 }}</p>
+              <p class="fw-bold fs-5">Envío</p>
+              <p> €{{ delivery_price|floatformat:2 }}</p>
             </div>
             <div class="mb-2">
-              <h4 class="fw-bolder mb-0">Discounts:</h4>
+              <h4 class="fw-bolder mb-0">Descuentos:</h4>
             </div>
             {% if sub_total >= discount_threshold  %}
               <div class="d-flex justify-content-between align-items-center">
-                <p>{{ discount_percentage }}% OFF &pound;{{ discount_threshold }}</p>
-                <p class="text-danger">- £{{ discount|floatformat:2 }}</p>
+                <p>{{ discount_percentage }}% DTO en €{{ discount_threshold }}</p>
+                <p class="text-danger">- €{{ discount|floatformat:2 }}</p>
               </div>
               {% if pre_delivery >= delivery_threshold %}
                 <div class="d-flex justify-content-between align-items-center">
-                  <p>FREE Delivery</p>
+                  <p>Envío GRATIS</p>
                   <p class="text-danger">- {{ delivery_price|floatformat:2 }}</p>
                 </div>
               {% else %}
                 <div class="d-flex justify-content-between align-items-center">
-                  <p class="fw-bold fs-5">Delivery</p>
-                  <p> £{{ delivery|floatformat:2 }}</p>
+                  <p class="fw-bold fs-5">Envío</p>
+                  <p> €{{ delivery|floatformat:2 }}</p>
                 </div>
               {% endif %}
             {% else %}
             <div>
               <p class="text-center mb-0">
-                Spend £{{ discount_delta|floatformat:2 }} more to get {{ discount_percentage }}% OFF
+                Gasta €{{ discount_delta|floatformat:2 }} más para obtener {{ discount_percentage }}% DTO
               </p>
             </div>
             {% endif %}
             <div class="d-flex justify-content-between align-items-center">
               <p class="fw-bold">Total:</p>
-              <p class="text-start">£{{ total|floatformat:2 }}</p>
+              <p class="text-start">€{{ total|floatformat:2 }}</p>
             </div>
           </div>      
         </div>

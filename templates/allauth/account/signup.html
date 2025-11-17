@@ -9,7 +9,7 @@
   <section class="my-5 d-flex justify-content-center">
     <div class="col-10 col-lg-3 d-flex justify-content-center flex-column">
       <h1 class="text-center mb-5">
-        {% trans "Sign Up" %}
+        Registro
       </h1>
       <div class="d-flex justify-content-center bg-lv-60 p-4">
         <form class="signup" id="signup_form" method="post" action="{% url 'account_signup' %}">
@@ -26,8 +26,8 @@
                 </div>
               {% endif %}
               <div class="my-2">
-                <label class="form-label" for="{{ form.username.id_for_label }}">Username</label>
-                <input class="form-control" autofocus="autofocus" name="username" type="text" id="{{ form.username.id_for_label }}" placeholder="Username" autocomplete="username" required="required">
+                <label class="form-label" for="{{ form.username.id_for_label }}">Nombre de Usuario</label>
+                <input class="form-control" autofocus="autofocus" name="username" type="text" id="{{ form.username.id_for_label }}" placeholder="Usuario" autocomplete="username" required="required">
                 {% for error in form.username.errors %}
                   <ul class="list-inline list-unstyled text-danger my-3">
                     <li>{{ error }}</li>
@@ -35,8 +35,8 @@
                 {% endfor %}
               </div>
               <div class="my-2">
-                <label class="form-label" for="{{ form.email.id_for_label }}">Email Address</label>
-                <input class="form-control" name="email" type="email" id="{{ form.email.id_for_label }}" placeholder="example@email.com" autocomplete="email" required="required">
+                <label class="form-label" for="{{ form.email.id_for_label }}">Correo Electrónico</label>
+                <input class="form-control" name="email" type="email" id="{{ form.email.id_for_label }}" placeholder="ejemplo@email.com" autocomplete="email" required="required">
                 {% for error in form.email.errors %}
                   <ul class="list-inline list-unstyled text-danger my-3">
                     <li>{{ error }}</li>
@@ -44,7 +44,7 @@
                 {% endfor %}
               </div>
               <div class="my-2">
-                <label class="form-label" for="{{ form.password1.id_for_label }}">Password</label>
+                <label class="form-label" for="{{ form.password1.id_for_label }}">Contraseña</label>
                 <input class="form-control" name="password1" type="password" id="{{ form.password1.id_for_label }}" placeholder="•••••••••" autocomplete="new-passowrd" required="required">
                 {% for error in form.password1.errors %}
                   <ul class="list-inline list-unstyled text-danger my-3">
@@ -53,7 +53,7 @@
                 {% endfor %}
               </div>
               <div class="my-2">
-                <label class="form-label" for="{{ form.password2.id_for_label }}">Re-enter Password</label>
+                <label class="form-label" for="{{ form.password2.id_for_label }}">Confirmar Contraseña</label>
                 <input class="form-control" name="password2" type="password" id="{{ form.password2.id_for_label }}" placeholder="•••••••••" autocomplete="new-password" required="required">
                 {% for error in form.password2.errors %}
                   <ul class="list-inline list-unstyled text-danger my-3">
@@ -67,18 +67,16 @@
                 {% endif %}
               </div>
               <div class="my-2">
-                <a href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
+                <a href="{% url 'account_reset_password' %}">¿Olvidaste tu Contraseña?</a>
               </div>
               <div class="my-2">
                 <p>
-                  {% blocktrans %}
-                  Already have an account? Then please
-                  <a href="{{ login_url }}">sign in</a>.
-                  {% endblocktrans %}
+                  ¿Ya tienes una cuenta? Entonces por favor
+                  <a href="{{ login_url }}">inicia sesión</a>.
                 </p>
               </div>
               <div class="my-2 mx-auto">
-                <button class="btn btn-xl btn-dark bg-dp text-lv" type="submit">{% trans "Sign Up" %}</button>
+                <button class="btn btn-xl btn-dark bg-dp text-lv" type="submit">Registrarse</button>
               </div>
             </div>
           </div>

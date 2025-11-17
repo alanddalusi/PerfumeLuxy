@@ -1,1 +1,1 @@
-Eau Royal order {{ order.order_number }} has been received!
+¡PerfumeLuxe ha recibido tu pedido {{ order.order_number }}!

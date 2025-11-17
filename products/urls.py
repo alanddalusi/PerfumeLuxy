@@ -10,4 +10,22 @@ urlpatterns = [
         "delete/<int:product_id>/",
         views.delete_product,
         name="delete_product"),
+    
+    # Wishlist
+    path("wishlist/", views.wishlist, name="wishlist"),
+    path("wishlist/toggle/<int:product_id>/", views.toggle_wishlist, name="toggle_wishlist"),
+    
+    # Comparación
+    path("compare/", views.compare_products, name="compare_products"),
+    
+    # Reviews
+    path("<int:product_id>/review/add/", views.add_review, name="add_review"),
+    
+    # Alertas
+    path("<int:product_id>/alert/price/", views.create_price_alert, name="create_price_alert"),
+    path("<int:product_id>/alert/stock/", views.create_stock_alert, name="create_stock_alert"),
+    
+    # Quiz
+    path("quiz/", views.perfume_quiz, name="perfume_quiz"),
+    path("quiz/results/", views.quiz_results, name="quiz_results"),
 ]

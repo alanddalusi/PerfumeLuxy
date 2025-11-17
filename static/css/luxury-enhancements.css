@@ -1,0 +1,545 @@
+/* ============================================
+   LUXURY DESIGN ENHANCEMENTS - PerfumeLuxe
+   Elementos premium para transmitir elegancia
+   ============================================ */
+
+/* ============================================
+   LUXURY BUTTONS & INTERACTIONS
+   ============================================ */
+
+.btn-luxury {
+  background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+  color: white;
+  border: none;
+  padding: 1rem 2.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  border-radius: 50px;
+  text-transform: uppercase;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+}
+
+.btn-luxury::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.btn-luxury:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4);
+  color: white;
+}
+
+.btn-luxury:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+.btn-luxury:active {
+  transform: translateY(-1px);
+  box-shadow: 0 5px 15px rgba(212, 175, 55, 0.35);
+}
+
+/* Outline Luxury Button */
+.btn-luxury-outline {
+  background: transparent;
+  color: var(--gold);
+  border: 2px solid var(--gold);
+  padding: 1rem 2.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  border-radius: 50px;
+  text-transform: uppercase;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-luxury-outline::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+  transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: -1;
+}
+
+.btn-luxury-outline:hover {
+  color: white;
+  border-color: var(--gold-dark);
+  box-shadow: 0 8px 25px rgba(212, 175, 55, 0.3);
+}
+
+.btn-luxury-outline:hover::before {
+  left: 0;
+}
+
+/* ============================================
+   PREMIUM SECTION DIVIDERS
+   ============================================ */
+
+.section-divider {
+  position: relative;
+  height: 1px;
+  background: linear-gradient(to right, 
+    transparent 0%, 
+    var(--gold-40) 25%, 
+    var(--gold) 50%, 
+    var(--gold-40) 75%, 
+    transparent 100%
+  );
+  margin: 4rem auto;
+  max-width: 600px;
+}
+
+.section-divider::before {
+  content: '◆';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  color: var(--gold);
+  padding: 0 1rem;
+  font-size: 0.8rem;
+}
+
+/* Decorative Corner */
+.luxury-corner {
+  position: relative;
+}
+
+.luxury-corner::before,
+.luxury-corner::after {
+  content: '';
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  border: 2px solid var(--gold-40);
+}
+
+.luxury-corner::before {
+  top: -10px;
+  left: -10px;
+  border-right: none;
+  border-bottom: none;
+}
+
+.luxury-corner::after {
+  bottom: -10px;
+  right: -10px;
+  border-left: none;
+  border-top: none;
+}
+
+/* ============================================
+   LUXURY CARDS
+   ============================================ */
+
+.luxury-card {
+  background: white;
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  border: 1px solid var(--gold-05);
+}
+
+.luxury-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--gold), var(--gold-light), var(--gold));
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.luxury-card:hover {
+  transform: translateY(-12px);
+  box-shadow: 0 20px 60px rgba(212, 175, 55, 0.15);
+}
+
+.luxury-card:hover::before {
+  opacity: 1;
+}
+
+/* Premium Product Card */
+.premium-product-card {
+  background: white;
+  border-radius: 1.5rem;
+  overflow: hidden;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.premium-product-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, transparent 0%, rgba(212, 175, 55, 0.03) 100%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+
+.premium-product-card:hover {
+  transform: translateY(-15px) scale(1.02);
+  box-shadow: 0 25px 60px rgba(212, 175, 55, 0.2);
+}
+
+.premium-product-card:hover::after {
+  opacity: 1;
+}
+
+/* ============================================
+   LUXURY TYPOGRAPHY
+   ============================================ */
+
+.luxury-title {
+  font-family: 'Playfair Display', serif;
+  font-weight: 700;
+  color: var(--charcoal);
+  letter-spacing: -0.5px;
+  position: relative;
+  display: inline-block;
+}
+
+.luxury-title::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 0;
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--gold), var(--gold-light));
+  border-radius: 2px;
+}
+
+.luxury-subtitle {
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: var(--gold);
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.elegant-text {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  color: var(--text-gray);
+  font-size: 1.1rem;
+  line-height: 1.8;
+}
+
+/* ============================================
+   PREMIUM BACKGROUNDS
+   ============================================ */
+
+.luxury-bg {
+  background: linear-gradient(135deg, #ffffff 0%, var(--cream) 100%);
+  position: relative;
+}
+
+.luxury-bg::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    radial-gradient(circle at 20% 50%, rgba(212, 175, 55, 0.03) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(212, 175, 55, 0.03) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.premium-gradient {
+  background: linear-gradient(135deg, 
+    var(--white) 0%, 
+    var(--cream) 50%, 
+    var(--champagne) 100%
+  );
+}
+
+.gold-gradient-text {
+  background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 700;
+}
+
+/* ============================================
+   LUXURY ANIMATIONS
+   ============================================ */
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.shimmer-effect {
+  position: relative;
+  overflow: hidden;
+}
+
+.shimmer-effect::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  animation: shimmer 2s infinite;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.float-animation {
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes pulse-gold {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 20px rgba(212, 175, 55, 0);
+  }
+}
+
+.pulse-gold {
+  animation: pulse-gold 2s infinite;
+}
+
+/* ============================================
+   LUXURY BORDERS & FRAMES
+   ============================================ */
+
+.gold-border {
+  border: 2px solid var(--gold);
+  position: relative;
+  padding: 2rem;
+}
+
+.gold-border::before,
+.gold-border::after {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--gold);
+}
+
+.gold-border::before {
+  top: -2px;
+  left: -2px;
+  border-right: none;
+  border-bottom: none;
+}
+
+.gold-border::after {
+  bottom: -2px;
+  right: -2px;
+  border-left: none;
+  border-top: none;
+}
+
+.elegant-frame {
+  padding: 3rem;
+  background: white;
+  box-shadow: 
+    inset 0 0 0 1px var(--gold-20),
+    inset 0 0 0 3px white,
+    inset 0 0 0 4px var(--gold-10),
+    0 10px 30px rgba(0, 0, 0, 0.08);
+  border-radius: 0.5rem;
+}
+
+/* ============================================
+   PREMIUM HOVER EFFECTS
+   ============================================ */
+
+.hover-lift {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hover-lift:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+}
+
+.hover-gold {
+  transition: all 0.3s ease;
+}
+
+.hover-gold:hover {
+  color: var(--gold) !important;
+  transform: scale(1.05);
+}
+
+.hover-shine {
+  position: relative;
+  overflow: hidden;
+}
+
+.hover-shine::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.3) 50%,
+    transparent 70%
+  );
+  transform: translateX(-100%);
+  transition: transform 0.6s;
+}
+
+.hover-shine:hover::after {
+  transform: translateX(100%);
+}
+
+/* ============================================
+   LUXURY SCROLLBAR
+   ============================================ */
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--white-v2);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--gold), var(--gold-dark));
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--gold-dark);
+}
+
+/* ============================================
+   PREMIUM LOADING SPINNER
+   ============================================ */
+
+.luxury-spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid var(--gold-20);
+  border-top: 4px solid var(--gold);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* ============================================
+   LUXURY BADGES & LABELS
+   ============================================ */
+
+.luxury-badge {
+  display: inline-block;
+  padding: 0.5rem 1.5rem;
+  background: linear-gradient(135deg, var(--gold), var(--gold-light));
+  color: white;
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+}
+
+.exclusive-label {
+  background: linear-gradient(135deg, var(--charcoal), var(--deep-black));
+  color: var(--gold);
+  padding: 0.4rem 1.2rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  border: 1px solid var(--gold-40);
+}
+
+/* ============================================
+   RESPONSIVE LUXURY
+   ============================================ */
+
+@media (max-width: 768px) {
+  .luxury-title::after {
+    width: 40px;
+    height: 2px;
+  }
+
+  .section-divider {
+    margin: 2rem auto;
+  }
+
+  .elegant-frame {
+    padding: 1.5rem;
+  }
+
+  .btn-luxury,
+  .btn-luxury-outline {
+    padding: 0.875rem 2rem;
+    font-size: 0.9rem;
+  }
+}

@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="overlay"></div>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col text-center mt-3">
+            <h2 class="logo-font">Tus Perfumes Recomendados</h2>
+            <p class="text-muted">Basado en tus preferencias</p>
+            <hr class="w-50 mb-1">
+        </div>
+    </div>
+
+    <!-- Resumen de preferencias -->
+    <div class="row mt-4">
+        <div class="col-12 col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-body">
+                    <h5>Tus Preferencias:</h5>
+                    <div class="row">
+                        {% if preferences.intensity %}
+                        <div class="col-6 col-md-3">
+                            <strong>Intensidad:</strong><br>
+                            <span class="badge badge-gold">{{ preferences.intensity }}</span>
+                        </div>
+                        {% endif %}
+                        {% if preferences.occasion %}
+                        <div class="col-6 col-md-3">
+                            <strong>Ocasión:</strong><br>
+                            <span class="badge badge-gold">{{ preferences.occasion }}</span>
+                        </div>
+                        {% endif %}
+                        {% if preferences.season %}
+                        <div class="col-6 col-md-3">
+                            <strong>Temporada:</strong><br>
+                            <span class="badge badge-gold">{{ preferences.season }}</span>
+                        </div>
+                        {% endif %}
+                        {% if preferences.family %}
+                        <div class="col-6 col-md-3">
+                            <strong>Familia:</strong><br>
+                            <span class="badge badge-gold">{{ preferences.family }}</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Productos recomendados -->
+    <div class="row">
+        <div class="product-container col-10 offset-1">
+            {% if recommended_products %}
+                <div class="row mt-4">
+                    {% for product in recommended_products %}
+                        <div class="col-sm-6 col-md-6 col-lg-4 col-xl-3">
+                            <div class="card h-100 border-0">
+                                {% if product.image %}
+                                <a href="{% url 'product_detail' product.id %}">
+                                    <img class="card-img-top img-fluid" src="{{ product.image.url }}" alt="{{ product.name }}">
+                                </a>
+                                {% else %}
+                                <a href="{% url 'product_detail' product.id %}">
+                                    <img class="card-img-top img-fluid" src="{{ MEDIA_URL }}noimage.png" alt="{{ product.name }}">
+                                </a>
+                                {% endif %}
+                                <div class="card-body pb-0">
+                                    <p class="mb-0">{{ product.name }}</p>
+                                    <p class="mb-0 text-muted"><small>{{ product.brand.name }}</small></p>
+                                </div>
+                                <div class="card-footer bg-white pt-0 border-0 text-left">
+                                    <div class="row">
+                                        <div class="col">
+                                            <p class="lead mb-0 text-left font-weight-bold">€{{ product.price }}</p>
+                                            {% if product.avg_rating %}
+                                                <small class="text-muted"><i class="fas fa-star text-gold mr-1"></i>{{ product.avg_rating|floatformat:1 }} / 5</small>
+                                            {% else %}
+                                                <small class="text-muted">Sin valorar</small>
+                                            {% endif %}
+                                            
+                                            {% if product.fragrance_family %}
+                                                <p class="mt-2 mb-0"><small class="badge badge-light">{{ product.fragrance_family.name }}</small></p>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="row">
+                    <div class="col text-center mt-5">
+                        <h4>No encontramos perfumes con esas características</h4>
+                        <p class="text-muted">Intenta con otras preferencias</p>
+                        <a href="{% url 'perfume_quiz' %}" class="btn btn-gold rounded-0 mt-3">
+                            <span class="text-uppercase">Volver al Quiz</span>
+                        </a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="row mt-4 mb-5">
+        <div class="col text-center">
+            <a href="{% url 'perfume_quiz' %}" class="btn btn-outline-black rounded-0 mr-2">
+                <span class="icon">
+                    <i class="fas fa-redo"></i>
+                </span>
+                <span class="text-uppercase">Repetir Quiz</span>
+            </a>
+            <a href="{% url 'products' %}" class="btn btn-outline-black rounded-0">
+                <span class="text-uppercase">Ver Todos los Productos</span>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

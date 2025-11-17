@@ -1,0 +1,66 @@
+[
+    {
+        "model": "products.fragrancefamily",
+        "pk": 1,
+        "fields": {
+            "name": "Floral",
+            "description": "Fragancias dominadas por notas florales como rosa, jazmín, lirio, violeta y magnolia. Perfectas para ocasiones románticas y elegantes."
+        }
+    },
+    {
+        "model": "products.fragrancefamily",
+        "pk": 2,
+        "fields": {
+            "name": "Oriental",
+            "description": "Fragancias cálidas y exóticas con especias, ámbar, vainilla y resinas. Ideales para la noche y el invierno."
+        }
+    },
+    {
+        "model": "products.fragrancefamily",
+        "pk": 3,
+        "fields": {
+            "name": "Amaderado",
+            "description": "Fragancias con notas de cedro, sándalo, vetiver y pachulí. Sofisticadas y duraderas."
+        }
+    },
+    {
+        "model": "products.fragrancefamily",
+        "pk": 4,
+        "fields": {
+            "name": "Cítrico",
+            "description": "Fragancias frescas y vibrantes con limón, naranja, bergamota y pomelo. Perfectas para el día y el verano."
+        }
+    },
+    {
+        "model": "products.fragrancefamily",
+        "pk": 5,
+        "fields": {
+            "name": "Fresco",
+            "description": "Fragancias acuáticas, marinas y verdes. Refrescantes y revitalizantes."
+        }
+    },
+    {
+        "model": "products.fragrancefamily",
+        "pk": 6,
+        "fields": {
+            "name": "Gourmand",
+            "description": "Fragancias dulces y comestibles con notas de vainilla, caramelo, chocolate y café."
+        }
+    },
+    {
+        "model": "products.fragrancefamily",
+        "pk": 7,
+        "fields": {
+            "name": "Chipre",
+            "description": "Fragancias elegantes y sofisticadas con musgo de roble, bergamota y patchulí."
+        }
+    },
+    {
+        "model": "products.fragrancefamily",
+        "pk": 8,
+        "fields": {
+            "name": "Fougère",
+            "description": "Fragancias aromáticas con lavanda, geranio y cumarina. Clásicas y versátiles."
+        }
+    }
+]

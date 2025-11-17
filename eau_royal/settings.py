@@ -32,10 +32,10 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 if "DEVELOPMENT" in os.environ:
     DEBUG = True
+    ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 else:
     DEBUG = False
-
-ALLOWED_HOSTS = [os.environ.get("HOSTNAME")]
+    ALLOWED_HOSTS = [os.environ.get("HOSTNAME")]
 
 # Add Render.com URL to allowed hosts
 RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
@@ -94,6 +94,7 @@ TEMPLATES = [
             "context_processors": [
                 "django.template.context_processors.debug",
                 "django.template.context_processors.request",
+                "django.template.context_processors.media",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "bag.contexts.bag_contents",
