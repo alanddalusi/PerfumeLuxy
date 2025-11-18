@@ -1291,3 +1291,80 @@ a.footer-heading:hover {
     width: 98vw;
   }
 }
+
+/* ==================== Perfumery Professional Styles ==================== */
+
+/* Performance Metrics Section */
+.performance-section {
+  background: linear-gradient(135deg, #FAFAF7 0%, #FFFFFF 100%);
+  border: 1px solid #E9D8A6;
+  border-radius: 12px;
+  padding: 24px;
+  margin: 24px 0;
+}
+
+.performance-title {
+  font-family: 'Playfair Display', serif;
+  color: #333333;
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.performance-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.metric-card {
+  background: white;
+  border: 2px solid #E0E0E0;
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.metric-card:hover {
+  border-color: #D4AF37;
+  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.2);
+  transform: translateY(-4px);
+}
+
+.metric-card i {
+  font-size: 32px;
+  color: #D4AF37;
+  margin-bottom: 12px;
+  display: block;
+}
+
+.metric-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #666666;
+  margin-bottom: 8px;
+}
+
+.metric-value {
+  display: block;
+  font-family: 'Cinzel', serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333333;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .performance-metrics {
+    grid-template-columns: 1fr;
+  }
+  
+  .metric-card {
+    padding: 16px;
+  }
+}

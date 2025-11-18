@@ -178,6 +178,55 @@
             </p>
           </div>
         </div>
+        
+        <!-- Pirámide Olfativa -->
+        <div class="row">
+          <div class="col-12">
+            {% include 'includes/fragrance_pyramid.html' %}
+          </div>
+        </div>
+        
+        <!-- Información de Rendimiento -->
+        {% if product.intensity or product.duration or product.projection %}
+        <div class="row mt-4">
+          <div class="col-12">
+            <div class="performance-section">
+              <h5 class="performance-title">Rendimiento del Perfume</h5>
+              <div class="performance-metrics">
+                {% if product.intensity %}
+                <div class="metric-card">
+                  <i class="fas fa-tint"></i>
+                  <span class="metric-label">Intensidad</span>
+                  <span class="metric-value">{{ product.get_intensity_display }}</span>
+                </div>
+                {% endif %}
+                {% if product.duration %}
+                <div class="metric-card">
+                  <i class="fas fa-clock"></i>
+                  <span class="metric-label">Longevidad</span>
+                  <span class="metric-value">{{ product.get_duration_display }}</span>
+                </div>
+                {% endif %}
+                {% if product.projection %}
+                <div class="metric-card">
+                  <i class="fas fa-broadcast-tower"></i>
+                  <span class="metric-label">Proyección</span>
+                  <span class="metric-value">{{ product.get_projection_display }}</span>
+                </div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+        
+        <!-- Autenticidad y Garantías -->
+        <div class="row mt-4">
+          <div class="col-12">
+            {% include 'includes/authenticity_guarantee.html' %}
+          </div>
+        </div>
+        
       </div>
     </div>
   </section>

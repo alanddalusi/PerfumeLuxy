@@ -1,0 +1,263 @@
+{% load static %}
+
+<!-- Sección de Autenticidad y Garantías -->
+<div class="authenticity-section">
+  <h5 class="authenticity-title">
+    <i class="fas fa-shield-alt"></i>
+    100% Auténtico Garantizado
+  </h5>
+  
+  <div class="trust-badges">
+    <div class="trust-badge">
+      <i class="fas fa-certificate"></i>
+      <span class="badge-title">Origen Verificado</span>
+      <span class="badge-desc">Todos nuestros perfumes son originales</span>
+    </div>
+    
+    <div class="trust-badge">
+      <i class="fas fa-check-circle"></i>
+      <span class="badge-title">Sello de Calidad</span>
+      <span class="badge-desc">Certificado de autenticidad incluido</span>
+    </div>
+    
+    <div class="trust-badge">
+      <i class="fas fa-undo"></i>
+      <span class="badge-title">Garantía 30 Días</span>
+      <span class="badge-desc">Devolución sin preguntas</span>
+    </div>
+    
+    <div class="trust-badge">
+      <i class="fas fa-lock"></i>
+      <span class="badge-title">Compra Segura</span>
+      <span class="badge-desc">Pago protegido SSL</span>
+    </div>
+  </div>
+  
+  <div class="authenticity-details">
+    <button class="btn btn-outline-gold btn-sm" data-bs-toggle="modal" data-bs-target="#authenticityModal">
+      <i class="fas fa-file-certificate"></i>
+      Ver Certificado de Autenticidad
+    </button>
+  </div>
+</div>
+
+<!-- Modal de Certificado -->
+<div class="modal fade" id="authenticityModal" tabindex="-1" aria-labelledby="authenticityModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header border-bottom-0">
+        <h5 class="modal-title" id="authenticityModalLabel">
+          <i class="fas fa-certificate text-gold"></i>
+          Certificado de Autenticidad
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <div class="certificate-content">
+          <div class="certificate-header">
+            <img src="{% static 'favicon/android-chrome-192x192.png' %}" alt="PerfumeLuxy" style="height: 60px;">
+            <h3 class="mt-3">PerfumeLuxy</h3>
+            <p class="text-muted">Certificado de Autenticidad</p>
+          </div>
+          
+          <div class="certificate-body">
+            <p><strong>Garantizamos que:</strong></p>
+            <ul class="authenticity-list">
+              <li><i class="fas fa-check text-success"></i> Este producto es 100% original y auténtico</li>
+              <li><i class="fas fa-check text-success"></i> Proviene directamente de distribuidores autorizados</li>
+              <li><i class="fas fa-check text-success"></i> Cuenta con códigos de lote verificables</li>
+              <li><i class="fas fa-check text-success"></i> Incluye garantía del fabricante</li>
+              <li><i class="fas fa-check text-success"></i> Cumple con todas las normativas de la UE</li>
+            </ul>
+            
+            <div class="batch-verification mt-4">
+              <h6>Verificación de Lote</h6>
+              <p class="small text-muted">
+                Cada perfume incluye un código de lote único que puede verificarse en el sitio web oficial de la marca.
+                El código se encuentra en la base del frasco y en la caja exterior.
+              </p>
+            </div>
+            
+            <div class="guarantee-info mt-4">
+              <h6>Nuestra Garantía</h6>
+              <p class="small">
+                Si no estás completamente satisfecho con tu compra, aceptamos devoluciones dentro de los 30 días 
+                posteriores a la recepción. El producto debe estar sin abrir y en su embalaje original.
+              </p>
+            </div>
+          </div>
+          
+          <div class="certificate-footer">
+            <p class="small text-muted mb-0">
+              <i class="fas fa-info-circle"></i>
+              Para más información, contacta con nuestro servicio de atención al cliente
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer border-top-0">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+/* Authenticity Section */
+.authenticity-section {
+  background: linear-gradient(135deg, #FFFFFF 0%, #FAFAF7 100%);
+  border: 2px solid #D4AF37;
+  border-radius: 12px;
+  padding: 28px;
+  margin: 24px 0;
+}
+
+.authenticity-title {
+  font-family: 'Playfair Display', serif;
+  color: #333333;
+  font-size: 22px;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.authenticity-title i {
+  color: #D4AF37;
+  margin-right: 8px;
+  font-size: 24px;
+}
+
+.trust-badges {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.trust-badge {
+  background: white;
+  border: 1px solid #E9D8A6;
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.trust-badge:hover {
+  border-color: #D4AF37;
+  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+  transform: translateY(-4px);
+}
+
+.trust-badge i {
+  font-size: 28px;
+  color: #D4AF37;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.badge-title {
+  display: block;
+  font-weight: 700;
+  font-size: 13px;
+  color: #333333;
+  margin-bottom: 4px;
+}
+
+.badge-desc {
+  display: block;
+  font-size: 11px;
+  color: #666666;
+  line-height: 1.4;
+}
+
+.authenticity-details {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.btn-outline-gold {
+  color: #D4AF37;
+  border-color: #D4AF37;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-outline-gold:hover {
+  background-color: #D4AF37;
+  border-color: #D4AF37;
+  color: white;
+}
+
+/* Certificate Modal Styles */
+.certificate-content {
+  padding: 20px;
+}
+
+.certificate-header {
+  text-align: center;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #E9D8A6;
+}
+
+.certificate-header h3 {
+  font-family: 'Playfair Display', serif;
+  color: #333333;
+  font-weight: 700;
+}
+
+.certificate-body {
+  padding: 20px 0;
+}
+
+.authenticity-list {
+  list-style: none;
+  padding-left: 0;
+}
+
+.authenticity-list li {
+  padding: 8px 0;
+  font-size: 14px;
+}
+
+.authenticity-list i {
+  margin-right: 12px;
+  font-size: 16px;
+}
+
+.batch-verification,
+.guarantee-info {
+  background: #FAFAF7;
+  border-left: 4px solid #D4AF37;
+  padding: 16px;
+  border-radius: 4px;
+}
+
+.batch-verification h6,
+.guarantee-info h6 {
+  font-weight: 700;
+  color: #333333;
+  margin-bottom: 8px;
+}
+
+.certificate-footer {
+  text-align: center;
+  padding-top: 20px;
+  border-top: 1px solid #E0E0E0;
+}
+
+.text-gold {
+  color: #D4AF37 !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .trust-badges {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .authenticity-section {
+    padding: 20px;
+  }
+}
+</style>

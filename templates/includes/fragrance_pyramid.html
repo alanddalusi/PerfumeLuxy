@@ -1,0 +1,215 @@
+{% load static %}
+
+<!-- Pirámide Olfativa -->
+{% if product.fragrance_notes.exists %}
+<div class="fragrance-pyramid-section">
+  <h5 class="pyramid-title">Pirámide Olfativa</h5>
+  
+  <div class="fragrance-pyramid">
+    <!-- Notas de Salida (Top) -->
+    {% with top_notes=product.fragrance_notes.all|dictsort:"note_type" %}
+    {% if top_notes %}
+    <div class="pyramid-layer pyramid-top">
+      <div class="layer-header">
+        <i class="fas fa-cloud"></i>
+        <span class="layer-name">Notas de Salida</span>
+        <span class="layer-time">5-15 min</span>
+      </div>
+      <div class="layer-notes">
+        {% for note in top_notes %}
+          {% if note.note_type == 'top' %}
+            <span class="note-badge" title="{{ note.description|default:note.name }}">
+              {{ note.name }}
+            </span>
+          {% endif %}
+        {% endfor %}
+      </div>
+      <p class="layer-description">Primera impresión, frescas y volátiles</p>
+    </div>
+    {% endif %}
+    {% endwith %}
+    
+    <!-- Notas de Corazón (Heart) -->
+    {% with heart_notes=product.fragrance_notes.all|dictsort:"note_type" %}
+    {% if heart_notes %}
+    <div class="pyramid-layer pyramid-heart">
+      <div class="layer-header">
+        <i class="fas fa-heart"></i>
+        <span class="layer-name">Notas de Corazón</span>
+        <span class="layer-time">2-4 hrs</span>
+      </div>
+      <div class="layer-notes">
+        {% for note in heart_notes %}
+          {% if note.note_type == 'heart' %}
+            <span class="note-badge" title="{{ note.description|default:note.name }}">
+              {{ note.name }}
+            </span>
+          {% endif %}
+        {% endfor %}
+      </div>
+      <p class="layer-description">Cuerpo del perfume, suaves y florales</p>
+    </div>
+    {% endif %}
+    {% endwith %}
+    
+    <!-- Notas de Fondo (Base) -->
+    {% with base_notes=product.fragrance_notes.all|dictsort:"note_type" %}
+    {% if base_notes %}
+    <div class="pyramid-layer pyramid-base">
+      <div class="layer-header">
+        <i class="fas fa-tree"></i>
+        <span class="layer-name">Notas de Fondo</span>
+        <span class="layer-time">6+ hrs</span>
+      </div>
+      <div class="layer-notes">
+        {% for note in base_notes %}
+          {% if note.note_type == 'base' %}
+            <span class="note-badge" title="{{ note.description|default:note.name }}">
+              {{ note.name }}
+            </span>
+          {% endif %}
+        {% endfor %}
+      </div>
+      <p class="layer-description">Persistencia, profundas y amaderadas</p>
+    </div>
+    {% endif %}
+    {% endwith %}
+  </div>
+</div>
+
+<style>
+.fragrance-pyramid-section {
+  background: linear-gradient(135deg, #FAFAF7 0%, #FFFFFF 100%);
+  border: 1px solid #E9D8A6;
+  border-radius: 12px;
+  padding: 24px;
+  margin: 24px 0;
+}
+
+.pyramid-title {
+  font-family: 'Playfair Display', serif;
+  color: #333333;
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.fragrance-pyramid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.pyramid-layer {
+  padding: 16px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+}
+
+.pyramid-layer:hover {
+  transform: translateX(8px);
+  border-color: #D4AF37;
+  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.2);
+}
+
+.pyramid-top {
+  background: linear-gradient(135deg, #FFF9E6 0%, #FFFEF0 100%);
+  border-left: 4px solid #FFE066;
+}
+
+.pyramid-heart {
+  background: linear-gradient(135deg, #FFE6F0 0%, #FFF0F8 100%);
+  border-left: 4px solid #FFB3D9;
+  margin-left: 20px;
+}
+
+.pyramid-base {
+  background: linear-gradient(135deg, #F5E6D3 0%, #FAF0E6 100%);
+  border-left: 4px solid #D4AF37;
+  margin-left: 40px;
+}
+
+.layer-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  font-weight: 600;
+  color: #333333;
+}
+
+.layer-header i {
+  font-size: 20px;
+  color: #D4AF37;
+}
+
+.layer-name {
+  font-family: 'Cinzel', serif;
+  font-size: 16px;
+  flex: 1;
+}
+
+.layer-time {
+  font-size: 12px;
+  color: #666666;
+  background: rgba(212, 175, 55, 0.1);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.layer-notes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.note-badge {
+  background: #FFFFFF;
+  color: #333333;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  border: 1px solid #E0E0E0;
+  cursor: default;
+  transition: all 0.2s ease;
+}
+
+.note-badge:hover {
+  background: #D4AF37;
+  color: #FFFFFF;
+  border-color: #D4AF37;
+  transform: translateY(-2px);
+}
+
+.layer-description {
+  font-size: 12px;
+  color: #666666;
+  font-style: italic;
+  margin: 0;
+  margin-top: 8px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .pyramid-heart {
+    margin-left: 10px;
+  }
+  
+  .pyramid-base {
+    margin-left: 20px;
+  }
+  
+  .layer-header {
+    font-size: 14px;
+  }
+  
+  .note-badge {
+    font-size: 11px;
+    padding: 4px 10px;
+  }
+}
+</style>
+{% endif %}
