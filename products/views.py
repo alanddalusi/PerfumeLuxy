@@ -31,8 +31,7 @@ def all_products(request):
 
     # Filter valid products and order by creation date (newest first)
     products = Product.objects.filter(
-        id__isnull=False,
-        active=True
+        id__isnull=False
     ).order_by('-created_at')
     
     total_products = products.count()

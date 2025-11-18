@@ -12,7 +12,6 @@ def index(request):
     # Get featured/top selling products (valid products only)
     top_products = Product.objects.filter(
         id__isnull=False,
-        active=True,
         stock__gt=0
     ).order_by('-rating')[:8]  # Top 8 rated products
 
