@@ -29,7 +29,12 @@ def all_products(request):
 
     template = "products/products.html"
 
-    products = Product.objects.all()
+    # Filter valid products and order by creation date (newest first)
+    products = Product.objects.filter(
+        id__isnull=False,
+        active=True
+    ).order_by('-created_at')
+    
     total_products = products.count()
 
     brand_list = Brand.objects.all()

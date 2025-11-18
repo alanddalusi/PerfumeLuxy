@@ -221,18 +221,18 @@
             <a href="{% url 'product_detail' product.id %}" class="product-card-link">
               <div class="product-card-image">
                 {% if product.image %}
-                  <img data-src="{{ product.image.url }}" src="{{ product.image.url }}" alt="{{ product.brand.name }} {{ product.name }}" loading="lazy"/>
+                  <img src="{{ product.image.url }}" alt="{{ product.brand.name }} {{ product.name }}" loading="lazy" width="300" height="300"/>
                 {% else %}
-                  <img data-src="{% static 'img/noimage.png' %}" src="{% static 'img/noimage.png' %}" alt="{{ product.brand.name }} {{ product.name }}" loading="lazy"/>
+                  <img src="{% static 'img/noimage.png' %}" alt="{{ product.brand.name }} {{ product.name }}" loading="lazy" width="300" height="300"/>
                 {% endif %}
               </div>
             </a>
             {% else %}
             <div class="product-card-image">
               {% if product.image %}
-                <img data-src="{{ product.image.url }}" src="{{ product.image.url }}" alt="{{ product.brand.name }} {{ product.name }}" loading="lazy"/>
+                <img src="{{ product.image.url }}" alt="{{ product.brand.name }} {{ product.name }}" loading="lazy" width="300" height="300"/>
               {% else %}
-                <img data-src="{% static 'img/noimage.png' %}" src="{% static 'img/noimage.png' %}" alt="{{ product.brand.name }} {{ product.name }}" loading="lazy"/>
+                <img src="{% static 'img/noimage.png' %}" alt="{{ product.brand.name }} {{ product.name }}" loading="lazy" width="300" height="300"/>
               {% endif %}
             </div>
             {% endif %}
