@@ -27,7 +27,7 @@
         <div class="col-md-7 col-12 mb-4 mb-md-0">
           {% if product.image %}
             <a href="{{ product.image.url }}" target="_blank">
-              <img class="card-img-top" src="{{ product.image.url }}" alt="{{ product.brand.name|lower }} {{ product.name|lower }}"/>
+              <img class="card-img-top" src="{{ product.image.url }}" alt="{{ product.brand.name|lower }} {{ product.name|lower }}" loading="lazy"/>
             </a>
           {% else %}
             <img class="card-img-top" src="{{ MEDIA_URL }}noimage.png" alt="{{ product.brand.name|lower }} {{ product.name|lower }}"/>
@@ -259,4 +259,62 @@
     });
   </script>
   {% include 'products/includes/quantity_input_script.html' %}
+
+  <!-- Schema.org Structured Data for Product -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org/",
+    "@type": "Product",
+    "name": "{{ product.name }}",
+    "description": "{{ product.description|truncatewords:30 }}",
+    "brand": {
+      "@type": "Brand",
+      "name": "{{ product.brand.name|default:'Eau Royal' }}"
+    },
+    "sku": "{{ product.sku|default:product.id }}",
+    {% if product.image %}
+    "image": [
+      "{{ request.scheme }}://{{ request.get_host }}{{ product.image.url }}"
+    ],
+    {% endif %}
+    "offers": {
+      "@type": "Offer",
+      "url": "{{ request.build_absolute_uri }}",
+      "priceCurrency": "EUR",
+      "price": "{{ product.price }}",
+      "availability": "{% if product.in_stock %}https://schema.org/InStock{% else %}https://schema.org/OutOfStock{% endif %}",
+      "seller": {
+        "@type": "Organization",
+        "name": "Eau Royal"
+      }
+    },
+    {% if product.average_rating > 0 %}
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "{{ product.average_rating|floatformat:1 }}",
+      "reviewCount": "{{ product.review_count }}"
+    },
+    {% endif %}
+    "category": "{% if product.category %}{{ product.category.name }}{% else %}Perfumes{% endif %}",
+    {% if product.fragrance_family %}
+    "additionalProperty": [
+      {
+        "@type": "PropertyValue",
+        "name": "Familia Olfativa",
+        "value": "{{ product.fragrance_family.name }}"
+      }{% if product.concentration %},
+      {
+        "@type": "PropertyValue", 
+        "name": "Concentración",
+        "value": "{{ product.get_concentration_display }}"
+      }{% endif %}{% if product.intensity %},
+      {
+        "@type": "PropertyValue",
+        "name": "Intensidad", 
+        "value": "{{ product.get_intensity_display }}"
+      }{% endif %}
+    ]
+    {% endif %}
+  }
+  </script>
 {% endblock %}
