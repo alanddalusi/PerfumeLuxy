@@ -1,0 +1,80 @@
+{% load static %}
+
+<!-- Breadcrumbs with Schema.org structured data -->
+<nav aria-label="breadcrumb" class="breadcrumb-luxury">
+  <ol class="breadcrumb" itemscope itemtype="https://schema.org/BreadcrumbList">
+    <li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+      <a itemprop="item" href="{% url 'home' %}">
+        <span itemprop="name">Inicio</span>
+      </a>
+      <meta itemprop="position" content="1" />
+    </li>
+    
+    {% if breadcrumb_items %}
+      {% for item in breadcrumb_items %}
+        {% if forloop.last %}
+          <li class="breadcrumb-item active" aria-current="page" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+            <span itemprop="name">{{ item.name }}</span>
+            <meta itemprop="position" content="{{ forloop.counter|add:1 }}" />
+          </li>
+        {% else %}
+          <li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+            <a itemprop="item" href="{{ item.url }}">
+              <span itemprop="name">{{ item.name }}</span>
+            </a>
+            <meta itemprop="position" content="{{ forloop.counter|add:1 }}" />
+          </li>
+        {% endif %}
+      {% endfor %}
+    {% endif %}
+  </ol>
+</nav>
+
+<style>
+.breadcrumb-luxury {
+  padding: 1rem 0;
+  background: transparent;
+}
+
+.breadcrumb-luxury .breadcrumb {
+  margin: 0;
+  padding: 0.75rem 1.5rem;
+  background: var(--white-pure);
+  border: 0.5px solid var(--gold-light, #E9D8A6);
+  border-radius: 8px;
+  font-size: 0.875rem;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+  content: "›";
+  color: var(--gold, #D4AF37);
+  font-size: 1.25rem;
+  padding: 0 0.5rem;
+}
+
+.breadcrumb-item a {
+  color: var(--charcoal, #333);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.breadcrumb-item a:hover {
+  color: var(--gold, #D4AF37);
+}
+
+.breadcrumb-item.active {
+  color: var(--gold, #D4AF37);
+  font-weight: 500;
+}
+
+@media (max-width: 767px) {
+  .breadcrumb-luxury .breadcrumb {
+    font-size: 0.75rem;
+    padding: 0.5rem 1rem;
+  }
+  
+  .breadcrumb-item + .breadcrumb-item::before {
+    padding: 0 0.25rem;
+  }
+}
+</style>

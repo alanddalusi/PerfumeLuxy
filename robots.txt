@@ -1,4 +1,29 @@
+# PerfumeLuxe Robots.txt - SEO Optimized
 User-agent: *
+
+# Allow main content
+Allow: /
+Allow: /products/
+Allow: /static/
+Allow: /media/
+
+# Disallow admin and user areas
+Disallow: /admin/
 Disallow: /accounts/
 Disallow: /bag/
-Sitemap: https://eau-royal.onrender.com/sitemap.xml
+Disallow: /checkout/
+Disallow: /profile/
+
+# Disallow search and filter parameters to avoid duplicate content
+Disallow: /*?sort=
+Disallow: /*?filter=
+Disallow: /*?page=
+Disallow: /*?q=
+
+# Crawl delay (optional, adjust if needed)
+Crawl-delay: 1
+
+# Sitemap location
+Sitemap: https://perfumeluxy.com/sitemap.xml
+Sitemap: https://perfumeluxy.com/sitemap-products.xml
+Sitemap: https://perfumeluxy.com/sitemap-categories.xml
