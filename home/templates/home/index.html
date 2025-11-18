@@ -21,20 +21,20 @@
 
 {% block content %}
   <!-- Hero Section Luxury -->
-  <section class="hero-luxury">
+  <section class="luxury-hero">
     <div class="container">
-      <div class="row align-items-center">
+      <div class="row align-items-center min-vh-75">
         <div class="col-lg-6 hero-content-luxury">
-          <p class="luxury-subtitle text-uppercase" style="color: var(--gold); font-size: 0.875rem; letter-spacing: 0.15em; margin-bottom: 1rem;">Fragancias de Lujo</p>
-          <h1 class="luxury-title" style="line-height: 1.2;">
+          <p class="luxury-display" style="font-size: 0.875rem; margin-bottom: 1rem;">Fragancias de Lujo</p>
+          <h1 class="luxury-hero-title">
             Descubre la esencia
-            <span style="display: block; color: var(--gold);">de la elegancia</span>
+            <span class="text-luxury-gold d-block">de la elegancia</span>
           </h1>
-          <p class="luxury-subtitle" style="font-size: 1.125rem; margin: 2rem 0;">
+          <p class="luxury-hero-subtitle">
             Catálogo exclusivo de fragancias de diseñador y nicho. Autenticidad garantizada, precios competitivos.
           </p>
           <div class="d-flex gap-3 flex-wrap mb-4">
-            <a href="{% url 'products' %}" class="btn-luxury-gold">
+            <a href="{% url 'products' %}" class="btn-luxury">
               <i class="fas fa-shopping-bag me-2"></i>Explorar Colección
             </a>
             <a href="{% url 'products' %}?has_discount=True" class="btn-luxury-outline">
@@ -237,62 +237,62 @@
   <div class="divider-luxury"></div>
 
   <!-- Top Selling Products Section Luxury -->
-  <section style="padding: 5rem 0; background: var(--white-pure);">
+  <section class="bg-luxury-gray" style="padding: var(--luxury-spacing-xxl) 0;">
     <div class="container">
       <div class="text-center mb-5">
-        <p class="luxury-subtitle text-uppercase" style="color: var(--gold); font-size: 0.875rem; letter-spacing: 0.15em;">Favoritos de los Clientes</p>
-        <h2 class="luxury-title" style="font-size: 2.5rem; margin-bottom: 1rem;">Los Más Vendidos</h2>
-        <p class="luxury-subtitle" style="max-width: 600px; margin: 0 auto;">Nuestras fragancias más amadas elegidas por clientes como tú</p>
+        <p class="luxury-display">Favoritos de los Clientes</p>
+        <h2 class="luxury-title" style="font-size: 2.5rem; margin-bottom: var(--luxury-spacing-md);">Los Más Vendidos</h2>
+        <p class="luxury-hero-subtitle" style="max-width: 600px; margin: 0 auto;">Nuestras fragancias más amadas elegidas por clientes como tú</p>
       </div>
-      <div class="divider-center"></div>
-      <div class="row g-4 mt-5">
+      
+      <div class="luxury-product-grid">
         {% for product in top_products %}
         {% if product.id %}
-        <div class="col-lg-3 col-md-4 col-sm-6">
-          <a href="{% url 'product_detail' product.id %}" class="card-luxury" style="display: block; text-decoration: none;">
-            <div style="position: relative; overflow: hidden; border-radius: 8px 8px 0 0;">
+          <div class="luxury-product-card">
+            <a href="{% url 'product_detail' product.id %}" style="display: block; text-decoration: none; color: inherit;">
               {% if product.image %}
-                <img src="{{ product.image.url }}" alt="{{ product.brand.name }} {{ product.name }}" style="width: 100%; height: 300px; object-fit: cover;" loading="lazy"/>
+                <img src="{{ product.image.url }}" alt="{{ product.brand.name }} {{ product.name }}" class="luxury-product-image" loading="lazy"/>
               {% else %}
-                <img src="{{ MEDIA_URL }}noimage.png" alt="{{ product.brand.name }} {{ product.name }}" style="width: 100%; height: 300px; object-fit: cover;" loading="lazy"/>
+                <img src="{{ MEDIA_URL }}noimage.png" alt="{{ product.brand.name }} {{ product.name }}" class="luxury-product-image" loading="lazy"/>
               {% endif %}
               {% if product.has_discount %}
-                <span style="position: absolute; top: 1rem; right: 1rem; background: var(--gold); color: white; padding: 0.375rem 0.75rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">Sale</span>
+                <span class="luxury-badge luxury-badge-sale" style="position: absolute; top: var(--luxury-spacing-sm); right: var(--luxury-spacing-sm);">Oferta</span>
               {% endif %}
-            </div>
-            <div style="padding: 1.5rem;">
-              <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--gold); margin-bottom: 0.5rem;">{{ product.brand.name }}</div>
-              <h5 style="font-family: var(--font-luxury); color: var(--charcoal); margin-bottom: 0.75rem; font-size: 1.125rem; line-height: 1.4;">{{ product.name }}</h5>
-              {% if product.rating %}
-              <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;">
-                <div style="color: #FFD700; font-size: 0.875rem;">
-                  {% for i in "12345" %}
-                    {% if forloop.counter <= product.rating %}
-                      <i class="fas fa-star"></i>
-                    {% else %}
-                      <i class="far fa-star"></i>
-                    {% endif %}
-                  {% endfor %}
+              
+              <div class="luxury-product-info">
+                <div class="luxury-product-brand">{{ product.brand.name }}</div>
+                <h5 class="luxury-product-title">{{ product.name }}</h5>
+                {% if product.rating %}
+                <div class="d-flex align-items-center gap-2 mb-2">
+                  <div class="text-warning">
+                    {% for i in "12345" %}
+                      {% if forloop.counter <= product.rating %}
+                        <i class="fas fa-star"></i>
+                      {% else %}
+                        <i class="far fa-star"></i>
+                      {% endif %}
+                    {% endfor %}
+                  </div>
+                  <span class="text-muted small">{{ product.rating }}</span>
                 </div>
-                <span style="color: #666; font-size: 0.875rem;">{{ product.rating }}</span>
-              </div>
-              {% endif %}
-              <div style="font-family: var(--font-luxury); color: var(--charcoal);">
-                {% if product.has_discount %}
-                  <span style="text-decoration: line-through; color: #999; margin-right: 0.5rem; font-size: 0.875rem;">£{{ product.price }}</span>
-                  <span style="color: var(--gold); font-size: 1.25rem; font-weight: 600;">£{{ product.discounted_price|floatformat:2 }}</span>
-                {% else %}
-                  <span style="font-size: 1.25rem; font-weight: 600;">£{{ product.price }}</span>
                 {% endif %}
+                <div class="luxury-product-price">
+                  {% if product.has_discount %}
+                    <span class="text-muted text-decoration-line-through small me-2">€{{ product.price }}</span>
+                    <span>€{{ product.discounted_price|floatformat:2 }}</span>
+                  {% else %}
+                    €{{ product.price }}
+                  {% endif %}
+                </div>
               </div>
-            </div>
-          </a>
-        </div>
+            </a>
+          </div>
         {% endif %}
         {% endfor %}
       </div>
-      <div class="text-center mt-5">
-        <a href="{% url 'products' %}" class="btn-luxury-gold">
+      
+      <div class="text-center" style="margin-top: var(--luxury-spacing-xl);">
+        <a href="{% url 'products' %}" class="btn-luxury">
           <i class="fas fa-th me-2"></i>Ver Todos los Productos
         </a>
       </div>
