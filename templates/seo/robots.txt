@@ -1,0 +1,42 @@
+# Eau Royal Perfumery - Luxury E-commerce Robots.txt
+# SEO Optimized for Premium Fragrance Website
+User-agent: *
+
+# Allow main content areas
+Allow: /
+Allow: /products/
+Allow: /static/
+Allow: /media/
+
+# Allow product detail pages with SEO-friendly slugs
+Allow: /products/*/
+
+# Disallow admin and private areas
+Disallow: /admin/
+Disallow: /accounts/
+Disallow: /bag/
+Disallow: /checkout/
+Disallow: /profile/
+
+# Disallow search and filter parameters to prevent duplicate content
+Disallow: /*?sort=
+Disallow: /*?filter=
+Disallow: /*?page=
+Disallow: /*?q=
+Disallow: /*?search=
+Disallow: /*?category=
+Disallow: /*?brand=
+Disallow: /*?price_min=
+Disallow: /*?price_max=
+
+# Disallow temporary and development files
+Disallow: /static/css/*.map
+Disallow: /static/js/*.map
+Disallow: /*.json$
+Disallow: /*.txt$
+
+# Crawl delay for respectful crawling
+Crawl-delay: 1
+
+# XML Sitemaps for comprehensive indexing
+Sitemap: {{ sitemap_url }}

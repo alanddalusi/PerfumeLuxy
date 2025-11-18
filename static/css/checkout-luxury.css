@@ -1,0 +1,1081 @@
+/* =====================================
+   CHECKOUT LUXURY FRAMEWORK
+   Premium checkout design system
+===================================== */
+
+/* Luxury Variables (inherited from luxury.css) */
+:root {
+  --luxury-gold: #d4af37;
+  --luxury-gold-light: #f4e4a1;
+  --luxury-gold-dark: #b8941f;
+  --luxury-white: #ffffff;
+  --luxury-black: #1a1a1a;
+  --luxury-gray: #f8f9fa;
+  --luxury-text: #2c2c2c;
+  --luxury-dark: #333333;
+  --luxury-serif: 'Playfair Display', serif;
+  --luxury-sans: 'Inter', sans-serif;
+  --luxury-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --luxury-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  --luxury-border: 1px solid rgba(212, 175, 55, 0.3);
+  --luxury-border-gold: 2px solid var(--luxury-gold);
+  --luxury-gradient: linear-gradient(135deg, var(--luxury-gold) 0%, var(--luxury-gold-dark) 100%);
+}
+
+/* =====================================
+   CHECKOUT NAVIGATION LUXURY
+===================================== */
+.luxury-checkout-nav {
+  background: linear-gradient(135deg, var(--luxury-white) 0%, var(--luxury-gray) 100%);
+  border-bottom: var(--luxury-border-gold);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.luxury-logo-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.luxury-logo-link:hover {
+  text-decoration: none;
+  color: inherit;
+}
+
+.luxury-checkout-logo {
+  text-align: center;
+  margin: 0;
+}
+
+.luxury-logo-text {
+  font-family: var(--luxury-serif);
+  color: var(--luxury-gold);
+  font-size: 2rem;
+  font-weight: 700;
+  display: block;
+}
+
+.luxury-logo-tagline {
+  font-family: var(--luxury-sans);
+  color: var(--luxury-text);
+  font-size: 0.8rem;
+  font-weight: 400;
+  display: block;
+  margin-top: 0.25rem;
+  opacity: 0.8;
+}
+
+/* =====================================
+   CHECKOUT LAYOUT LUXURY
+===================================== */
+.luxury-checkout-container {
+  background: linear-gradient(135deg, #fafafa 0%, #ffffff 100%);
+  min-height: 100vh;
+  padding: 2rem 0;
+}
+
+.luxury-checkout-header {
+  background: linear-gradient(135deg, var(--luxury-white) 0%, var(--luxury-gray) 100%);
+  border-bottom: var(--luxury-border-gold);
+  padding: 2rem 0;
+  margin-bottom: 3rem;
+  box-shadow: 0 4px 20px rgba(212, 175, 55, 0.1);
+}
+
+.luxury-checkout-title {
+  font-family: var(--luxury-serif);
+  color: var(--luxury-gold);
+  font-size: 2.5rem;
+  font-weight: 700;
+  text-align: center;
+  margin: 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* =====================================
+   PROGRESS INDICATOR LUXURY
+===================================== */
+.luxury-progress-container {
+  background: white;
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: var(--luxury-shadow);
+  margin-bottom: 3rem;
+  border: var(--luxury-border);
+}
+
+.luxury-progress-steps {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  margin: 2rem 0;
+}
+
+.luxury-progress-line {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #e9ecef 0%, #e9ecef 100%);
+  transform: translateY(-50%);
+  z-index: 1;
+}
+
+.luxury-progress-line-active {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  height: 3px;
+  background: var(--luxury-gradient);
+  transform: translateY(-50%);
+  z-index: 2;
+  transition: width 0.5s ease;
+  border-radius: 2px;
+}
+
+.luxury-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 3;
+  position: relative;
+}
+
+.luxury-step-circle {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.5rem;
+  transition: var(--luxury-transition);
+  border: 3px solid #e9ecef;
+  background: white;
+  color: #6c757d;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.luxury-step-circle.active {
+  background: var(--luxury-gradient);
+  color: white;
+  border-color: var(--luxury-gold);
+  transform: scale(1.1);
+  box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4);
+}
+
+.luxury-step-circle.completed {
+  background: var(--luxury-gold);
+  color: white;
+  border-color: var(--luxury-gold);
+}
+
+.luxury-step-circle.completed i {
+  font-size: 1.2rem;
+}
+
+.luxury-step-label {
+  font-family: var(--luxury-serif);
+  font-weight: 600;
+  margin-top: 1rem;
+  color: #6c757d;
+  transition: var(--luxury-transition);
+  text-align: center;
+}
+
+.luxury-step.active .luxury-step-label {
+  color: var(--luxury-gold);
+  font-weight: 700;
+}
+
+.luxury-step.completed .luxury-step-label {
+  color: var(--luxury-dark);
+}
+
+/* =====================================
+   FORM SECTIONS LUXURY
+===================================== */
+.luxury-form-section {
+  background: white;
+  border-radius: 20px;
+  padding: 2.5rem;
+  margin-bottom: 2rem;
+  box-shadow: var(--luxury-shadow);
+  border: var(--luxury-border);
+  transition: var(--luxury-transition);
+}
+
+.luxury-form-section.active {
+  border-color: var(--luxury-gold);
+  box-shadow: 0 12px 40px rgba(212, 175, 55, 0.2);
+}
+
+.luxury-form-section.completed {
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border-color: var(--luxury-gold);
+}
+
+.luxury-section-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: var(--luxury-border);
+}
+
+.luxury-section-icon {
+  width: 50px;
+  height: 50px;
+  background: var(--luxury-gradient);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.2rem;
+}
+
+.luxury-section-title {
+  font-family: var(--luxury-serif);
+  color: var(--luxury-dark);
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.luxury-section-subtitle {
+  color: var(--luxury-text);
+  font-size: 0.9rem;
+  margin: 0;
+  opacity: 0.8;
+}
+
+/* =====================================
+   FORM INPUTS LUXURY
+===================================== */
+.luxury-form-group {
+  margin-bottom: 1.5rem;
+}
+
+.luxury-form-label {
+  font-family: var(--luxury-serif);
+  font-weight: 600;
+  color: var(--luxury-dark);
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.luxury-form-input {
+  width: 100%;
+  padding: 1rem 1.5rem;
+  border: 2px solid #e9ecef;
+  border-radius: 12px;
+  font-size: 1rem;
+  transition: var(--luxury-transition);
+  background: white;
+  color: var(--luxury-text);
+}
+
+.luxury-form-input:focus {
+  outline: none;
+  border-color: var(--luxury-gold);
+  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+  background: #fefefe;
+}
+
+.luxury-form-input:valid {
+  border-color: #28a745;
+}
+
+.luxury-form-input.error {
+  border-color: #dc3545;
+  box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+}
+
+/* Country Select Styling */
+select.luxury-form-input,
+#id_country {
+  width: 100%;
+  padding: 1rem 1.5rem;
+  border: 2px solid #e9ecef;
+  border-radius: 12px;
+  font-size: 1rem;
+  transition: var(--luxury-transition);
+  background: white;
+  color: var(--luxury-text);
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 1rem center;
+  background-repeat: no-repeat;
+  background-size: 1em;
+}
+
+select.luxury-form-input:focus,
+#id_country:focus {
+  outline: none;
+  border-color: var(--luxury-gold);
+  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+  background: #fefefe;
+}
+
+/* Checkbox Styling */
+.form-check {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 10px;
+  border: 1px solid #e9ecef;
+}
+
+.form-check-input {
+  width: 1.2rem;
+  height: 1.2rem;
+  border: 2px solid var(--luxury-gold);
+  border-radius: 4px;
+}
+
+.form-check-input:checked {
+  background-color: var(--luxury-gold);
+  border-color: var(--luxury-gold);
+}
+
+.form-check-label {
+  font-size: 0.95rem;
+  color: var(--luxury-text);
+  margin: 0;
+  cursor: pointer;
+}
+
+.luxury-form-error {
+  color: #dc3545;
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.luxury-form-error i {
+  font-size: 0.8rem;
+}
+
+/* =====================================
+   BUTTONS LUXURY
+===================================== */
+.luxury-btn {
+  background: var(--luxury-gradient);
+  border: none;
+  color: white;
+  padding: 1rem 2rem;
+  border-radius: 50px;
+  font-family: var(--luxury-serif);
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: var(--luxury-transition);
+  box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+  text-transform: uppercase;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.luxury-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4);
+}
+
+.luxury-btn:disabled {
+  background: #6c757d;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+.luxury-btn-secondary {
+  background: white;
+  color: var(--luxury-gold);
+  border: 2px solid var(--luxury-gold);
+}
+
+.luxury-btn-secondary:hover:not(:disabled) {
+  background: var(--luxury-gold);
+  color: white;
+}
+
+/* =====================================
+   ORDER SUMMARY LUXURY
+===================================== */
+.luxury-order-summary {
+  background: white;
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: var(--luxury-shadow);
+  border: var(--luxury-border);
+  position: sticky;
+  top: 2rem;
+}
+
+.luxury-summary-header {
+  text-align: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: var(--luxury-border);
+}
+
+.luxury-summary-title {
+  font-family: var(--luxury-serif);
+  color: var(--luxury-gold);
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.luxury-item-card {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid #e9ecef;
+  transition: var(--luxury-transition);
+}
+
+.luxury-item-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.luxury-item-image {
+  width: 60px;
+  height: 60px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.luxury-item-details {
+  flex: 1;
+  padding-left: 1rem;
+}
+
+.luxury-item-brand {
+  font-weight: 700;
+  color: var(--luxury-dark);
+  font-size: 0.9rem;
+  margin-bottom: 0.25rem;
+}
+
+.luxury-item-name {
+  color: var(--luxury-text);
+  font-size: 0.85rem;
+  margin-bottom: 0.25rem;
+}
+
+.luxury-item-meta {
+  color: #6c757d;
+  font-size: 0.75rem;
+  display: flex;
+  justify-content: space-between;
+}
+
+.luxury-item-price {
+  font-weight: 700;
+  color: var(--luxury-gold);
+  font-size: 1rem;
+}
+
+/* Summary Totals */
+.luxury-summary-totals {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: var(--luxury-border);
+}
+
+.luxury-total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+  font-size: 1rem;
+}
+
+.luxury-total-row.subtotal {
+  color: var(--luxury-text);
+}
+
+.luxury-total-row.discount {
+  color: #28a745;
+}
+
+.luxury-total-row.shipping {
+  color: var(--luxury-text);
+}
+
+.luxury-total-row.final {
+  font-family: var(--luxury-serif);
+  font-weight: 700;
+  font-size: 1.3rem;
+  color: var(--luxury-gold);
+  padding-top: 1rem;
+  border-top: 2px solid var(--luxury-gold);
+  margin-top: 1rem;
+}
+
+/* =====================================
+   TRUST BADGES LUXURY
+===================================== */
+.luxury-trust-section {
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border-radius: 15px;
+  padding: 1.5rem;
+  margin-top: 2rem;
+  border: var(--luxury-border);
+}
+
+.luxury-trust-badges {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1rem;
+  text-align: center;
+}
+
+.luxury-trust-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.luxury-trust-icon {
+  width: 40px;
+  height: 40px;
+  background: var(--luxury-gradient);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1rem;
+}
+
+.luxury-trust-text {
+  font-size: 0.8rem;
+  color: var(--luxury-text);
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+/* =====================================
+   PAYMENT SECTION LUXURY
+===================================== */
+.luxury-payment-methods {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin: 1.5rem 0;
+  flex-wrap: wrap;
+}
+
+.luxury-payment-icon {
+  font-size: 2rem;
+  color: var(--luxury-gold);
+  opacity: 0.7;
+  transition: var(--luxury-transition);
+}
+
+.luxury-payment-icon:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.luxury-stripe-element {
+  background: white;
+  border: 2px solid #e9ecef;
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  transition: var(--luxury-transition);
+}
+
+.luxury-stripe-element:focus-within {
+  border-color: var(--luxury-gold);
+  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+}
+
+.luxury-security-notice {
+  background: linear-gradient(135deg, #e8f5e8 0%, #f8f9fa 100%);
+  border: 1px solid #28a745;
+  border-radius: 10px;
+  padding: 1rem;
+  margin-top: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.luxury-security-icon {
+  color: #28a745;
+  font-size: 1.2rem;
+}
+
+.luxury-security-text {
+  font-size: 0.9rem;
+  color: var(--luxury-text);
+  margin: 0;
+}
+
+/* =====================================
+   LOADING OVERLAY LUXURY
+===================================== */
+.luxury-loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 9999;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.luxury-loading-content {
+  background: white;
+  border-radius: 20px;
+  padding: 3rem;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.luxury-loading-spinner {
+  color: var(--luxury-gold);
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  animation: spin 1s linear infinite;
+}
+
+.luxury-loading-text {
+  font-family: var(--luxury-serif);
+  color: var(--luxury-dark);
+  font-size: 1.2rem;
+  margin: 0;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* =====================================
+   LUXURY COUNTRY SELECT
+===================================== */
+.luxury-country-select {
+    width: 100%;
+    padding: 1rem 1.5rem;
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    font-size: 1rem;
+    color: var(--luxury-text);
+    background-color: white;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 1rem center;
+    background-repeat: no-repeat;
+    background-size: 1.5em 1.5em;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    transition: var(--luxury-transition);
+}
+
+.luxury-country-select:focus {
+    outline: none;
+    border-color: var(--luxury-gold);
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+    background-color: #fefcf7;
+}
+
+.luxury-country-select:hover {
+    border-color: var(--luxury-gold-light);
+}
+
+/* =====================================
+   CHECKOUT SUCCESS LUXURY
+===================================== */
+.luxury-success-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.luxury-success-icon {
+  font-size: 5rem;
+  color: #28a745;
+  animation: successPulse 2s ease-in-out infinite;
+}
+
+.luxury-success-title {
+  font-family: var(--luxury-serif);
+  color: var(--luxury-gold);
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.luxury-success-subtitle {
+  color: var(--luxury-text);
+  font-size: 1.2rem;
+  margin-bottom: 0;
+}
+
+.luxury-success-details,
+.luxury-shipping-details,
+.luxury-next-steps {
+  background: white;
+  border-radius: 20px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: var(--luxury-shadow);
+  border: var(--luxury-border);
+}
+
+.luxury-order-info {
+  margin-top: 2rem;
+}
+
+.luxury-info-card {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  border: 1px solid #e9ecef;
+  height: 100%;
+}
+
+.luxury-info-title {
+  font-family: var(--luxury-serif);
+  color: var(--luxury-gold);
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+}
+
+.luxury-order-number {
+  font-family: monospace;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--luxury-dark);
+  margin: 0;
+  word-break: break-all;
+}
+
+.luxury-order-date,
+.luxury-email,
+.luxury-total-paid {
+  font-size: 1rem;
+  color: var(--luxury-text);
+  margin: 0;
+  font-weight: 600;
+}
+
+.luxury-total-paid {
+  font-size: 1.3rem;
+  color: var(--luxury-gold);
+  font-weight: 700;
+}
+
+.luxury-shipping-info {
+  margin-top: 2rem;
+}
+
+.luxury-address-card {
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid #e9ecef;
+}
+
+.luxury-address-name {
+  font-family: var(--luxury-serif);
+  color: var(--luxury-gold);
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.luxury-address-details p {
+  margin-bottom: 0.25rem;
+  color: var(--luxury-text);
+  line-height: 1.4;
+}
+
+.luxury-delivery-icon {
+  font-size: 3rem;
+  color: var(--luxury-gold);
+  margin-bottom: 1rem;
+}
+
+.luxury-delivery-text {
+  color: var(--luxury-text);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.luxury-steps-list {
+  margin-top: 2rem;
+}
+
+.luxury-step-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 10px;
+}
+
+.luxury-step-number {
+  width: 40px;
+  height: 40px;
+  background: var(--luxury-gradient);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.luxury-step-content h5 {
+  font-family: var(--luxury-serif);
+  color: var(--luxury-dark);
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.luxury-step-content p {
+  color: var(--luxury-text);
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.luxury-action-buttons-section {
+  margin-top: 3rem;
+}
+
+.luxury-support-section {
+  background: linear-gradient(135deg, #e8f5e8 0%, #f8f9fa 100%);
+  border: 1px solid #28a745;
+  border-radius: 15px;
+  padding: 1.5rem;
+  margin-top: 2rem;
+}
+
+.luxury-support-title {
+  font-family: var(--luxury-serif);
+  color: var(--luxury-dark);
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.luxury-support-text {
+  color: var(--luxury-text);
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.luxury-support-contacts {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.luxury-contact-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--luxury-text);
+  font-size: 0.9rem;
+}
+
+.luxury-contact-item i {
+  color: #28a745;
+  width: 16px;
+}
+
+.luxury-thank-you-section {
+  background: linear-gradient(135deg, var(--luxury-gold) 0%, var(--luxury-gold-dark) 100%);
+  border-radius: 20px;
+  padding: 3rem;
+  margin: 3rem 0;
+  color: white;
+}
+
+.luxury-thank-you-title {
+  font-family: var(--luxury-serif);
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.luxury-thank-you-text {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+  opacity: 0.9;
+}
+
+.luxury-social-share {
+  margin-top: 2rem;
+}
+
+.luxury-social-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.luxury-social-btn {
+  width: 50px;
+  height: 50px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  text-decoration: none;
+  transition: var(--luxury-transition);
+  backdrop-filter: blur(10px);
+}
+
+.luxury-social-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+  color: white;
+  text-decoration: none;
+}
+
+@keyframes successPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+/* =====================================
+   RESPONSIVE DESIGN LUXURY
+===================================== */
+@media (max-width: 992px) {
+  .luxury-checkout-title {
+    font-size: 2rem;
+  }
+  
+  .luxury-progress-steps {
+    margin: 1.5rem 0;
+  }
+  
+  .luxury-step-circle {
+    width: 50px;
+    height: 50px;
+    font-size: 1.2rem;
+  }
+  
+  .luxury-form-section {
+    padding: 2rem;
+  }
+  
+  .luxury-order-summary {
+    position: static;
+    margin-top: 2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .luxury-checkout-container {
+    padding: 1rem 0;
+  }
+  
+  .luxury-checkout-header {
+    padding: 1.5rem 0;
+    margin-bottom: 2rem;
+  }
+  
+  .luxury-checkout-title {
+    font-size: 1.75rem;
+  }
+  
+  .luxury-progress-container {
+    padding: 1.5rem;
+  }
+  
+  .luxury-step {
+    flex: 1;
+  }
+  
+  .luxury-step-circle {
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+  }
+  
+  .luxury-step-label {
+    font-size: 0.8rem;
+    margin-top: 0.5rem;
+  }
+  
+  .luxury-form-section {
+    padding: 1.5rem;
+  }
+  
+  .luxury-section-title {
+    font-size: 1.5rem;
+  }
+  
+  .luxury-trust-badges {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .luxury-payment-methods {
+    gap: 0.5rem;
+  }
+  
+  .luxury-payment-icon {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .luxury-progress-steps {
+    margin: 1rem 0;
+  }
+  
+  .luxury-step-label {
+    font-size: 0.7rem;
+  }
+  
+  .luxury-form-section {
+    padding: 1rem;
+  }
+  
+  .luxury-order-summary {
+    padding: 1.5rem;
+  }
+  
+  .luxury-trust-badges {
+    grid-template-columns: 1fr;
+  }
+}

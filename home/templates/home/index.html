@@ -34,10 +34,10 @@
             Catálogo exclusivo de fragancias de diseñador y nicho. Autenticidad garantizada, precios competitivos.
           </p>
           <div class="d-flex gap-3 flex-wrap mb-4">
-            <a href="{% url 'products' %}" class="btn-luxury">
+            <a href="{% url 'products:products' %}" class="btn-luxury">
               <i class="fas fa-shopping-bag me-2"></i>Explorar Colección
             </a>
-            <a href="{% url 'products' %}?has_discount=True" class="btn-luxury-outline">
+            <a href="{% url 'products:products' %}?has_discount=True" class="btn-luxury-outline">
               Ver Ofertas
             </a>
           </div>
@@ -115,7 +115,7 @@
       <div class="divider-center"></div>
       
       <div class="category-grid-luxury">
-        <a href="{% url 'products' %}?gender=M" class="category-card-luxury">
+        <a href="{% url 'products:products' %}?gender=M" class="category-card-luxury">
           <div class="category-card-image">
             <img src="https://res.cloudinary.com/datonex/image/upload/v1650202214/eau-royal/eau-royal-hompage/home-his-category_mp0kcv.jpg" alt="Men's Fragrances"/>
           </div>
@@ -126,7 +126,7 @@
           <p class="category-card-desc">Masculino y Audaz</p>
         </a>
         
-        <a href="{% url 'products' %}?gender=F" class="category-card-luxury">
+        <a href="{% url 'products:products' %}?gender=F" class="category-card-luxury">
           <div class="category-card-image">
             <img src="https://res.cloudinary.com/datonex/image/upload/v1650202214/eau-royal/eau-royal-hompage/home-hers-category_kex1e8.jpg" alt="Women's Fragrances"/>
           </div>
@@ -137,7 +137,7 @@
           <p class="category-card-desc">Elegante y Refinado</p>
         </a>
         
-        <a href="{% url 'products' %}?category=candles" class="category-card-luxury">
+        <a href="{% url 'products:products' %}?category=candles" class="category-card-luxury">
           <div class="category-card-image">
             <img src="https://res.cloudinary.com/datonex/image/upload/v1650202214/eau-royal/eau-royal-hompage/home-candles-category_yi7fya.jpg" alt="Scented Candles"/>
           </div>
@@ -148,7 +148,7 @@
           <p class="category-card-desc">Ambiente y Calidez</p>
         </a>
         
-        <a href="{% url 'products' %}?has_discount=True" class="category-card-luxury">
+        <a href="{% url 'products:products' %}?has_discount=True" class="category-card-luxury">
           <div class="category-card-image">
             <img src="https://res.cloudinary.com/datonex/image/upload/v1650202214/eau-royal/eau-royal-hompage/home-sale-category_k33age.jpg" alt="Sale Items"/>
             <span class="category-sale-badge">Hasta 50% Dto</span>
@@ -249,7 +249,7 @@
         {% for product in top_products %}
         {% if product.id %}
           <div class="luxury-product-card">
-            <a href="{% url 'product_detail' product.id %}" style="display: block; text-decoration: none; color: inherit;">
+            <a href="{% url 'products:product_detail' product.slug %}" style="display: block; text-decoration: none; color: inherit;">
               {% if product.image %}
                 <img src="{{ product.image.url }}" alt="{{ product.brand.name }} {{ product.name }}" class="luxury-product-image" loading="lazy"/>
               {% else %}
@@ -292,7 +292,7 @@
       </div>
       
       <div class="text-center" style="margin-top: var(--luxury-spacing-xl);">
-        <a href="{% url 'products' %}" class="btn-luxury">
+        <a href="{% url 'products:products' %}" class="btn-luxury">
           <i class="fas fa-th me-2"></i>Ver Todos los Productos
         </a>
       </div>
@@ -449,7 +449,7 @@
           </p>
           
           <!-- Newsletter Form Inline -->
-          <form method="POST" action="{% url 'home' %}" class="newsletter-form-enhanced">
+          <form method="POST" action="{% url 'home:index' %}" class="newsletter-form-enhanced">
             {% csrf_token %}
             <input type="email" name="email" placeholder="Tu email" required />
             <button type="submit">
@@ -508,7 +508,7 @@
         </div>
         <div class="modal-body px-4 py-4">
           <p class="text-center mb-4">Regístrate para recibir ofertas exclusivas, consejos sobre fragancias y novedades.</p>
-          <form method="POST" action="{% url 'home' %}">
+          <form method="POST" action="{% url 'home:index' %}">
             {% csrf_token %}
             {{ form|crispy }}
             <div class="text-center mt-4">

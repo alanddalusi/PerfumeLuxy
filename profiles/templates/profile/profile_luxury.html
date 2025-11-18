@@ -1,0 +1,359 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/profile-luxury.css' %}">
+{% endblock %}
+
+{% block extra_title %}Mi Perfil | Eau Royal{% endblock %}
+
+{% block content %}
+<div class="luxury-profile-wrapper">
+  <div class="luxury-profile-container">
+    
+    <!-- Profile Header -->
+    <div class="luxury-profile-header">
+      <div class="luxury-profile-header-content">
+        <div class="luxury-profile-avatar">
+          {{ user_initials|upper }}
+        </div>
+        <div class="luxury-profile-info">
+          <h1>{{ user.get_full_name|default:user.username }}</h1>
+          <p class="luxury-profile-email">
+            <i class="fas fa-envelope"></i>
+            {{ user.email }}
+          </p>
+          <div class="luxury-profile-stats">
+            <div class="luxury-stat-item">
+              <span class="luxury-stat-value">{{ orders.count }}</span>
+              <span class="luxury-stat-label">Pedidos</span>
+            </div>
+            <div class="luxury-stat-item">
+              <span class="luxury-stat-value">VIP</span>
+              <span class="luxury-stat-label">Categoría</span>
+            </div>
+            <div class="luxury-stat-item">
+              <span class="luxury-stat-value">
+                <i class="fas fa-star" style="color: #d4af37;"></i>
+              </span>
+              <span class="luxury-stat-label">Premium</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Profile Navigation -->
+    <div class="luxury-profile-nav">
+      <button class="luxury-nav-tab active" data-tab="orders">
+        <i class="fas fa-shopping-bag"></i>
+        Mis Pedidos
+      </button>
+      <button class="luxury-nav-tab" data-tab="details">
+        <i class="fas fa-user-circle"></i>
+        Detalles del Perfil
+      </button>
+      <button class="luxury-nav-tab" data-tab="settings">
+        <i class="fas fa-cog"></i>
+        Configuración
+      </button>
+    </div>
+
+    <!-- Profile Content -->
+    <div class="luxury-profile-content">
+      
+      <!-- Orders Section -->
+      <div class="luxury-profile-section" id="orders-section">
+        <div class="luxury-section-header">
+          <h2 class="luxury-section-title">
+            <i class="fas fa-history"></i>
+            Historial de Pedidos
+          </h2>
+        </div>
+        
+        {% if orders %}
+          {% for order in orders %}
+          <div class="luxury-order-card">
+            <div class="luxury-order-header">
+              <div>
+                <div class="luxury-order-number">Pedido #{{ order.order_number|truncatechars:10 }}</div>
+                <div class="luxury-order-date">{{ order.date|date:"d M Y" }}</div>
+              </div>
+              <span class="luxury-order-status completed">
+                <i class="fas fa-check-circle"></i> Completado
+              </span>
+            </div>
+            
+            <div class="luxury-order-details">
+              <div class="luxury-order-detail">
+                <span class="luxury-order-detail-label">Productos</span>
+                <span class="luxury-order-detail-value">{{ order.cartitems.count }} items</span>
+              </div>
+              <div class="luxury-order-detail">
+                <span class="luxury-order-detail-label">Envío</span>
+                <span class="luxury-order-detail-value">
+                  {% if order.delivery_cost == 0 %}
+                    Gratis
+                  {% else %}
+                    €{{ order.delivery_cost }}
+                  {% endif %}
+                </span>
+              </div>
+              <div class="luxury-order-detail">
+                <span class="luxury-order-detail-label">Total</span>
+                <span class="luxury-order-total">€{{ order.total }}</span>
+              </div>
+            </div>
+            
+            <div class="luxury-order-actions">
+              <a href="{% url 'profiles:order_history' order.order_number %}" class="luxury-order-btn primary">
+                <i class="fas fa-eye"></i>
+                Ver Detalles
+              </a>
+              <button class="luxury-order-btn">
+                <i class="fas fa-redo"></i>
+                Reordenar
+              </button>
+            </div>
+          </div>
+          {% endfor %}
+        {% else %}
+          <div class="luxury-empty-state">
+            <div class="luxury-empty-icon">
+              <i class="fas fa-shopping-bag"></i>
+            </div>
+            <h3 class="luxury-empty-title">No tienes pedidos aún</h3>
+            <p class="luxury-empty-text">
+              Explora nuestra exclusiva colección de fragancias de lujo
+            </p>
+            <a href="{% url 'products' %}" class="luxury-empty-action">
+              <i class="fas fa-sparkles"></i>
+              Descubrir Perfumes
+            </a>
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Profile Details Section -->
+      <div class="luxury-profile-section" id="details-section" style="display: none;">
+        <div class="luxury-section-header">
+          <h2 class="luxury-section-title">
+            <i class="fas fa-id-card"></i>
+            Información Personal
+          </h2>
+        </div>
+        
+        <form method="POST" action="{% url 'profiles:profile' %}" class="luxury-profile-form">
+          {% csrf_token %}
+          
+          <div class="luxury-form-row">
+            <div class="luxury-form-group">
+              <label class="luxury-form-label" for="{{ form.default_phone_number.id_for_label }}">
+                <i class="fas fa-phone"></i>
+                Teléfono
+              </label>
+              {{ form.default_phone_number }}
+            </div>
+            
+            <div class="luxury-form-group">
+              <label class="luxury-form-label" for="{{ form.default_postcode.id_for_label }}">
+                <i class="fas fa-mail-bulk"></i>
+                Código Postal
+              </label>
+              {{ form.default_postcode }}
+            </div>
+          </div>
+          
+          <div class="luxury-form-group">
+            <label class="luxury-form-label" for="{{ form.default_street_address1.id_for_label }}">
+              <i class="fas fa-map-marker-alt"></i>
+              Dirección (Línea 1)
+            </label>
+            {{ form.default_street_address1 }}
+          </div>
+          
+          <div class="luxury-form-group">
+            <label class="luxury-form-label" for="{{ form.default_street_address2.id_for_label }}">
+              <i class="fas fa-map-marker-alt"></i>
+              Dirección (Línea 2)
+            </label>
+            {{ form.default_street_address2 }}
+          </div>
+          
+          <div class="luxury-form-row">
+            <div class="luxury-form-group">
+              <label class="luxury-form-label" for="{{ form.default_town_or_city.id_for_label }}">
+                <i class="fas fa-city"></i>
+                Ciudad
+              </label>
+              {{ form.default_town_or_city }}
+            </div>
+            
+            <div class="luxury-form-group">
+              <label class="luxury-form-label" for="{{ form.default_county.id_for_label }}">
+                <i class="fas fa-map"></i>
+                Provincia
+              </label>
+              {{ form.default_county }}
+            </div>
+          </div>
+          
+          <div class="luxury-form-group">
+            <label class="luxury-form-label" for="id_default_country">
+              <i class="fas fa-globe"></i>
+              País
+            </label>
+            <select name="default_country" 
+                    id="id_default_country" 
+                    class="luxury-form-input luxury-form-select">
+              <option value="">Selecciona un país</option>
+              <option value="ES" {% if form.default_country.value == "ES" %}selected{% endif %}>Spain</option>
+              <option value="FR" {% if form.default_country.value == "FR" %}selected{% endif %}>France</option>
+              <option value="IT" {% if form.default_country.value == "IT" %}selected{% endif %}>Italy</option>
+              <option value="DE" {% if form.default_country.value == "DE" %}selected{% endif %}>Germany</option>
+              <option value="GB" {% if form.default_country.value == "GB" %}selected{% endif %}>United Kingdom</option>
+              <option value="PT" {% if form.default_country.value == "PT" %}selected{% endif %}>Portugal</option>
+              <option value="NL" {% if form.default_country.value == "NL" %}selected{% endif %}>Netherlands</option>
+              <option value="BE" {% if form.default_country.value == "BE" %}selected{% endif %}>Belgium</option>
+              <option value="CH" {% if form.default_country.value == "CH" %}selected{% endif %}>Switzerland</option>
+              <option value="AT" {% if form.default_country.value == "AT" %}selected{% endif %}>Austria</option>
+              <option value="IE" {% if form.default_country.value == "IE" %}selected{% endif %}>Ireland</option>
+              <option value="DK" {% if form.default_country.value == "DK" %}selected{% endif %}>Denmark</option>
+              <option value="SE" {% if form.default_country.value == "SE" %}selected{% endif %}>Sweden</option>
+              <option value="NO" {% if form.default_country.value == "NO" %}selected{% endif %}>Norway</option>
+              <option value="FI" {% if form.default_country.value == "FI" %}selected{% endif %}>Finland</option>
+              <option value="PL" {% if form.default_country.value == "PL" %}selected{% endif %}>Poland</option>
+              <option value="GR" {% if form.default_country.value == "GR" %}selected{% endif %}>Greece</option>
+              <option value="CZ" {% if form.default_country.value == "CZ" %}selected{% endif %}>Czech Republic</option>
+              <option value="US" {% if form.default_country.value == "US" %}selected{% endif %}>United States</option>
+              <option value="CA" {% if form.default_country.value == "CA" %}selected{% endif %}>Canada</option>
+              <option value="AU" {% if form.default_country.value == "AU" %}selected{% endif %}>Australia</option>
+            </select>
+          </div>
+          
+          <div class="luxury-form-actions">
+            <button type="submit" class="luxury-btn luxury-btn-primary">
+              <i class="fas fa-save"></i>
+              Guardar Cambios
+            </button>
+            <button type="reset" class="luxury-btn luxury-btn-secondary">
+              <i class="fas fa-undo"></i>
+              Restablecer
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Settings Section -->
+      <div class="luxury-profile-section" id="settings-section" style="display: none; grid-column: 1 / -1;">
+        <div class="luxury-section-header">
+          <h2 class="luxury-section-title">
+            <i class="fas fa-sliders-h"></i>
+            Configuración de Cuenta
+          </h2>
+        </div>
+        
+        <div class="luxury-settings-card">
+          <div class="luxury-settings-info">
+            <div class="luxury-settings-icon">
+              <i class="fas fa-lock"></i>
+            </div>
+            <div class="luxury-settings-content">
+              <h3>Cambiar Contraseña</h3>
+              <p>Actualiza tu contraseña para mantener tu cuenta segura</p>
+            </div>
+          </div>
+          <a href="{% url 'account_change_password' %}" class="luxury-settings-action">
+            Cambiar
+          </a>
+        </div>
+        
+        <div class="luxury-settings-card">
+          <div class="luxury-settings-info">
+            <div class="luxury-settings-icon">
+              <i class="fas fa-envelope"></i>
+            </div>
+            <div class="luxury-settings-content">
+              <h3>Cambiar Email</h3>
+              <p>Actualiza tu dirección de correo electrónico</p>
+            </div>
+          </div>
+          <a href="{% url 'account_email' %}" class="luxury-settings-action">
+            Cambiar
+          </a>
+        </div>
+        
+        <div class="luxury-settings-card">
+          <div class="luxury-settings-info">
+            <div class="luxury-settings-icon">
+              <i class="fas fa-bell"></i>
+            </div>
+            <div class="luxury-settings-content">
+              <h3>Notificaciones</h3>
+              <p>Gestiona tus preferencias de notificaciones</p>
+            </div>
+          </div>
+          <button class="luxury-settings-action">
+            Configurar
+          </button>
+        </div>
+        
+        <div class="luxury-settings-card">
+          <div class="luxury-settings-info">
+            <div class="luxury-settings-icon">
+              <i class="fas fa-shield-alt"></i>
+            </div>
+            <div class="luxury-settings-content">
+              <h3>Privacidad y Seguridad</h3>
+              <p>Controla quién puede ver tu información</p>
+            </div>
+          </div>
+          <button class="luxury-settings-action">
+            Ver Opciones
+          </button>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block postloadjs %}
+{{ block.super }}
+<script>
+// Tab Navigation
+document.querySelectorAll('.luxury-nav-tab').forEach(tab => {
+  tab.addEventListener('click', function() {
+    // Remove active class from all tabs
+    document.querySelectorAll('.luxury-nav-tab').forEach(t => t.classList.remove('active'));
+    
+    // Add active class to clicked tab
+    this.classList.add('active');
+    
+    // Hide all sections
+    document.querySelectorAll('.luxury-profile-section').forEach(section => {
+      section.style.display = 'none';
+    });
+    
+    // Show selected section
+    const tabName = this.dataset.tab;
+    const section = document.getElementById(`${tabName}-section`);
+    if (section) {
+      section.style.display = 'block';
+      if (tabName === 'settings') {
+        section.style.gridColumn = '1 / -1';
+      }
+    }
+  });
+});
+
+// Form styling
+const formInputs = document.querySelectorAll('input, select, textarea');
+formInputs.forEach(input => {
+  if (!input.classList.contains('luxury-form-input')) {
+    input.classList.add('luxury-form-input');
+  }
+});
+</script>
+{% endblock %}

@@ -10,7 +10,7 @@
     </div>
     <a
       class="btn btn-dp capitalize d-flex justify-content-center align-items-center"
-      href="{% url 'view_bag' %}"
+      href="{% url 'bag:view_bag' %}"
       role="button">
       <span class="text-capitalize">Checkout</span>
     </a>
@@ -87,7 +87,7 @@
     <div class="d-grid gap-2 d-flex justify-content-center justify-content-md-around">
       <a
         class="btn btn-dp capitalize d-flex justify-content-center align-items-center flex-fill"
-        href="{% url 'view_bag' %}"
+        href="{% url 'bag:view_bag' %}"
         role="button">
         <span class="icon">
           <i class="fa-solid fa-lock fs-5"></i>
@@ -108,7 +108,7 @@
         <div class="d-grid">
           <a
             class="btn btn-outline-dp d-flex justify-content-center align-items-center flex-fill"
-            href="{% url 'products' %}"
+            href="{% url 'products:products' %}"
             role="button">
             <span class="icon">
               <i class="fas fa-chevron-left fs-5"></i>

@@ -1,0 +1,348 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/luxury.css' %}"/>
+  <link rel="stylesheet" href="{% static 'css/checkout-luxury.css' %}"/>
+{% endblock %}
+
+{% block extra_title %} | Pedido Completado{% endblock %}
+
+{% block navigation %}
+<!-- Luxury Checkout Navigation -->
+<nav class="luxury-checkout-nav">
+  <div class="container">
+    <div class="row align-items-center py-3">
+      <div class="col-12 text-center">
+        <a href="{% url 'home:index' %}" class="luxury-logo-link">
+          <h1 class="luxury-checkout-logo">
+            <span class="luxury-logo-text">PerfumeLuxe</span>
+            <small class="luxury-logo-tagline">Pedido Completado</small>
+          </h1>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="luxury-checkout-container">
+  <div class="container">
+    
+    <!-- Success Header -->
+    <div class="luxury-success-header text-center py-5">
+      <div class="luxury-success-icon mb-4">
+        <i class="fas fa-check-circle"></i>
+      </div>
+      <h1 class="luxury-success-title">
+        ¡Pedido Completado con Éxito!
+      </h1>
+      <p class="luxury-success-subtitle">
+        Gracias por tu compra. Tu pedido está siendo procesado.
+      </p>
+    </div>
+
+    <!-- Luxury Progress Indicator - Completed -->
+    <div class="luxury-progress-container">
+      <div class="luxury-progress-steps">
+        <div class="luxury-progress-line"></div>
+        <div class="luxury-progress-line-active" style="width: 100%"></div>
+        
+        <div class="luxury-step completed">
+          <div class="luxury-step-circle completed">
+            <i class="fas fa-check"></i>
+          </div>
+          <div class="luxury-step-label">Datos Personales</div>
+        </div>
+        
+        <div class="luxury-step completed">
+          <div class="luxury-step-circle completed">
+            <i class="fas fa-check"></i>
+          </div>
+          <div class="luxury-step-label">Dirección de Envío</div>
+        </div>
+        
+        <div class="luxury-step completed">
+          <div class="luxury-step-circle completed">
+            <i class="fas fa-check"></i>
+          </div>
+          <div class="luxury-step-label">Método de Pago</div>
+        </div>
+        
+        <div class="luxury-step completed">
+          <div class="luxury-step-circle completed">
+            <i class="fas fa-crown"></i>
+          </div>
+          <div class="luxury-step-label">¡Completado!</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <!-- Order Details Column -->
+      <div class="col-lg-7">
+        <!-- Order Information -->
+        <div class="luxury-success-details">
+          <div class="luxury-section-header">
+            <div class="luxury-section-icon">
+              <i class="fas fa-receipt"></i>
+            </div>
+            <div>
+              <h2 class="luxury-section-title">Detalles del Pedido</h2>
+              <p class="luxury-section-subtitle">Información de tu compra</p>
+            </div>
+          </div>
+          
+          <div class="luxury-order-info">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="luxury-info-card">
+                  <h4 class="luxury-info-title">
+                    <i class="fas fa-hashtag me-2"></i>
+                    Número de Pedido
+                  </h4>
+                  <p class="luxury-order-number">{{ order.order_number }}</p>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="luxury-info-card">
+                  <h4 class="luxury-info-title">
+                    <i class="fas fa-calendar me-2"></i>
+                    Fecha del Pedido
+                  </h4>
+                  <p class="luxury-order-date">{{ order.date|date:"d M Y, H:i" }}</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="row">
+              <div class="col-md-6">
+                <div class="luxury-info-card">
+                  <h4 class="luxury-info-title">
+                    <i class="fas fa-envelope me-2"></i>
+                    Email de Confirmación
+                  </h4>
+                  <p class="luxury-email">{{ order.email }}</p>
+                  <small class="text-muted">Se ha enviado un email de confirmación</small>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="luxury-info-card">
+                  <h4 class="luxury-info-title">
+                    <i class="fas fa-euro-sign me-2"></i>
+                    Total Pagado
+                  </h4>
+                  <p class="luxury-total-paid">€{{ order.total|floatformat:2 }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Shipping Information -->
+        <div class="luxury-shipping-details">
+          <div class="luxury-section-header">
+            <div class="luxury-section-icon">
+              <i class="fas fa-shipping-fast"></i>
+            </div>
+            <div>
+              <h2 class="luxury-section-title">Información de Envío</h2>
+              <p class="luxury-section-subtitle">Tu pedido será enviado a:</p>
+            </div>
+          </div>
+          
+          <div class="luxury-shipping-info">
+            <div class="row">
+              <div class="col-md-8">
+                <div class="luxury-address-card">
+                  <h4 class="luxury-address-name">{{ order.full_name }}</h4>
+                  <div class="luxury-address-details">
+                    <p>{{ order.street_address1 }}</p>
+                    {% if order.street_address2 %}
+                      <p>{{ order.street_address2 }}</p>
+                    {% endif %}
+                    <p>{{ order.town_or_city }}{% if order.county %}, {{ order.county }}{% endif %}</p>
+                    <p>{{ order.postcode }}</p>
+                    <p><strong>{{ order.country }}</strong></p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4 text-center">
+                <div class="luxury-delivery-icon">
+                  <i class="fas fa-truck"></i>
+                </div>
+                <p class="luxury-delivery-text">
+                  <strong>Tiempo estimado:</strong><br>
+                  3-5 días laborables
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Next Steps -->
+        <div class="luxury-next-steps">
+          <div class="luxury-section-header">
+            <div class="luxury-section-icon">
+              <i class="fas fa-list-check"></i>
+            </div>
+            <div>
+              <h2 class="luxury-section-title">Próximos Pasos</h2>
+              <p class="luxury-section-subtitle">Qué esperar a continuación</p>
+            </div>
+          </div>
+          
+          <div class="luxury-steps-list">
+            <div class="luxury-step-item">
+              <div class="luxury-step-number">1</div>
+              <div class="luxury-step-content">
+                <h5>Confirmación por Email</h5>
+                <p>Recibirás un email de confirmación en los próximos minutos.</p>
+              </div>
+            </div>
+            <div class="luxury-step-item">
+              <div class="luxury-step-number">2</div>
+              <div class="luxury-step-content">
+                <h5>Procesamiento</h5>
+                <p>Tu pedido será procesado y empaquetado cuidadosamente.</p>
+              </div>
+            </div>
+            <div class="luxury-step-item">
+              <div class="luxury-step-number">3</div>
+              <div class="luxury-step-content">
+                <h5>Envío y Seguimiento</h5>
+                <p>Te enviaremos el código de seguimiento cuando tu pedido sea despachado.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="luxury-action-buttons-section">
+          <div class="row g-3">
+            {% if from_profile %}
+            <div class="col-md-6">
+              <a href="{% url 'profiles:profile' %}" class="luxury-btn luxury-btn-secondary">
+                <i class="fas fa-user me-2"></i>
+                Volver al Perfil
+              </a>
+            </div>
+            {% endif %}
+            <div class="col-md-6">
+              <a href="{% url 'home:index' %}" class="luxury-btn">
+                <i class="fas fa-home me-2"></i>
+                Continuar Comprando
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Order Summary Column -->
+      <div class="col-lg-5">
+        <div class="luxury-order-summary">
+          <div class="luxury-summary-header">
+            <h3 class="luxury-summary-title">
+              <i class="fas fa-shopping-bag me-2"></i>
+              Resumen del Pedido
+            </h3>
+            <p class="text-muted small mb-0">
+              {{ order.cartitems.all.count }} {% if order.cartitems.all.count == 1 %}artículo{% else %}artículos{% endif %}
+            </p>
+          </div>
+          
+          <!-- Order Items -->
+          <div class="luxury-order-items">
+            {% for item in order.cartitems.all %}
+            <div class="luxury-item-card d-flex">
+              <img src="{% if item.product.image %}{{ item.product.image.url }}{% else %}{{ MEDIA_URL }}noimage.png{% endif %}" 
+                   alt="{{ item.product.name }}" 
+                   class="luxury-item-image">
+              <div class="luxury-item-details">
+                <div class="luxury-item-brand">{{ item.product.brand.name }}</div>
+                <div class="luxury-item-name">{{ item.product.name }}</div>
+                <div class="luxury-item-meta">
+                  <span>Tamaño: {% if item.product_size %}{{ item.product_size }}{% else %}Estándar{% endif %}</span>
+                  <span>Cant: {{ item.quantity }}</span>
+                </div>
+              </div>
+              <div class="luxury-item-price">
+                €{{ item.cartitem_total|floatformat:2 }}
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+          
+          <!-- Summary Totals -->
+          <div class="luxury-summary-totals">
+            <div class="luxury-total-row subtotal">
+              <span>Subtotal:</span>
+              <span>€{{ order.order_total|floatformat:2 }}</span>
+            </div>
+            
+            <div class="luxury-total-row shipping">
+              <span>Envío:</span>
+              <span>€{{ order.delivery_cost|floatformat:2 }}</span>
+            </div>
+            
+            <div class="luxury-total-row final">
+              <span>Total:</span>
+              <span>€{{ order.total|floatformat:2 }}</span>
+            </div>
+          </div>
+          
+          <!-- Contact Support -->
+          <div class="luxury-support-section">
+            <h4 class="luxury-support-title">
+              <i class="fas fa-headset me-2"></i>
+              ¿Necesitas Ayuda?
+            </h4>
+            <p class="luxury-support-text">
+              Si tienes alguna pregunta sobre tu pedido, no dudes en contactarnos.
+            </p>
+            <div class="luxury-support-contacts">
+              <div class="luxury-contact-item">
+                <i class="fas fa-phone"></i>
+                <span>+34 91 123 4567</span>
+              </div>
+              <div class="luxury-contact-item">
+                <i class="fas fa-envelope"></i>
+                <span>soporte@perfumeluxe.com</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Thank You Message -->
+    <div class="luxury-thank-you-section text-center">
+      <div class="luxury-thank-you-content">
+        <h2 class="luxury-thank-you-title">
+          <i class="fas fa-heart me-3"></i>
+          ¡Gracias por Elegir PerfumeLuxe!
+        </h2>
+        <p class="luxury-thank-you-text">
+          Tu confianza es nuestro mayor logro. Esperamos que disfrutes de tu nueva fragancia tanto como nosotros disfrutamos de servirte.
+        </p>
+        <div class="luxury-social-share">
+          <p class="mb-3">¡Comparte tu experiencia!</p>
+          <div class="luxury-social-buttons">
+            <a href="#" class="luxury-social-btn" target="_blank">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+            <a href="#" class="luxury-social-btn" target="_blank">
+              <i class="fab fa-twitter"></i>
+            </a>
+            <a href="#" class="luxury-social-btn" target="_blank">
+              <i class="fab fa-instagram"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

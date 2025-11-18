@@ -81,7 +81,7 @@ def checkout(request):
                             order=order,
                             product=product,
                             quantity=item_data,
-                            product_size=size,
+                            product_size="",
                         )
                         order_cart_item.save()
                     else:
@@ -104,7 +104,7 @@ def checkout(request):
                         )
                     )
                     order.delete()
-                    return redirect(reverse("view_bag"))
+                    return redirect(reverse("bag:view_bag"))
 
             request.session["save_info"] = "save-info" in request.POST
             return redirect(reverse("checkout_success",
@@ -123,21 +123,37 @@ def checkout(request):
         current_bag = bag_contents(request)
         total = current_bag["total"]
         stripe_total = round(total * 100)
-        stripe.api_key = stripe_secret_key
-        try:
-            intent = stripe.PaymentIntent.create(
-                amount=stripe_total,
-                currency=settings.STRIPE_CURRENCY,
-            )
-        except:
-            messages.error(
+        
+        # Verificar que las claves de Stripe estén configuradas
+        intent = None
+        mock_key = "sk_test_51234567890abcdef"
+        if not stripe_secret_key or stripe_secret_key == mock_key:
+            # Crear un intent mock para desarrollo sin Stripe válido
+            class MockIntent:
+                client_secret = "pi_mock_secret_for_development"
+            intent = MockIntent()
+            messages.warning(
                 request,
-                (
-                    "Error processing your payment. "
-                    "You have not been charged. "
-                    "Please try again later"
-                )
+                "Demo mode: Using mock payment processing. "
+                "Configure Stripe for real payments."
             )
+        else:
+            stripe.api_key = stripe_secret_key
+            try:
+                intent = stripe.PaymentIntent.create(
+                    amount=stripe_total,
+                    currency=settings.STRIPE_CURRENCY,
+                )
+            except Exception:
+                messages.error(
+                    request,
+                    (
+                        "Error processing your payment. "
+                        "You have not been charged. "
+                        "Please try again later"
+                    )
+                )
+                return redirect(reverse("bag:view_bag"))
 
         if request.user.is_authenticated:
             try:
@@ -169,12 +185,12 @@ def checkout(request):
             )
         )
 
-    template = "checkout/checkout.html"
+    template = "checkout/checkout_luxury.html"
 
     context = {
         "order_form": order_form,
         "stripe_public_key": stripe_public_key,
-        "client_secret": intent.client_secret,
+        "client_secret": intent.client_secret if intent else "",
     }
 
     return render(request, template, context)
@@ -220,7 +236,7 @@ def checkout_success(request, order_number):
     if "bag" in request.session:
         del request.session["bag"]
 
-    template = "checkout/checkout_success.html"
+    template = "checkout/checkout_success_luxury.html"
     context = {
         "order": order,
         "on_checkout_success": True,

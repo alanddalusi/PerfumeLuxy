@@ -87,7 +87,7 @@
               <small class="text-muted">Sin Valoración</small>
             {% endif %}
           </div>
-          <form action="{% url 'add_to_bag' product.id %}" method="POST">
+          <form action="{% url 'bag:add_to_bag' product.id %}" method="POST">
             {% csrf_token %}
             {% if product.has_sizes == True %}
               <div class="btn-toolbar justify-content-center justify-content-md-start mb-5 mb-md-3" role="toolbar" aria-label="Toolbar with button groups">

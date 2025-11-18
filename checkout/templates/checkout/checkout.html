@@ -12,7 +12,7 @@
 <nav class="container-fluid bg-dp">
   <div class="row">
     <div class="col-12">
-      <a href="{% url 'home' %}" class="nav-link">
+      <a href="{% url 'home:index' %}" class="nav-link">
         <h1 class="text-center my-0 fs-3 text-lv logo-text ">
           PerfumeLuxe
         </h1>
@@ -92,7 +92,7 @@
                     </p>
                     <a
                       class="btn btn-dp d-flex justify-content-center align-items-center"
-                      href="{% url 'view_bag' %}"
+                      href="{% url 'bag:view_bag' %}"
                       role="button">
                       <span class="text-capitalize">Editar Carrito</span>
                     </a>
@@ -196,7 +196,7 @@
         </div>
       </div>
       <div class="col-12 col-sm-8 col-md-6 col-lg-5 bg-white form-content-container">
-        <form method="POST" action="{% url 'checkout' %}" class="mb-5" id="payment-form">
+        <form method="POST" action="{% url 'checkout:checkout' %}" class="mb-5" id="payment-form">
           {% csrf_token %}
           <fieldset class="shadow bg-lv-20 p-3 mb-3" id="details-field">
             <legend class="text-center mt-2">Detalles</legend>
@@ -283,7 +283,7 @@
           </p>
           <a
             class="btn btn-dp d-flex justify-content-center align-items-center"
-            href="{% url 'view_bag' %}"
+            href="{% url 'bag:view_bag' %}"
             role="button">
             <span class="text-capitalize">Editar Carrito</span>
           </a>

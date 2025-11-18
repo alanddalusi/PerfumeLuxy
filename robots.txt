@@ -1,29 +1,42 @@
-# PerfumeLuxe Robots.txt - SEO Optimized
+# Eau Royal Perfumery - Luxury E-commerce Robots.txt
+# SEO Optimized for Premium Fragrance Website
 User-agent: *
 
-# Allow main content
+# Allow main content areas
 Allow: /
 Allow: /products/
 Allow: /static/
 Allow: /media/
 
-# Disallow admin and user areas
+# Allow product detail pages with SEO-friendly slugs
+Allow: /products/*/
+
+# Disallow admin and private areas
 Disallow: /admin/
 Disallow: /accounts/
 Disallow: /bag/
 Disallow: /checkout/
 Disallow: /profile/
 
-# Disallow search and filter parameters to avoid duplicate content
+# Disallow search and filter parameters to prevent duplicate content
 Disallow: /*?sort=
 Disallow: /*?filter=
 Disallow: /*?page=
 Disallow: /*?q=
+Disallow: /*?search=
+Disallow: /*?category=
+Disallow: /*?brand=
+Disallow: /*?price_min=
+Disallow: /*?price_max=
 
-# Crawl delay (optional, adjust if needed)
+# Disallow temporary and development files
+Disallow: /static/css/*.map
+Disallow: /static/js/*.map
+Disallow: /*.json$
+Disallow: /*.txt$
+
+# Crawl delay for respectful crawling
 Crawl-delay: 1
 
-# Sitemap location
-Sitemap: https://perfumeluxy.com/sitemap.xml
-Sitemap: https://perfumeluxy.com/sitemap-products.xml
-Sitemap: https://perfumeluxy.com/sitemap-categories.xml
+# XML Sitemaps for comprehensive indexing
+Sitemap: http://127.0.0.1:8000/sitemap.xml

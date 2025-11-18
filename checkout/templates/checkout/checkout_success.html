@@ -186,14 +186,14 @@
         </div>
         <div class="d-grid my-5">
           {% if from_profile %}
-            <a class="btn btn-outline-dp d-flex justify-content-center align-items-center mb-2" href="{% url 'profile' %}" role="button">
+            <a class="btn btn-outline-dp d-flex justify-content-center align-items-center mb-2" href="{% url 'profiles:profile' %}" role="button">
               <span class="icon">
                 <i class="fas fa-chevron-left fs-4"></i>
               </span>
               <span class="text-capitalize">Volver al Perfil</span>
             </a>
           {% endif %}
-          <a class="btn btn-dp d-flex justify-content-center align-items-center" href="{% url 'home' %}" role="button">
+          <a class="btn btn-dp d-flex justify-content-center align-items-center" href="{% url 'home:index' %}" role="button">
             <span class="icon">
               <i class="fas fa-house fs-4"></i>
             </span>

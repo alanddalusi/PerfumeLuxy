@@ -32,7 +32,7 @@ def profile(request):
         form = UserProfileForm(instance=profile)
     orders = profile.orders.all()
 
-    template = "profile/profile.html"
+    template = "profile/profile_luxury.html"
     context = {
         "form": form,
         "orders": orders,
@@ -56,7 +56,7 @@ def order_history(request, order_number):
         ),
     )
 
-    template = "checkout/checkout_success.html"
+    template = "checkout/checkout_success_luxury.html"
     context = {
         "order": order,
         "from_profile": True,

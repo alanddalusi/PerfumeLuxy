@@ -11,7 +11,7 @@
   <ul class="navbar-nav justify-content-end flex-grow-1 pe-3 text-dp">
     <!-- Inicio -->
     <li class="nav-item">
-      <a class="nav-link d-flex align-items-center justify-content-between text-dp" href="{% url 'home' %}">
+      <a class="nav-link d-flex align-items-center justify-content-between text-dp" href="{% url 'home:index' %}">
         <span><i class="fas fa-home me-2"></i>Inicio</span>
         <i class="fa-solid fa-chevron-right icon"></i>
       </a>
@@ -25,19 +25,19 @@
       </div>
     </li>
     <li class="nav-item">
-      <a class="nav-link d-flex align-items-center justify-content-between text-dp" href="{% url 'products' %}?gender=F">
+      <a class="nav-link d-flex align-items-center justify-content-between text-dp" href="{% url 'products:products' %}?gender=F">
         <span><i class="fas fa-venus me-2 text-gold"></i>Fragancias Para Ella</span>
         <i class="fa-solid fa-chevron-right icon"></i>
       </a>
     </li>
     <li class="nav-item">
-      <a class="nav-link d-flex align-items-center justify-content-between text-dp" href="{% url 'products' %}?gender=M">
+      <a class="nav-link d-flex align-items-center justify-content-between text-dp" href="{% url 'products:products' %}?gender=M">
         <span><i class="fas fa-mars me-2 text-gold"></i>Fragancias Para Él</span>
         <i class="fa-solid fa-chevron-right icon"></i>
       </a>
     </li>
     <li class="nav-item">
-      <a class="nav-link d-flex align-items-center justify-content-between text-dp" href="{% url 'products' %}?gender=U">
+      <a class="nav-link d-flex align-items-center justify-content-between text-dp" href="{% url 'products:products' %}?gender=U">
         <span><i class="fas fa-genderless me-2 text-gold"></i>Fragancias Unisex</span>
         <i class="fa-solid fa-chevron-right icon"></i>
       </a>
@@ -51,13 +51,13 @@
       </div>
     </li>
     <li class="nav-item">
-      <a class="nav-link d-flex align-items-center justify-content-between text-dp" href="{% url 'products' %}?category=perfumes">
+      <a class="nav-link d-flex align-items-center justify-content-between text-dp" href="{% url 'products:products' %}?category=perfumes">
         <span><i class="fas fa-spray-can me-2"></i>Perfumes</span>
         <i class="fa-solid fa-chevron-right icon"></i>
       </a>
     </li>
     <li class="nav-item">
-      <a class="nav-link d-flex align-items-center justify-content-between text-dp" href="{% url 'products' %}?category=candles">
+      <a class="nav-link d-flex align-items-center justify-content-between text-dp" href="{% url 'products:products' %}?category=candles">
         <span><i class="fas fa-fire me-2"></i>Velas Aromáticas</span>
         <i class="fa-solid fa-chevron-right icon"></i>
       </a>
@@ -74,7 +74,7 @@
       </div>
     </li>
     <li class="nav-item">
-      <a class="nav-link d-flex align-items-center justify-content-between text-dp" href="{% url 'fragrance_families' %}">
+      <a class="nav-link d-flex align-items-center justify-content-between text-dp" href="{% url 'products:fragrance_families' %}">
         <span><i class="fas fa-book-open me-2 text-gold"></i>Guía de Familias Olfativas</span>
         <span class="badge bg-gold">Educativo</span>
       </a>
@@ -83,13 +83,13 @@
     
     <!-- Ofertas y Destacados -->
     <li class="nav-item">
-      <a class="nav-link d-flex align-items-center justify-content-between text-dp" href="{% url 'products' %}?has_discount=True">
+      <a class="nav-link d-flex align-items-center justify-content-between text-dp" href="{% url 'products:products' %}?has_discount=True">
         <span><i class="fas fa-tags me-2 text-danger"></i>Ofertas Especiales</span>
         <span class="badge bg-danger">Sale</span>
       </a>
     </li>
     <li class="nav-item">
-      <a class="nav-link d-flex align-items-center justify-content-between text-dp" href="{% url 'products' %}?new_arrivals=true">
+      <a class="nav-link d-flex align-items-center justify-content-between text-dp" href="{% url 'products:products' %}?new_arrivals=true">
         <span><i class="fas fa-star me-2 text-warning"></i>Novedades</span>
         <span class="badge bg-success">Nuevo</span>
       </a>
@@ -161,12 +161,12 @@
       {% endif %}
     </ul>
   </div>
-  <a href="{% url 'home' %}" class="nav-link">
+  <a href="{% url 'home:index' %}" class="nav-link">
     <h1 class="logo-text my-0 text-lv fs-3 text-center">
       <strong>PerfumeLuxe</strong>
     </h1>
   </a>
-  <a href="{% url 'view_bag' %}" class="btn btn-nav-dp" aria-label="view bag">
+  <a href="{% url 'bag:view_bag' %}" class="btn btn-nav-dp" aria-label="view bag">
     <span class="position-relative">
       <i class="fa-solid fa-bag-shopping icon text-lv"></i>
       {% if bag_items %}

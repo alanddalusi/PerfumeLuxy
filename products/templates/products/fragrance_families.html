@@ -47,7 +47,7 @@
           </span>
         </div>
         
-        <a href="{% url 'products' %}?fragrance_family={{ family.name }}" class="btn btn-family">
+        <a href="{% url 'products:products' %}?fragrance_family={{ family.name }}" class="btn btn-family">
           Explorar {{ family.name }}
           <i class="fas fa-arrow-right ms-2"></i>
         </a>
@@ -96,7 +96,7 @@
       </div>
       
       <div class="text-center mt-5">
-        <a href="{% url 'products' %}" class="btn btn-gold btn-lg">
+        <a href="{% url 'products:products' %}" class="btn btn-gold btn-lg">
           Ver Todos los Perfumes
         </a>
       </div>

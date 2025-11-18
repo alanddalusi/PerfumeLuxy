@@ -247,11 +247,11 @@ def fragrance_families_guide(request):
     return render(request, template, context)
 
 
-def product_detail(request, product_id):
+def product_detail(request, slug):
     """View function that returns individual product details"""
 
     template = "products/product_detail_improved.html"
-    product = get_object_or_404(Product, pk=product_id)
+    product = get_object_or_404(Product, slug=slug)
 
     products_url = request.session.get('products_url', '/products/')
 

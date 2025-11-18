@@ -33,7 +33,7 @@
               </div>
             {% endfor %}
             <div class="col-4 pe-0 d-flex flex-column align-items-center">
-              <a class="btn btn-outline-dp" role="button" href="{% url 'order_history' order.order_number %}" title="{{ order.order_number }}">
+              <a class="btn btn-outline-dp" role="button" href="{% url 'profiles:order_history' order.order_number %}" title="{{ order.order_number }}">
                   View order
               </a>
               <small class=" text-muted mt-1">

@@ -14,7 +14,7 @@
       <div class="text-md-center">
         <h6 class="text-dp text-capitalize mt-2">Default Delivery</h6>
       </div>
-      <form class="mt-3 mx-md-5" action="{% url 'profile' %}" method="POST" id="profile-update-form">
+      <form class="mt-3 mx-md-5" action="{% url 'profiles:profile' %}" method="POST" id="profile-update-form">
         {% csrf_token %}
         {{ form|crispy }}
         <div class="d-grid">

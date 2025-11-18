@@ -1,0 +1,482 @@
+{% extends "base.html" %} 
+
+{% load static %} 
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/luxury.css' %}" />
+  <link rel="stylesheet" href="{% static 'css/checkout-luxury.css' %}" />
+{% endblock %} 
+
+{% block extra_title %} | Pago Premium{% endblock %} 
+
+{% block navigation %}
+<!-- Luxury Checkout Navigation -->
+<nav class="luxury-checkout-nav">
+  <div class="container">
+    <div class="row align-items-center py-3">
+      <div class="col-12 text-center">
+        <a href="{% url 'home:index' %}" class="luxury-logo-link">
+          <h1 class="luxury-checkout-logo">
+            <span class="luxury-logo-text">PerfumeLuxe</span>
+            <small class="luxury-logo-tagline">Checkout Seguro</small>
+          </h1>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="luxury-checkout-container">
+  <div class="container">
+    
+    <!-- Luxury Checkout Header -->
+    <div class="luxury-checkout-header">
+      <h1 class="luxury-checkout-title">
+        <i class="fas fa-crown me-3"></i>
+        Checkout Premium
+      </h1>
+      <p class="text-center text-muted mt-2">Finaliza tu compra de forma segura y elegante</p>
+    </div>
+
+    <!-- Luxury Progress Indicator -->
+    <div class="luxury-progress-container">
+      <div class="luxury-progress-steps">
+        <div class="luxury-progress-line"></div>
+        <div class="luxury-progress-line-active" id="progress-line" style="width: 25%"></div>
+        
+        <div class="luxury-step active" data-step="1">
+          <div class="luxury-step-circle active">
+            <span>1</span>
+          </div>
+          <div class="luxury-step-label">Datos Personales</div>
+        </div>
+        
+        <div class="luxury-step" data-step="2">
+          <div class="luxury-step-circle">
+            <span>2</span>
+          </div>
+          <div class="luxury-step-label">Dirección de Envío</div>
+        </div>
+        
+        <div class="luxury-step" data-step="3">
+          <div class="luxury-step-circle">
+            <span>3</span>
+          </div>
+          <div class="luxury-step-label">Método de Pago</div>
+        </div>
+        
+        <div class="luxury-step" data-step="4">
+          <div class="luxury-step-circle">
+            <i class="fas fa-check" style="display: none;"></i>
+            <span>4</span>
+          </div>
+          <div class="luxury-step-label">Confirmación</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <!-- Checkout Form Column -->
+      <div class="col-lg-7">
+        <form method="POST" action="{% url 'checkout:checkout' %}" id="luxury-payment-form">
+          {% csrf_token %}
+          
+          <!-- Step 1: Personal Details -->
+          <div class="luxury-form-section active" id="step-1">
+            <div class="luxury-section-header">
+              <div class="luxury-section-icon">
+                <i class="fas fa-user"></i>
+              </div>
+              <div>
+                <h2 class="luxury-section-title">Datos Personales</h2>
+                <p class="luxury-section-subtitle">Información básica para tu pedido</p>
+              </div>
+            </div>
+            
+            <div class="row">
+              <div class="col-12">
+                <div class="luxury-form-group">
+                  <label class="luxury-form-label" for="{{ order_form.full_name.id_for_label }}">
+                    <i class="fas fa-user me-2"></i>Nombre Completo *
+                  </label>
+                  <input type="text" class="luxury-form-input" 
+                         id="{{ order_form.full_name.id_for_label }}" 
+                         name="{{ order_form.full_name.name }}"
+                         placeholder="Introduce tu nombre completo"
+                         required>
+                  <div class="luxury-form-error" id="name-error" style="display: none;">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span>Por favor, introduce tu nombre completo</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="col-md-6">
+                <div class="luxury-form-group">
+                  <label class="luxury-form-label" for="{{ order_form.email.id_for_label }}">
+                    <i class="fas fa-envelope me-2"></i>Correo Electrónico *
+                  </label>
+                  <input type="email" class="luxury-form-input" 
+                         id="{{ order_form.email.id_for_label }}" 
+                         name="{{ order_form.email.name }}"
+                         placeholder="tu@email.com"
+                         required>
+                  <div class="luxury-form-error" id="email-error" style="display: none;">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span>Introduce un email válido</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="col-md-6">
+                <div class="luxury-form-group">
+                  <label class="luxury-form-label" for="{{ order_form.phone_number.id_for_label }}">
+                    <i class="fas fa-phone me-2"></i>Teléfono *
+                  </label>
+                  <input type="tel" class="luxury-form-input" 
+                         id="{{ order_form.phone_number.id_for_label }}" 
+                         name="{{ order_form.phone_number.name }}"
+                         placeholder="+34 600 000 000"
+                         required>
+                  <div class="luxury-form-error" id="phone-error" style="display: none;">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span>Introduce un número de teléfono válido</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <button type="button" class="luxury-btn" id="continue-to-shipping">
+              <i class="fas fa-arrow-right me-2"></i>
+              Continuar al Envío
+            </button>
+          </div>
+
+          <!-- Step 2: Shipping Details -->
+          <div class="luxury-form-section" id="step-2" style="display: none;">
+            <div class="luxury-section-header">
+              <div class="luxury-section-icon">
+                <i class="fas fa-shipping-fast"></i>
+              </div>
+              <div>
+                <h2 class="luxury-section-title">Dirección de Envío</h2>
+                <p class="luxury-section-subtitle">¿Dónde quieres recibir tu pedido?</p>
+              </div>
+            </div>
+            
+            <div class="row">
+              <div class="col-12">
+                <div class="luxury-form-group">
+                  <label class="luxury-form-label" for="{{ order_form.street_address1.id_for_label }}">
+                    <i class="fas fa-home me-2"></i>Dirección *
+                  </label>
+                  <input type="text" class="luxury-form-input" 
+                         id="{{ order_form.street_address1.id_for_label }}" 
+                         name="{{ order_form.street_address1.name }}"
+                         placeholder="Calle, número, piso"
+                         required>
+                </div>
+              </div>
+              
+              <div class="col-12">
+                <div class="luxury-form-group">
+                  <label class="luxury-form-label" for="{{ order_form.street_address2.id_for_label }}">
+                    <i class="fas fa-building me-2"></i>Información Adicional
+                  </label>
+                  <input type="text" class="luxury-form-input" 
+                         id="{{ order_form.street_address2.id_for_label }}" 
+                         name="{{ order_form.street_address2.name }}"
+                         placeholder="Apartamento, suite, escalera (opcional)">
+                </div>
+              </div>
+              
+              <div class="col-md-6">
+                <div class="luxury-form-group">
+                  <label class="luxury-form-label" for="{{ order_form.town_or_city.id_for_label }}">
+                    <i class="fas fa-city me-2"></i>Ciudad *
+                  </label>
+                  <input type="text" class="luxury-form-input" 
+                         id="{{ order_form.town_or_city.id_for_label }}" 
+                         name="{{ order_form.town_or_city.name }}"
+                         placeholder="Madrid"
+                         required>
+                </div>
+              </div>
+              
+              <div class="col-md-6">
+                <div class="luxury-form-group">
+                  <label class="luxury-form-label" for="{{ order_form.postcode.id_for_label }}">
+                    <i class="fas fa-mailbox me-2"></i>Código Postal *
+                  </label>
+                  <input type="text" class="luxury-form-input" 
+                         id="{{ order_form.postcode.id_for_label }}" 
+                         name="{{ order_form.postcode.name }}"
+                         placeholder="28001"
+                         required>
+                </div>
+              </div>
+              
+              <div class="col-md-6">
+                <div class="luxury-form-group">
+                  <label class="luxury-form-label" for="{{ order_form.county.id_for_label }}">
+                    <i class="fas fa-map-marked-alt me-2"></i>Provincia
+                  </label>
+                  <input type="text" class="luxury-form-input" 
+                         id="{{ order_form.county.id_for_label }}" 
+                         name="{{ order_form.county.name }}"
+                         placeholder="Madrid">
+                </div>
+              </div>
+              
+              <div class="col-md-6">
+                <div class="luxury-form-group">
+                  <label class="luxury-form-label" for="id_country">
+                    <i class="fas fa-globe me-2"></i>País *
+                  </label>
+                  <select name="country" id="id_country" class="luxury-country-select stripe-style-input" required>
+                    <option value="">Seleccionar País</option>
+                    <option value="ES" {% if order_form.country.value == 'ES' %}selected{% endif %}>España</option>
+                    <option value="FR" {% if order_form.country.value == 'FR' %}selected{% endif %}>Francia</option>
+                    <option value="IT" {% if order_form.country.value == 'IT' %}selected{% endif %}>Italia</option>
+                    <option value="PT" {% if order_form.country.value == 'PT' %}selected{% endif %}>Portugal</option>
+                    <option value="DE" {% if order_form.country.value == 'DE' %}selected{% endif %}>Alemania</option>
+                    <option value="GB" {% if order_form.country.value == 'GB' %}selected{% endif %}>Reino Unido</option>
+                    <option value="US" {% if order_form.country.value == 'US' %}selected{% endif %}>Estados Unidos</option>
+                    <option value="CA" {% if order_form.country.value == 'CA' %}selected{% endif %}>Canadá</option>
+                    <option value="MX" {% if order_form.country.value == 'MX' %}selected{% endif %}>México</option>
+                    <option value="AR" {% if order_form.country.value == 'AR' %}selected{% endif %}>Argentina</option>
+                    <option value="BR" {% if order_form.country.value == 'BR' %}selected{% endif %}>Brasil</option>
+                    <option value="CL" {% if order_form.country.value == 'CL' %}selected{% endif %}>Chile</option>
+                    <option value="CO" {% if order_form.country.value == 'CO' %}selected{% endif %}>Colombia</option>
+                    <option value="PE" {% if order_form.country.value == 'PE' %}selected{% endif %}>Perú</option>
+                    <option value="AU" {% if order_form.country.value == 'AU' %}selected{% endif %}>Australia</option>
+                    <option value="JP" {% if order_form.country.value == 'JP' %}selected{% endif %}>Japón</option>
+                    <option value="CN" {% if order_form.country.value == 'CN' %}selected{% endif %}>China</option>
+                    <option value="IN" {% if order_form.country.value == 'IN' %}selected{% endif %}>India</option>
+                    <option value="ZA" {% if order_form.country.value == 'ZA' %}selected{% endif %}>Sudáfrica</option>
+                    <option value="EG" {% if order_form.country.value == 'EG' %}selected{% endif %}>Egipto</option>
+                    <option value="OTHER" {% if order_form.country.value == 'OTHER' %}selected{% endif %}>Otro</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            
+            {% if user.is_authenticated %}
+            <div class="luxury-form-group">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="save-info" name="save-info" checked>
+                <label class="form-check-label" for="save-info">
+                  <i class="fas fa-bookmark me-2"></i>Guardar esta información en mi perfil
+                </label>
+              </div>
+            </div>
+            {% endif %}
+            
+            <div class="d-flex gap-3">
+              <button type="button" class="luxury-btn luxury-btn-secondary" id="back-to-personal">
+                <i class="fas fa-arrow-left me-2"></i>
+                Volver
+              </button>
+              <button type="button" class="luxury-btn" id="continue-to-payment">
+                <i class="fas fa-arrow-right me-2"></i>
+                Continuar al Pago
+              </button>
+            </div>
+          </div>
+
+          <!-- Step 3: Payment -->
+          <div class="luxury-form-section" id="step-3" style="display: none;">
+            <div class="luxury-section-header">
+              <div class="luxury-section-icon">
+                <i class="fas fa-credit-card"></i>
+              </div>
+              <div>
+                <h2 class="luxury-section-title">Método de Pago</h2>
+                <p class="luxury-section-subtitle">Pago 100% seguro y encriptado</p>
+              </div>
+            </div>
+            
+            <!-- Payment Methods Icons -->
+            <div class="luxury-payment-methods">
+              <i class="fab fa-cc-visa luxury-payment-icon"></i>
+              <i class="fab fa-cc-mastercard luxury-payment-icon"></i>
+              <i class="fab fa-cc-amex luxury-payment-icon"></i>
+              <i class="fab fa-paypal luxury-payment-icon"></i>
+              <i class="fab fa-apple-pay luxury-payment-icon"></i>
+            </div>
+            
+            <!-- Stripe Card Element -->
+            <div class="luxury-form-group">
+              <label class="luxury-form-label">
+                <i class="fas fa-lock me-2"></i>Información de la Tarjeta
+              </label>
+              <div class="luxury-stripe-element" id="card-element">
+                <!-- Stripe Elements will create form elements here -->
+              </div>
+              <div class="luxury-form-error" id="card-errors" role="alert" style="display: none;"></div>
+            </div>
+            
+            <!-- Security Notice -->
+            <div class="luxury-security-notice">
+              <i class="fas fa-shield-alt luxury-security-icon"></i>
+              <div>
+                <p class="luxury-security-text">
+                  <strong>Pago 100% Seguro:</strong> Tu información está protegida con encriptación SSL de 256 bits. 
+                  Nunca almacenamos datos de tarjetas de crédito.
+                </p>
+              </div>
+            </div>
+            
+            <!-- Final Charge Notice -->
+            <div class="luxury-charge-notice mt-4 p-3 bg-light border rounded">
+              <div class="d-flex align-items-center">
+                <i class="fas fa-info-circle text-warning me-2"></i>
+                <span>Se cobrará a tu tarjeta: <strong class="text-warning">€{{ total|floatformat:2 }}</strong></span>
+              </div>
+            </div>
+            
+            <!-- Hidden Inputs -->
+            <input type="hidden" value="{{ client_secret }}" name="client_secret">
+            
+            <div class="d-flex gap-3 mt-4">
+              <button type="button" class="luxury-btn luxury-btn-secondary" id="back-to-shipping">
+                <i class="fas fa-arrow-left me-2"></i>
+                Volver
+              </button>
+              <button type="submit" class="luxury-btn" id="complete-order">
+                <i class="fas fa-lock me-2"></i>
+                Realizar Pedido Seguro
+              </button>
+            </div>
+          </div>
+        </form>
+        
+        <!-- Trust Badges -->
+        <div class="luxury-trust-section">
+          <div class="luxury-trust-badges">
+            <div class="luxury-trust-badge">
+              <div class="luxury-trust-icon">
+                <i class="fas fa-shield-alt"></i>
+              </div>
+              <div class="luxury-trust-text">Pago Seguro SSL</div>
+            </div>
+            <div class="luxury-trust-badge">
+              <div class="luxury-trust-icon">
+                <i class="fas fa-undo"></i>
+              </div>
+              <div class="luxury-trust-text">30 Días Devolución</div>
+            </div>
+            <div class="luxury-trust-badge">
+              <div class="luxury-trust-icon">
+                <i class="fas fa-shipping-fast"></i>
+              </div>
+              <div class="luxury-trust-text">Envío Gratis +50€</div>
+            </div>
+            <div class="luxury-trust-badge">
+              <div class="luxury-trust-icon">
+                <i class="fas fa-certificate"></i>
+              </div>
+              <div class="luxury-trust-text">100% Auténtico</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Order Summary Column -->
+      <div class="col-lg-5">
+        <div class="luxury-order-summary">
+          <div class="luxury-summary-header">
+            <h3 class="luxury-summary-title">
+              <i class="fas fa-shopping-bag me-2"></i>
+              Resumen del Pedido
+            </h3>
+            <p class="text-muted small mb-0">
+              {{ product_count }} {% if product_count == 1 %}artículo{% else %}artículos{% endif %}
+            </p>
+          </div>
+          
+          <!-- Order Items -->
+          <div class="luxury-order-items">
+            {% for item in bag_items %}
+            <div class="luxury-item-card d-flex">
+              <img src="{{ item.product.image.url }}" 
+                   alt="{{ item.product.name }}" 
+                   class="luxury-item-image">
+              <div class="luxury-item-details">
+                <div class="luxury-item-brand">{{ item.product.brand.name }}</div>
+                <div class="luxury-item-name">{{ item.product.name }}</div>
+                <div class="luxury-item-meta">
+                  <span>Tamaño: {% if item.product.has_sizes %}{{ item.size }}{% else %}Estándar{% endif %}</span>
+                  <span>Cant: {{ item.quantity }}</span>
+                </div>
+              </div>
+              <div class="luxury-item-price">
+                €{{ item.item_total|floatformat:2 }}
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+          
+          <!-- Summary Totals -->
+          <div class="luxury-summary-totals">
+            <div class="luxury-total-row subtotal">
+              <span>Subtotal:</span>
+              <span>€{{ sub_total|floatformat:2 }}</span>
+            </div>
+            
+            {% if sub_total >= discount_threshold %}
+            <div class="luxury-total-row discount">
+              <span>Descuento ({{ discount_percentage }}%):</span>
+              <span>-€{{ discount|floatformat:2 }}</span>
+            </div>
+            {% endif %}
+            
+            <div class="luxury-total-row shipping">
+              <span>Envío:</span>
+              <span>
+                {% if delivery == 0 %}
+                  <span class="text-success">¡GRATIS!</span>
+                {% else %}
+                  €{{ delivery|floatformat:2 }}
+                {% endif %}
+              </span>
+            </div>
+            
+            <div class="luxury-total-row final">
+              <span>Total:</span>
+              <span>€{{ total|floatformat:2 }}</span>
+            </div>
+          </div>
+          
+          <!-- Edit Cart Link -->
+          <div class="text-center mt-3">
+            <a href="{% url 'bag:view_bag' %}" class="btn btn-outline-secondary btn-sm">
+              <i class="fas fa-edit me-2"></i>Editar Carrito
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Luxury Loading Overlay -->
+<div class="luxury-loading-overlay" id="loading-overlay">
+  <div class="luxury-loading-content">
+    <i class="fas fa-spinner luxury-loading-spinner"></i>
+    <p class="luxury-loading-text">Procesando tu pedido...</p>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block page_footer %}{% endblock %}
+
+{% block postloadjs %}
+  {{ block.super }}
+  {{ stripe_public_key|json_script:"id_stripe_public_key" }}
+  {{ client_secret|json_script:"id_client_secret" }}
+  <script src="{% static 'js/checkout-luxury.js' %}"></script>
+{% endblock %}
