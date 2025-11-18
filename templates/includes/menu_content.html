@@ -64,6 +64,23 @@
     </li>
     <li class="nav-item"><hr class="text-lv canvas-hr"></li>
     
+    <!-- Categoría: Familias Olfativas -->
+    <li class="nav-item">
+      <div class="nav-category-header px-3 py-2">
+        <small class="text-muted text-uppercase fw-bold">
+          <i class="fas fa-flask me-1"></i>
+          Explorar por Aroma
+        </small>
+      </div>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link d-flex align-items-center justify-content-between text-dp" href="{% url 'fragrance_families' %}">
+        <span><i class="fas fa-book-open me-2 text-gold"></i>Guía de Familias Olfativas</span>
+        <span class="badge bg-gold">Educativo</span>
+      </a>
+    </li>
+    <li class="nav-item"><hr class="text-lv canvas-hr"></li>
+    
     <!-- Ofertas y Destacados -->
     <li class="nav-item">
       <a class="nav-link d-flex align-items-center justify-content-between text-dp" href="{% url 'products' %}?has_discount=True">

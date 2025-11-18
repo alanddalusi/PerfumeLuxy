@@ -225,6 +225,23 @@ def all_products(request):
     return render(request, template, context)
 
 
+def fragrance_families_guide(request):
+    """Guía educativa de familias olfativas"""
+    
+    template = "products/fragrance_families.html"
+    
+    # Obtener todas las familias con conteo de productos
+    fragrance_families = FragranceFamily.objects.annotate(
+        product_count=Count('products')
+    ).order_by('name')
+    
+    context = {
+        'fragrance_families': fragrance_families,
+    }
+    
+    return render(request, template, context)
+
+
 def product_detail(request, product_id):
     """View function that returns individual product details"""
 
