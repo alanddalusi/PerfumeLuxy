@@ -18,17 +18,19 @@ class ProductAdmin(admin.ModelAdmin):
         "name",
         "brand",
         "category",
+        "concentration",
+        "size",
         "price",
         "rating",
         "stock",
-        "intensity",
-        "duration",
         "gender",
     )
     list_filter = (
         "brand",
         "category",
         "gender",
+        "concentration",
+        "size",
         "fragrance_family",
         "intensity",
         "duration",
@@ -42,7 +44,17 @@ class ProductAdmin(admin.ModelAdmin):
     ordering = ("sku",)
     fieldsets = (
         ("Información Básica", {
-            "fields": ("name", "sku", "brand", "category", "gender", "description")
+            "fields": (
+                "name", "sku", "brand", "category",
+                "gender", "description"
+            )
+        }),
+        ("Información Esencial de Perfumería", {
+            "fields": ("concentration", "size"),
+            "description": (
+                "Concentración (EDT/EDP/Parfum) y tamaño son "
+                "información CRÍTICA para clientes"
+            )
         }),
         ("Precio y Stock", {
             "fields": ("price", "stock", "has_discount", "has_subscription")

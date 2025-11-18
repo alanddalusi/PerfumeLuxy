@@ -36,6 +36,23 @@
         <div class="col-md-5 col-12 mt-5 mt-md-0 mb-4 mb-md-0">
           <h2 class="display-5 fw-bolder mb-3">{{ product.brand.name }}</h2>
           <h4 class="mb-3">{{ product.name }}</h4>
+          
+          <!-- Concentración y Tamaño - INFORMACIÓN CRÍTICA -->
+          {% if product.concentration or product.size %}
+          <div class="mb-3 d-flex gap-2 align-items-center">
+            {% if product.concentration %}
+              <span class="badge bg-warning text-dark px-3 py-2 fs-6">
+                {{ product.get_concentration_display }}
+              </span>
+            {% endif %}
+            {% if product.size %}
+              <span class="badge bg-light text-dark border px-3 py-2 fs-6">
+                {{ product.get_size_display }}
+              </span>
+            {% endif %}
+          </div>
+          {% endif %}
+          
           {% if product.category.name == "Perfumes" %}
             {% for g in product.gender.db_name %}
               <h6 class="mb-3">Eau de toilette para

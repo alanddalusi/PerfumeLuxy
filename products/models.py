@@ -79,6 +79,28 @@ class FragranceNote(models.Model):
 
 
 class Product(models.Model):
+    CONCENTRATION_CHOICES = [
+        ('parfum', 'Parfum (20-30%)'),
+        ('edp', 'Eau de Parfum (15-20%)'),
+        ('edt', 'Eau de Toilette (5-15%)'),
+        ('edc', 'Eau de Cologne (2-5%)'),
+        ('splash', 'Splash/Body Mist (1-3%)'),
+    ]
+    
+    SIZE_CHOICES = [
+        ('2ml', '2ml - Muestra'),
+        ('5ml', '5ml - Viaje'),
+        ('10ml', '10ml - Viaje'),
+        ('15ml', '15ml'),
+        ('30ml', '30ml'),
+        ('50ml', '50ml'),
+        ('75ml', '75ml'),
+        ('100ml', '100ml'),
+        ('125ml', '125ml'),
+        ('150ml', '150ml'),
+        ('200ml', '200ml'),
+    ]
+    
     INTENSITY_CHOICES = [
         ('light', 'Suave'),
         ('moderate', 'Moderada'),
@@ -142,6 +164,16 @@ class Product(models.Model):
     )
     fragrance_notes = models.ManyToManyField(
         FragranceNote, blank=True, related_name='products'
+    )
+    
+    # Información esencial de perfumería
+    concentration = models.CharField(
+        max_length=20, choices=CONCENTRATION_CHOICES, null=True, blank=True,
+        help_text="Concentración del perfume (EDT, EDP, Parfum)"
+    )
+    size = models.CharField(
+        max_length=10, choices=SIZE_CHOICES, null=True, blank=True,
+        help_text="Tamaño del frasco en ml"
     )
     
     # Características del perfume

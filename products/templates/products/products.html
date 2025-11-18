@@ -273,6 +273,18 @@
                 <div class="product-card-brand">{{ product.brand.name }}</div>
                 <h3 class="product-card-title">{{ product.name }}</h3>
                 
+                <!-- Concentración y Tamaño -->
+                {% if product.concentration or product.size %}
+                <div class="product-concentration-size">
+                  {% if product.concentration %}
+                    <span class="concentration-badge">{{ product.get_concentration_display }}</span>
+                  {% endif %}
+                  {% if product.size %}
+                    <span class="size-badge">{{ product.get_size_display }}</span>
+                  {% endif %}
+                </div>
+                {% endif %}
+                
                 <!-- Rating -->
                 <div class="product-card-rating">
                   {% if product.average_rating %}
