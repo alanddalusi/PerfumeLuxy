@@ -1,0 +1,36 @@
+{% load static %}
+<!-- Dynamic SEO Meta Tags -->
+<title>{{ meta_title|default:"Eau Royal – Perfumes de Lujo y Equivalencias Premium" }}</title>
+<meta name="description" content="{{ meta_description|default:'Descubre nuestra colección exclusiva de perfumes de lujo y equivalencias premium. Fragancias de alta calidad con envío rápido en toda España. Más de 265 fragancias disponibles.' }}"/>
+<meta name="keywords" content="{{ meta_keywords|default:'perfumes de lujo, equivalencias perfumes, fragancias premium, perfumería online, perfumes españa' }}"/>
+
+<!-- Canonical URL -->
+<link rel="canonical" href="{{ request.build_absolute_uri }}"/>
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="{{ og_type|default:'website' }}"/>
+<meta property="og:url" content="{{ request.build_absolute_uri }}"/>
+<meta property="og:title" content="{{ meta_title|default:'Eau Royal – Perfumes de Lujo' }}"/>
+<meta property="og:description" content="{{ meta_description|default:'Tienda de perfumes de lujo, equivalencias y fragancias exclusivas con envío rápido en España.' }}"/>
+<meta property="og:image" content="{% if meta_image %}{{ meta_image }}{% else %}{% static 'home/img/logo-eau-royal.png' %}{% endif %}"/>
+<meta property="og:site_name" content="Eau Royal"/>
+<meta property="og:locale" content="es_ES"/>
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:url" content="{{ request.build_absolute_uri }}"/>
+<meta name="twitter:title" content="{{ meta_title|default:'Eau Royal – Perfumes de Lujo' }}"/>
+<meta name="twitter:description" content="{{ meta_description|default:'Tienda de perfumes de lujo y equivalencias premium.' }}"/>
+<meta name="twitter:image" content="{% if meta_image %}{{ meta_image }}{% else %}{% static 'home/img/logo-eau-royal.png' %}{% endif %}"/>
+
+<!-- Additional Meta Tags -->
+<meta name="robots" content="{{ robots|default:'index, follow' }}"/>
+<meta name="author" content="Eau Royal"/>
+<meta name="copyright" content="© {% now 'Y' %} Eau Royal. Todos los derechos reservados."/>
+
+<!-- Geo Tags -->
+<meta name="geo.region" content="ES"/>
+<meta name="geo.placename" content="España"/>
+
+<!-- Language -->
+<link rel="alternate" hreflang="es" href="{{ request.build_absolute_uri }}"/>

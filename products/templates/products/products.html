@@ -11,6 +11,7 @@
 {% block extrajs %}
   <script src="{% static 'products/js/lib/Waypoints/jquery.waypoints.min.js' %}"></script>
   <script src="{% static 'products/js/lib/Waypoints/infinite.min.js' %}"></script>
+  <script src="{% static 'products/js/products-filters.js' %}"></script>
 {% endblock %}
 
 {% block content %}
@@ -97,44 +98,101 @@
             </div>
 
             <!-- Active Filters -->
-            <div id="activeFilters" class="mb-3">
+            <div id="activeFilters" class="mb-3 active-filters-container">
               <!-- Filter chips will be added here by JavaScript -->
             </div>
 
+            <!-- Gender Filter -->
+            <div class="filter-section filter-group">
+              <h6 class="filter-title filter-group-title">
+                <span><i class="fas fa-venus-mars"></i> Género</span>
+              </h6>
+              <div class="filter-options">
+                {% for gender in gender_list %}
+                <label class="filter-option">
+                  <input type="checkbox" name="gender" value="{{ gender.db_name }}">
+                  <span>{{ gender.name }}</span>
+                </label>
+                {% endfor %}
+              </div>
+            </div>
+
+            <!-- Brand Filter -->
+            <div class="filter-section filter-group">
+              <h6 class="filter-title filter-group-title">
+                <span><i class="fas fa-tag"></i> Marca</span>
+              </h6>
+              <div class="filter-options" style="max-height: 200px; overflow-y: auto;">
+                {% for brand in brand_list %}
+                <label class="filter-option">
+                  <input type="checkbox" name="brand" value="{{ brand.name }}">
+                  <span>{{ brand.name }}</span>
+                </label>
+                {% endfor %}
+              </div>
+            </div>
+
             <!-- Price Range -->
-            <div class="filter-section">
-              <h6 class="filter-title">Rango de Precio</h6>
+            <div class="filter-section filter-group">
+              <h6 class="filter-title filter-group-title">
+                <span><i class="fas fa-euro-sign"></i> Rango de Precio</span>
+              </h6>
               <div class="price-range-slider">
-                <input type="text" id="priceRange" name="price_range" />
+                <input type="text" id="priceRange" name="price_range" 
+                       data-min="{{ min_price }}" 
+                       data-max="{{ max_price }}" />
               </div>
             </div>
 
             <!-- Fragrance Family -->
-            <div class="filter-section">
-              <h6 class="filter-title">Familia de Fragancia</h6>
+            <div class="filter-section filter-group">
+              <h6 class="filter-title filter-group-title">
+                <span><i class="fas fa-layer-group"></i> Familia Olfativa</span>
+              </h6>
+              <div class="filter-options">
+                {% for family in fragrance_family_list %}
+                <label class="filter-option">
+                  <input type="checkbox" name="fragrance_family" value="{{ family.name }}">
+                  <span>{{ family.name }}</span>
+                </label>
+                {% endfor %}
+              </div>
+            </div>
+
+            <!-- Concentration -->
+            <div class="filter-section filter-group">
+              <h6 class="filter-title filter-group-title">
+                <span><i class="fas fa-vial"></i> Concentración</span>
+              </h6>
               <div class="filter-options">
                 <label class="filter-option">
-                  <input type="checkbox" name="family" value="floral">
-                  <span>Floral</span>
+                  <input type="checkbox" name="concentration" value="parfum">
+                  <span>Parfum</span>
                 </label>
                 <label class="filter-option">
-                  <input type="checkbox" name="family" value="oriental">
-                  <span>Oriental</span>
+                  <input type="checkbox" name="concentration" value="edp">
+                  <span>Eau de Parfum</span>
                 </label>
                 <label class="filter-option">
-                  <input type="checkbox" name="family" value="woody">
-                  <span>Amaderado</span>
+                  <input type="checkbox" name="concentration" value="edt">
+                  <span>Eau de Toilette</span>
                 </label>
                 <label class="filter-option">
-                  <input type="checkbox" name="family" value="fresh">
-                  <span>Fresco</span>
+                  <input type="checkbox" name="concentration" value="edc">
+                  <span>Eau de Cologne</span>
+                </label>
+                <label class="filter-option">
+                  <input type="checkbox" name="concentration" value="splash">
+                  <span>Splash/Mist</span>
                 </label>
               </div>
             </div>
 
             <!-- Intensity -->
-            <div class="filter-section">
-              <h6 class="filter-title">Intensidad</h6>
+            <div class="filter-section filter-group">
+              <h6 class="filter-title filter-group-title">
+                <span><i class="fas fa-fire"></i> Intensidad</span>
+              </h6>
               <div class="filter-options">
                 <label class="filter-option">
                   <input type="checkbox" name="intensity" value="light">
@@ -148,35 +206,72 @@
                   <input type="checkbox" name="intensity" value="strong">
                   <span>Fuerte</span>
                 </label>
+                <label class="filter-option">
+                  <input type="checkbox" name="intensity" value="very_strong">
+                  <span>Muy Fuerte</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Season -->
+            <div class="filter-section filter-group">
+              <h6 class="filter-title filter-group-title">
+                <span><i class="fas fa-calendar-alt"></i> Temporada</span>
+              </h6>
+              <div class="filter-options">
+                <label class="filter-option">
+                  <input type="checkbox" name="season" value="spring">
+                  <span>Primavera</span>
+                </label>
+                <label class="filter-option">
+                  <input type="checkbox" name="season" value="summer">
+                  <span>Verano</span>
+                </label>
+                <label class="filter-option">
+                  <input type="checkbox" name="season" value="autumn">
+                  <span>Otoño</span>
+                </label>
+                <label class="filter-option">
+                  <input type="checkbox" name="season" value="winter">
+                  <span>Invierno</span>
+                </label>
               </div>
             </div>
 
             <!-- Occasion -->
-            <div class="filter-section">
-              <h6 class="filter-title">Ocasión</h6>
+            <div class="filter-section filter-group">
+              <h6 class="filter-title filter-group-title">
+                <span><i class="fas fa-clock"></i> Ocasión</span>
+              </h6>
               <div class="filter-options">
                 <label class="filter-option">
                   <input type="checkbox" name="occasion" value="daily">
                   <span>Uso Diario</span>
                 </label>
                 <label class="filter-option">
-                  <input type="checkbox" name="occasion" value="office">
-                  <span>Oficina</span>
-                </label>
-                <label class="filter-option">
-                  <input type="checkbox" name="occasion" value="evening">
+                  <input type="checkbox" name="occasion" value="night">
                   <span>Noche</span>
                 </label>
                 <label class="filter-option">
-                  <input type="checkbox" name="occasion" value="special">
-                  <span>Eventos Especiales</span>
+                  <input type="checkbox" name="occasion" value="formal">
+                  <span>Formal</span>
+                </label>
+                <label class="filter-option">
+                  <input type="checkbox" name="occasion" value="casual">
+                  <span>Casual</span>
+                </label>
+                <label class="filter-option">
+                  <input type="checkbox" name="occasion" value="sport">
+                  <span>Deporte</span>
                 </label>
               </div>
             </div>
 
             <!-- In Stock -->
-            <div class="filter-section">
-              <h6 class="filter-title">Disponibilidad</h6>
+            <div class="filter-section filter-group">
+              <h6 class="filter-title filter-group-title">
+                <span><i class="fas fa-box"></i> Disponibilidad</span>
+              </h6>
               <div class="filter-options">
                 <label class="filter-option">
                   <input type="checkbox" name="in_stock" value="true" checked>
@@ -190,8 +285,10 @@
             </div>
 
             <!-- Sorting -->
-            <div class="filter-section">
-              <h6 class="filter-title">Ordenar por</h6>
+            <div class="filter-section filter-group">
+              <h6 class="filter-title filter-group-title">
+                <span><i class="fas fa-sort"></i> Ordenar por</span>
+              </h6>
               <select class="form-select" name="sort" id="sortSelect">
                 <option value="name_asc">Nombre (A-Z)</option>
                 <option value="name_desc">Nombre (Z-A)</option>

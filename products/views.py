@@ -98,7 +98,7 @@ def all_products(request):
                 return redirect(reverse("products"))
 
         if "gender" in request.GET:
-            genders = request.GET["gender"].split(",")
+            genders = request.GET.getlist("gender")
             products = products.filter(gender__db_name__in=genders)
             genders = Gender.objects.filter(db_name__in=genders)
             total_products = products.count()
@@ -144,6 +144,11 @@ def all_products(request):
         if "intensity" in request.GET:
             intensities = request.GET.getlist("intensity")
             products = products.filter(intensity__in=intensities)
+            total_products = products.count()
+
+        if "concentration" in request.GET:
+            concentrations = request.GET.getlist("concentration")
+            products = products.filter(concentration__in=concentrations)
             total_products = products.count()
 
         if "duration" in request.GET:
