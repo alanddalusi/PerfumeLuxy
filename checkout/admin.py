@@ -54,3 +54,7 @@ class OrderAdmin(admin.ModelAdmin):
     )
 
     ordering = ("-date",)
+
+
+# Import marketing admin to auto-register models
+from . import marketing_admin  # noqa: F401

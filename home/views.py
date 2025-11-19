@@ -32,9 +32,25 @@ def index(request):
     else:
         form = SubscribeForm()
 
+    # SEO: Generar meta tags para home
+    from eau_royal.seo import SEOManager
+    seo = SEOManager(request)
+    seo_data = seo.get_meta_tags(
+        title="PerfumeLuxe - Perfumes Auténticos de Lujo | Envío Gratis +50€",
+        description="Descubre PerfumeLuxe: fragancias 100% auténticas de las mejores marcas. Chanel, Dior, Tom Ford, Gucci y más. Envío gratis +50€, devolución 30 días. Compra con garantía total.",
+        keywords="perfumes auténticos, fragancias de lujo, perfume mujer, perfume hombre, eau de parfum, comprar perfume online, tienda perfumes españa"
+    )
+    
+    # Schema.org para organización y sitio web
+    organization_schema = seo.generate_organization_schema()
+    website_schema = seo.generate_website_schema()
+
     context = {
         "form": form,
         "top_products": top_products,
+        "seo_data": seo_data,
+        "organization_schema": organization_schema,
+        "website_schema": website_schema,
     }
 
     return render(request, template, context)

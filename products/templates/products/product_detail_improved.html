@@ -8,21 +8,12 @@
 {% endblock %}
 
 {% block content %}
-  <!-- Luxury Breadcrumb Navigation -->
-  <section class="luxury-breadcrumb">
+  <!-- SEO Breadcrumb con Schema.org -->
+  {% if breadcrumb_items %}
     <div class="container">
-      <nav aria-label="breadcrumb">
-        <ol class="breadcrumb mb-0">
-          <li class="breadcrumb-item"><a href="{% url 'home:index' %}"><i class="fas fa-home me-2"></i>Inicio</a></li>
-          <li class="breadcrumb-item"><a href="{% url 'products:products' %}">Productos</a></li>
-          {% if product.gender %}
-            <li class="breadcrumb-item"><a href="{% url 'products:products' %}?gender={{ product.gender.db_name }}">{{ product.gender.name }}</a></li>
-          {% endif %}
-          <li class="breadcrumb-item active" aria-current="page">{{ product.name }}</li>
-        </ol>
-      </nav>
+      {% include 'seo/breadcrumb.html' with breadcrumb_items=breadcrumb_items %}
     </div>
-  </section>
+  {% endif %}
 
   <!-- Product Detail Main Section -->
   <section class="product-detail-section py-5">

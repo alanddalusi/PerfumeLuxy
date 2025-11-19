@@ -1,0 +1,167 @@
+<!-- Formulario de Cupón para Checkout -->
+<div class="coupon-section luxury-card mb-4">
+    <div class="card-header d-flex align-items-center justify-content-between">
+        <h5 class="mb-0">
+            <i class="fas fa-ticket-alt text-gold me-2"></i>
+            ¿Tienes un cupón de descuento?
+        </h5>
+        {% if coupon_code %}
+            <span class="badge bg-success">
+                <i class="fas fa-check me-1"></i>{{ coupon_code }} aplicado
+            </span>
+        {% endif %}
+    </div>
+    
+    <div class="card-body">
+        {% if coupon_code %}
+            <!-- Cupón aplicado -->
+            <div class="coupon-applied">
+                <div class="d-flex justify-content-between align-items-center p-3 bg-success bg-opacity-10 rounded">
+                    <div>
+                        <strong class="text-success">Cupón activo: {{ coupon_code }}</strong>
+                        <p class="mb-0 small text-muted">
+                            {% if free_shipping %}
+                                Envío gratis aplicado
+                            {% else %}
+                                Descuento: -€{{ discount|floatformat:2 }}
+                            {% endif %}
+                        </p>
+                    </div>
+                    <form method="POST" action="{% url 'checkout:remove_coupon' %}" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                            <i class="fas fa-times"></i> Eliminar
+                        </button>
+                    </form>
+                </div>
+            </div>
+        {% else %}
+            <!-- Formulario para aplicar cupón -->
+            <form method="POST" action="{% url 'checkout:apply_coupon' %}" id="couponForm">
+                {% csrf_token %}
+                <div class="input-group">
+                    <input 
+                        type="text" 
+                        name="coupon_code" 
+                        id="couponCodeInput"
+                        class="form-control" 
+                        placeholder="Código de cupón (ej: VERANO2025)"
+                        style="text-transform: uppercase;">
+                    <button class="btn btn-gold" type="submit" id="applyCouponBtn">
+                        <i class="fas fa-check me-2"></i>Aplicar
+                    </button>
+                </div>
+                <small class="text-muted mt-2 d-block">
+                    <i class="fas fa-info-circle me-1"></i>
+                    Ingresa tu código y haz click en "Aplicar"
+                </small>
+            </form>
+            
+            <!-- Mensaje de validación en tiempo real -->
+            <div id="couponValidation" class="mt-2" style="display: none;"></div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+.luxury-card {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.luxury-card .card-header {
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    border-bottom: 2px solid #d4af37;
+    padding: 1rem 1.5rem;
+}
+
+.luxury-card .card-body {
+    padding: 1.5rem;
+}
+
+.btn-gold {
+    background: linear-gradient(135deg, #d4af37 0%, #f8e896 100%);
+    color: #1a1a1a;
+    border: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-gold:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+    color: #000;
+}
+
+#couponCodeInput {
+    border: 2px solid #e0e0e0;
+    padding: 0.75rem 1rem;
+    font-weight: 500;
+    letter-spacing: 1px;
+}
+
+#couponCodeInput:focus {
+    border-color: #d4af37;
+    box-shadow: 0 0 0 0.2rem rgba(212, 175, 55, 0.25);
+}
+
+.coupon-applied {
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+</style>
+
+<script>
+// Validación en tiempo real del cupón (opcional)
+document.getElementById('couponCodeInput')?.addEventListener('blur', function() {
+    const code = this.value.trim();
+    if (!code) return;
+    
+    fetch('{% url "checkout:validate_coupon_ajax" %}', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `code=${encodeURIComponent(code)}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        const validationDiv = document.getElementById('couponValidation');
+        validationDiv.style.display = 'block';
+        
+        if (data.valid) {
+            validationDiv.innerHTML = `
+                <div class="alert alert-success py-2">
+                    <i class="fas fa-check-circle me-2"></i>
+                    Cupón válido! ${data.discount_type === 'percentage' ? data.discount_value + '%' : '€' + data.discount_value} de descuento
+                </div>
+            `;
+        } else {
+            validationDiv.innerHTML = `
+                <div class="alert alert-warning py-2">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    ${data.message}
+                </div>
+            `;
+        }
+    });
+});
+
+// Convertir a mayúsculas mientras escribe
+document.getElementById('couponCodeInput')?.addEventListener('input', function() {
+    this.value = this.value.toUpperCase();
+});
+</script>

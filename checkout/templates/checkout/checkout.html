@@ -146,6 +146,10 @@
                       <hr class="default-hr w-100 border-2 mx-auto mt-1">
                     {% endfor %}
                   </div>
+                  
+                  <!-- Coupon Form -->
+                  {% include 'checkout/includes/coupon_form.html' %}
+                  
                   <div class="col-12 mx-auto mb-3 d-grid gap-2">
                     <div class="text-center bg-lv-40 p-2">
                       <div class="d-flex justify-content-between align-items-center">
@@ -159,6 +163,29 @@
                       <div class="mb-2">
                         <h4 class="fw-bolder mb-0">Descuentos:</h4>
                       </div>
+                      
+                      <!-- Coupon Discount -->
+                      {% if request.session.coupon_code %}
+                        <div class="d-flex justify-content-between align-items-center bg-success bg-opacity-10 p-2 rounded mb-2">
+                          <p class="mb-0">
+                            <i class="fas fa-tag me-2"></i>
+                            Cupón: <strong>{{ request.session.coupon_code }}</strong>
+                          </p>
+                          <p class="text-success fw-bold mb-0">- €{{ request.session.discount|floatformat:2 }}</p>
+                        </div>
+                      {% endif %}
+                      
+                      <!-- Loyalty Discount -->
+                      {% if request.session.loyalty_discount %}
+                        <div class="d-flex justify-content-between align-items-center bg-gold bg-opacity-10 p-2 rounded mb-2">
+                          <p class="mb-0">
+                            <i class="fas fa-crown me-2"></i>
+                            Puntos fidelidad
+                          </p>
+                          <p class="text-gold fw-bold mb-0">- €{{ request.session.loyalty_discount|floatformat:2 }}</p>
+                        </div>
+                      {% endif %}
+                      
                       {% if sub_total >= discount_threshold  %}
                         <div class="d-flex justify-content-between align-items-center">
                           <p>{{ discount_percentage }}% DTO en €{{ discount_threshold }}</p>
@@ -330,6 +357,10 @@
             <hr class="default-hr w-100 border-2 mx-auto mt-1">
           {% endfor %}
         </div>
+        
+        <!-- Coupon Form Desktop -->
+        {% include 'checkout/includes/coupon_form.html' %}
+        
         <div class="col-12 mx-auto mb-3 d-grid gap-2">
           <div class="bg-lv-40 p-2">
             <div class="d-flex justify-content-between align-items-center">
@@ -343,6 +374,29 @@
             <div class="mb-2">
               <h4 class="fw-bolder mb-0">Descuentos:</h4>
             </div>
+            
+            <!-- Coupon Discount Desktop -->
+            {% if request.session.coupon_code %}
+              <div class="d-flex justify-content-between align-items-center bg-success bg-opacity-10 p-2 rounded mb-2">
+                <p class="mb-0">
+                  <i class="fas fa-tag me-2"></i>
+                  Cupón: <strong>{{ request.session.coupon_code }}</strong>
+                </p>
+                <p class="text-success fw-bold mb-0">- €{{ request.session.discount|floatformat:2 }}</p>
+              </div>
+            {% endif %}
+            
+            <!-- Loyalty Discount Desktop -->
+            {% if request.session.loyalty_discount %}
+              <div class="d-flex justify-content-between align-items-center bg-gold bg-opacity-10 p-2 rounded mb-2">
+                <p class="mb-0">
+                  <i class="fas fa-crown me-2"></i>
+                  Puntos fidelidad
+                </p>
+                <p class="text-gold fw-bold mb-0">- €{{ request.session.loyalty_discount|floatformat:2 }}</p>
+              </div>
+            {% endif %}
+            
             {% if sub_total >= discount_threshold  %}
               <div class="d-flex justify-content-between align-items-center">
                 <p>{{ discount_percentage }}% DTO en €{{ discount_threshold }}</p>

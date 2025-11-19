@@ -200,6 +200,8 @@ def checkout_success(request, order_number):
     """
     Handle successful checkouts
     """
+    from .views_marketing import register_coupon_usage, add_loyalty_points
+    
     save_info = request.session.get("save_info")
     order = get_object_or_404(Order, order_number=order_number)
 
@@ -223,6 +225,23 @@ def checkout_success(request, order_number):
             user_profile_form = UserProfileForm(profile_data, instance=profile)
             if user_profile_form.is_valid():
                 user_profile_form.save()
+        
+        # Register coupon usage
+        register_coupon_usage(request.session, request.user)
+        
+        # Add loyalty points
+        points_earned = add_loyalty_points(
+            request.user,
+            float(order.grand_total),
+            order.order_number
+        )
+        
+        # Show loyalty points message
+        if points_earned > 0:
+            messages.success(
+                request,
+                f"¡Has ganado {points_earned} puntos de fidelidad!"
+            )
 
     messages.success(
         request,
@@ -235,6 +254,20 @@ def checkout_success(request, order_number):
 
     if "bag" in request.session:
         del request.session["bag"]
+    
+    # Clean coupon and loyalty session data
+    if "coupon_id" in request.session:
+        del request.session["coupon_id"]
+    if "coupon_code" in request.session:
+        del request.session["coupon_code"]
+    if "discount" in request.session:
+        del request.session["discount"]
+    if "free_shipping" in request.session:
+        del request.session["free_shipping"]
+    if "loyalty_discount" in request.session:
+        del request.session["loyalty_discount"]
+    if "loyalty_points_used" in request.session:
+        del request.session["loyalty_points_used"]
 
     template = "checkout/checkout_success_luxury.html"
     context = {

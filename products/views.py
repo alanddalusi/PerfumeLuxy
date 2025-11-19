@@ -272,6 +272,32 @@ def product_detail(request, slug):
         wishlist, _ = Wishlist.objects.get_or_create(user=request.user)
         in_wishlist = wishlist.products.filter(id=product.id).exists()
 
+    # SEO: Generar meta tags optimizados
+    from eau_royal.seo import SEOManager
+    seo = SEOManager(request)
+    seo_data = seo.get_product_meta(product)
+    
+    # SEO: Breadcrumb
+    breadcrumb_items = [
+        {'name': 'Inicio', 'url': '/'},
+        {'name': 'Productos', 'url': '/products/'},
+    ]
+    if product.gender:
+        breadcrumb_items.append({
+            'name': product.gender.get_friendly_name(),
+            'url': f'/products/?gender={product.gender.db_name}'
+        })
+    if product.brand:
+        breadcrumb_items.append({
+            'name': product.brand.name,
+            'url': f'/products/?brand={product.brand.db_name}'
+        })
+    breadcrumb_items.append({'name': product.name, 'url': None})
+    
+    # SEO: Schema.org para producto
+    product_schema = seo.generate_product_schema(product)
+    breadcrumb_schema = seo.generate_breadcrumb_schema(breadcrumb_items)
+
     context = {
         "product": product,
         "products_url": products_url,
@@ -280,6 +306,10 @@ def product_detail(request, slug):
         "review_count": review_count,
         "similar_products": similar_products,
         "in_wishlist": in_wishlist,
+        "seo_data": seo_data,
+        "breadcrumb_items": breadcrumb_items,
+        "product_schema": product_schema,
+        "breadcrumb_schema": breadcrumb_schema,
     }
 
     return render(request, template, context)

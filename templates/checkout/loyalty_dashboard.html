@@ -1,0 +1,360 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Programa de Fidelización | PerfumeLuxe{% endblock %}
+
+{% block extra_css %}
+<style>
+.loyalty-dashboard {
+    padding: 3rem 0;
+}
+
+.tier-card {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+    color: white;
+    border-radius: 16px;
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+}
+
+.tier-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(212, 175, 55, 0.2) 0%, transparent 70%);
+}
+
+.tier-badge {
+    display: inline-block;
+    padding: 0.5rem 1.5rem;
+    border-radius: 50px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 0.9rem;
+}
+
+.tier-bronze { background: linear-gradient(135deg, #CD7F32 0%, #B87333 100%); }
+.tier-silver { background: linear-gradient(135deg, #C0C0C0 0%, #A8A8A8 100%); }
+.tier-gold { background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%); color: #1a1a1a; }
+.tier-platinum { background: linear-gradient(135deg, #E5E4E2 0%, #B0B0B0 100%); color: #1a1a1a; }
+
+.points-display {
+    font-size: 4rem;
+    font-weight: 900;
+    color: #d4af37;
+    line-height: 1;
+    margin: 1.5rem 0;
+}
+
+.points-label {
+    font-size: 1.2rem;
+    color: rgba(255,255,255,0.7);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.benefit-item {
+    display: flex;
+    align-items: start;
+    gap: 1rem;
+    padding: 1rem;
+    background: white;
+    border-radius: 8px;
+    margin-bottom: 0.75rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    transition: transform 0.2s;
+}
+
+.benefit-item:hover {
+    transform: translateX(5px);
+}
+
+.benefit-icon {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #d4af37 0%, #f8e896 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #1a1a1a;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.transaction-item {
+    border-bottom: 1px solid #e0e0e0;
+    padding: 1rem 0;
+}
+
+.transaction-item:last-child {
+    border-bottom: none;
+}
+
+.transaction-points {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.transaction-points.earn {
+    color: #28a745;
+}
+
+.transaction-points.redeem {
+    color: #dc3545;
+}
+
+.redeem-card {
+    background: linear-gradient(135deg, #d4af37 0%, #f8e896 100%);
+    border-radius: 12px;
+    padding: 2rem;
+    color: #1a1a1a;
+}
+
+.redeem-card h4 {
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.redeem-input {
+    border: 2px solid #1a1a1a;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.redeem-input:focus {
+    border-color: #2d2d2d;
+    box-shadow: 0 0 0 0.2rem rgba(26, 26, 26, 0.25);
+}
+
+.btn-redeem {
+    background: #1a1a1a;
+    color: white;
+    font-weight: 700;
+    padding: 0.75rem 2rem;
+    border-radius: 8px;
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.btn-redeem:hover {
+    background: #2d2d2d;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="loyalty-dashboard">
+    <div class="container">
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'home:index' %}">Inicio</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'profile' %}">Mi Perfil</a></li>
+                <li class="breadcrumb-item active">Programa de Fidelización</li>
+            </ol>
+        </nav>
+
+        <h1 class="mb-4">Programa de Fidelización</h1>
+
+        <div class="row">
+            <!-- Tier Card -->
+            <div class="col-lg-8 mb-4">
+                <div class="tier-card">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <span class="tier-badge tier-{{ loyalty.tier }}">
+                                {{ loyalty.get_tier_display }}
+                            </span>
+                        </div>
+                        <i class="fas fa-crown" style="font-size: 2rem; color: #d4af37;"></i>
+                    </div>
+                    
+                    <div class="points-display">{{ loyalty.points }}</div>
+                    <div class="points-label">Puntos Disponibles</div>
+                    
+                    <div class="row mt-4 text-center">
+                        <div class="col-4">
+                            <div class="stat-value">{{ total_earned }}</div>
+                            <div class="stat-label">Puntos Ganados</div>
+                        </div>
+                        <div class="col-4">
+                            <div class="stat-value">{{ total_redeemed }}</div>
+                            <div class="stat-label">Puntos Canjeados</div>
+                        </div>
+                        <div class="col-4">
+                            <div class="stat-value">{{ loyalty.get_tier_display }}</div>
+                            <div class="stat-label">Nivel Actual</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Canjear Puntos -->
+                {% if available_to_redeem >= 100 %}
+                <div class="redeem-card mt-4">
+                    <h4><i class="fas fa-gift me-2"></i>Canjea tus puntos</h4>
+                    <p class="mb-3">Tienes {{ available_to_redeem }} puntos disponibles para canjear por €{{ discount_value|floatformat:2 }}</p>
+                    
+                    <form method="POST" action="{% url 'checkout:redeem_points' %}">
+                        {% csrf_token %}
+                        <div class="row g-3 align-items-end">
+                            <div class="col-md-6">
+                                <label for="pointsInput" class="form-label fw-bold">Puntos a canjear (múltiplos de 100):</label>
+                                <input 
+                                    type="number" 
+                                    class="form-control redeem-input" 
+                                    id="pointsInput"
+                                    name="points"
+                                    min="100"
+                                    max="{{ available_to_redeem }}"
+                                    step="100"
+                                    value="100"
+                                    required>
+                                <small class="text-muted">100 puntos = €5 de descuento</small>
+                            </div>
+                            <div class="col-md-6">
+                                <button type="submit" class="btn btn-redeem w-100">
+                                    <i class="fas fa-check me-2"></i>Canjear Ahora
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                {% else %}
+                <div class="alert alert-info mt-4">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Necesitas al menos 100 puntos para canjear. ¡Sigue comprando para acumular más!
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Beneficios del Tier -->
+            <div class="col-lg-4 mb-4">
+                <div class="card">
+                    <div class="card-header bg-gold text-dark">
+                        <h5 class="mb-0"><i class="fas fa-star me-2"></i>Tus Beneficios</h5>
+                    </div>
+                    <div class="card-body">
+                        {% for benefit in tier_benefits %}
+                        <div class="benefit-item">
+                            <div class="benefit-icon">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div>
+                                <strong>{{ benefit }}</strong>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Progreso al siguiente tier -->
+                <div class="card mt-4">
+                    <div class="card-body">
+                        <h6 class="fw-bold mb-3">Progreso al Siguiente Nivel</h6>
+                        {% if loyalty.tier == 'bronze' %}
+                            <p class="small text-muted">500 puntos para nivel Plata</p>
+                            <div class="progress">
+                                <div class="progress-bar bg-gold" style="width: {{ loyalty.points|floatformat:0|mul:0.2 }}%"></div>
+                            </div>
+                        {% elif loyalty.tier == 'silver' %}
+                            <p class="small text-muted">2000 puntos para nivel Oro</p>
+                            <div class="progress">
+                                <div class="progress-bar bg-gold" style="width: {{ loyalty.points|floatformat:0|mul:0.05 }}%"></div>
+                            </div>
+                        {% elif loyalty.tier == 'gold' %}
+                            <p class="small text-muted">5000 puntos para nivel Platino</p>
+                            <div class="progress">
+                                <div class="progress-bar bg-gold" style="width: {{ loyalty.points|floatformat:0|mul:0.02 }}%"></div>
+                            </div>
+                        {% else %}
+                            <p class="text-success"><i class="fas fa-trophy me-2"></i>¡Has alcanzado el nivel máximo!</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Historial de Transacciones -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-history me-2"></i>Historial de Puntos</h5>
+            </div>
+            <div class="card-body">
+                {% if transactions %}
+                    {% for transaction in transactions %}
+                    <div class="transaction-item">
+                        <div class="row align-items-center">
+                            <div class="col-md-2">
+                                <div class="transaction-points {{ transaction.transaction_type }}">
+                                    {% if transaction.transaction_type == 'earn' or transaction.transaction_type == 'bonus' %}
+                                        +{{ transaction.points }}
+                                    {% else %}
+                                        -{{ transaction.points }}
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <strong>{{ transaction.description }}</strong>
+                                {% if transaction.order_id %}
+                                    <br><small class="text-muted">Orden: {{ transaction.order_id }}</small>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-4 text-end">
+                                <small class="text-muted">{{ transaction.created_at|date:"d M Y, H:i" }}</small>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted text-center py-4">
+                        <i class="fas fa-inbox fa-3x mb-3 d-block"></i>
+                        No tienes transacciones aún. ¡Empieza a comprar para ganar puntos!
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Cómo funciona -->
+        <div class="card mt-4 border-gold">
+            <div class="card-header bg-gold text-dark">
+                <h5 class="mb-0"><i class="fas fa-question-circle me-2"></i>¿Cómo funciona?</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 text-center">
+                        <i class="fas fa-shopping-bag fa-3x text-gold mb-3"></i>
+                        <h6>1. Compra</h6>
+                        <p class="small">Gana 1 punto por cada €1</p>
+                    </div>
+                    <div class="col-md-3 text-center">
+                        <i class="fas fa-trophy fa-3x text-gold mb-3"></i>
+                        <h6>2. Acumula</h6>
+                        <p class="small">Sube de nivel automáticamente</p>
+                    </div>
+                    <div class="col-md-3 text-center">
+                        <i class="fas fa-gift fa-3x text-gold mb-3"></i>
+                        <h6>3. Canjea</h6>
+                        <p class="small">100 puntos = €5 descuento</p>
+                    </div>
+                    <div class="col-md-3 text-center">
+                        <i class="fas fa-smile fa-3x text-gold mb-3"></i>
+                        <h6>4. Disfruta</h6>
+                        <p class="small">Beneficios exclusivos</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

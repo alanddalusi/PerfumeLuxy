@@ -7,28 +7,34 @@
       <meta charset="UTF-8"/>
       <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
       <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
-      <meta name="description" content="{% block meta_description %}Descubre PerfumeLuxe - Fragancias 100% auténticas de las mejores marcas. Chanel, Dior, Tom Ford, Gucci y más. Envío gratis +50€, devolución 30 días. Compra perfumes de lujo con garantía total.{% endblock %}" />
-      <meta name="keywords" content="{% block meta_keywords %}perfumes auténticos, fragancias de lujo, perfume mujer, perfume hombre, eau de parfum, eau de toilette, comprar perfume online, tienda perfumes{% endblock %}" />
-      <meta name="author" content="PerfumeLuxe" />
-      <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
-      <meta name="theme-color" content="#d4af37" />
-      <link rel="canonical" href="{% block canonical_url %}{{ request.build_absolute_uri }}{% endblock %}" />
       
-      <!-- Open Graph / Facebook -->
-      <meta property="og:type" content="{% block og_type %}website{% endblock %}" />
-      <meta property="og:url" content="{{ request.build_absolute_uri }}" />
-      <meta property="og:title" content="{% block og_title %}PerfumeLuxe - Fragancias Auténticas de Lujo{% endblock %}" />
-      <meta property="og:description" content="{% block og_description %}Descubre nuestra colección exclusiva de perfumes de lujo. Marcas premium con envío gratis y garantía de autenticidad.{% endblock %}" />
-      <meta property="og:image" content="{% block og_image %}{{ request.scheme }}://{{ request.get_host }}{% static 'img/og-image.jpg' %}{% endblock %}" />
-      <meta property="og:site_name" content="PerfumeLuxe" />
-      <meta property="og:locale" content="es_ES" />
-      
-      <!-- Twitter Card -->
-      <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:url" content="{{ request.build_absolute_uri }}" />
-      <meta name="twitter:title" content="{% block twitter_title %}PerfumeLuxe - Fragancias Auténticas de Lujo{% endblock %}" />
-      <meta name="twitter:description" content="{% block twitter_description %}Perfumes 100% auténticos de las mejores marcas del mundo. Envío gratis y garantía total.{% endblock %}" />
-      <meta name="twitter:image" content="{% block twitter_image %}{{ request.scheme }}://{{ request.get_host }}{% static 'img/twitter-card.jpg' %}{% endblock %}" />
+      {% if seo_data %}
+        {% include 'seo/meta_tags.html' with seo_data=seo_data %}
+      {% else %}
+        <!-- Meta Tags por defecto -->
+        <meta name="description" content="Descubre PerfumeLuxe - Fragancias 100% auténticas de las mejores marcas. Chanel, Dior, Tom Ford, Gucci y más. Envío gratis +50€, devolución 30 días. Compra perfumes de lujo con garantía total." />
+        <meta name="keywords" content="perfumes auténticos, fragancias de lujo, perfume mujer, perfume hombre, eau de parfum, eau de toilette, comprar perfume online, tienda perfumes" />
+        <meta name="author" content="PerfumeLuxe" />
+        <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+        <meta name="theme-color" content="#d4af37" />
+        <link rel="canonical" href="{{ request.build_absolute_uri }}" />
+        
+        <!-- Open Graph / Facebook -->
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="{{ request.build_absolute_uri }}" />
+        <meta property="og:title" content="PerfumeLuxe - Fragancias Auténticas de Lujo" />
+        <meta property="og:description" content="Descubre nuestra colección exclusiva de perfumes de lujo. Marcas premium con envío gratis y garantía de autenticidad." />
+        <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{% static 'img/og-image.jpg' %}" />
+        <meta property="og:site_name" content="PerfumeLuxe" />
+        <meta property="og:locale" content="es_ES" />
+        
+        <!-- Twitter Card -->
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:url" content="{{ request.build_absolute_uri }}" />
+        <meta name="twitter:title" content="PerfumeLuxe - Fragancias Auténticas de Lujo" />
+        <meta name="twitter:description" content="Perfumes 100% auténticos de las mejores marcas del mundo. Envío gratis y garantía total." />
+        <meta name="twitter:image" content="{{ request.scheme }}://{{ request.get_host }}{% static 'img/twitter-card.jpg' %}" />
+      {% endif %}
     {% endblock %}
 
     {% block extra_meta %}{% endblock %}
@@ -65,7 +71,13 @@
 
     {% block extrajs %}{% endblock %}
 
-    <title>{% block title %}PerfumeLuxe - Perfumes Auténticos de Lujo | Envío Gratis +50€{% endblock %}</title>
+    <title>{% if seo_data %}{{ seo_data.title }}{% else %}{% block title %}PerfumeLuxe - Perfumes Auténticos de Lujo | Envío Gratis +50€{% endblock %}{% endif %}</title>
+    
+    <!-- Schema.org Structured Data -->
+    {% if organization_schema %}{{ organization_schema|safe }}{% endif %}
+    {% if website_schema %}{{ website_schema|safe }}{% endif %}
+    {% if product_schema %}{{ product_schema|safe }}{% endif %}
+    {% if breadcrumb_schema %}{{ breadcrumb_schema|safe }}{% endif %}
   </head>
 
   <body>

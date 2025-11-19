@@ -1,42 +1,40 @@
-# Eau Royal Perfumery - Luxury E-commerce Robots.txt
-# SEO Optimized for Premium Fragrance Website
+# PerfumeLuxe - Premium Fragrance E-commerce
+# Robots.txt optimizado para SEO
+
 User-agent: *
-
-# Allow main content areas
+# Permitir acceso principal
 Allow: /
-Allow: /products/
-Allow: /static/
-Allow: /media/
 
-# Allow product detail pages with SEO-friendly slugs
-Allow: /products/*/
-
-# Disallow admin and private areas
+# Áreas privadas - NO indexar
 Disallow: /admin/
 Disallow: /accounts/
 Disallow: /bag/
 Disallow: /checkout/
 Disallow: /profile/
+Disallow: /profiles/
 
-# Disallow search and filter parameters to prevent duplicate content
+# Prevenir contenido duplicado - parámetros de búsqueda
 Disallow: /*?sort=
 Disallow: /*?filter=
 Disallow: /*?page=
 Disallow: /*?q=
 Disallow: /*?search=
-Disallow: /*?category=
-Disallow: /*?brand=
-Disallow: /*?price_min=
-Disallow: /*?price_max=
+Disallow: /*?price_from=
+Disallow: /*?price_to=
 
-# Disallow temporary and development files
+# Archivos técnicos
 Disallow: /static/css/*.map
 Disallow: /static/js/*.map
 Disallow: /*.json$
-Disallow: /*.txt$
 
-# Crawl delay for respectful crawling
-Crawl-delay: 1
+# Configuración crawl rate
+Crawl-delay: 0.5
 
-# XML Sitemaps for comprehensive indexing
-Sitemap: http://127.0.0.1:8000/sitemap.xml
+# Sitemaps (actualizar con dominio real en producción)
+Sitemap: https://www.perfumeluxe.com/sitemap.xml
+Sitemap: https://www.perfumeluxe.com/sitemap-products.xml
+Sitemap: https://www.perfumeluxe.com/sitemap-categories.xml
+Sitemap: https://www.perfumeluxe.com/sitemap-pages.xml
+
+# Desarrollo local
+# Sitemap: http://127.0.0.1:8000/sitemap.xml
