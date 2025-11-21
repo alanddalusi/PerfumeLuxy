@@ -4,6 +4,9 @@ from .models import (
     FragranceNote, Review, ReviewImage, Wishlist,
     PriceAlert, StockAlert
 )
+from .admin_extended import (
+    ProductSizeInline, ProductVideoInline, FragranceEvolutionInline
+)
 
 
 class ReviewImageInline(admin.TabularInline):
@@ -42,6 +45,7 @@ class ProductAdmin(admin.ModelAdmin):
     search_fields = ("name", "sku", "description")
     filter_horizontal = ("fragrance_notes",)
     ordering = ("sku",)
+    inlines = [ProductSizeInline, ProductVideoInline, FragranceEvolutionInline]
     fieldsets = (
         ("Información Básica", {
             "fields": (

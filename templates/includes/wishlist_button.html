@@ -1,0 +1,105 @@
+<!-- Wishlist Heart Button Component -->
+{% load static %}
+
+<button 
+    class="wish-btn {% if is_in_wishlist %}active{% endif %}" 
+    data-product-id="{{ product.id }}"
+    onclick="toggleWishlist({{ product.id }}, this)"
+    title="{% if is_in_wishlist %}Quitar de favoritos{% else %}Añadir a favoritos{% endif %}">
+    <i class="fas fa-heart"></i>
+</button>
+
+<script>
+function toggleWishlist(productId, button) {
+    // Prevenir comportamiento por defecto
+    event.preventDefault();
+    event.stopPropagation();
+    
+    fetch(`/products/wishlist/toggle/${productId}/`, {
+        method: 'GET',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Toggle clase active
+            button.classList.toggle('active');
+            
+            // Cambiar título
+            if (data.action === 'added') {
+                button.title = 'Quitar de favoritos';
+                
+                // Animación de corazón
+                button.style.transform = 'scale(1.3)';
+                setTimeout(() => {
+                    button.style.transform = 'scale(1)';
+                }, 300);
+            } else {
+                button.title = 'Añadir a favoritos';
+            }
+            
+            // Mostrar mensaje (opcional)
+            showToast(data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showToast('Error al actualizar favoritos', 'error');
+    });
+}
+
+function showToast(message, type = 'success') {
+    // Toast notification simple
+    const toast = document.createElement('div');
+    toast.className = `toast-notification toast-${type}`;
+    toast.textContent = message;
+    toast.style.cssText = `
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        background: ${type === 'success' ? '#28a745' : '#dc3545'};
+        color: white;
+        padding: 15px 25px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        z-index: 9999;
+        animation: slideIn 0.3s ease;
+    `;
+    
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
+
+// Animaciones
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes slideIn {
+        from {
+            transform: translateX(400px);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+    
+    @keyframes slideOut {
+        from {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        to {
+            transform: translateX(400px);
+            opacity: 0;
+        }
+    }
+`;
+document.head.appendChild(style);
+</script>

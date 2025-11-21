@@ -1,0 +1,190 @@
+<!-- Advanced Filters Sidebar Component -->
+{% load static %}
+
+<div class="filters-sidebar">
+    <div class="filters-header mb-4">
+        <h4 class="mb-0">Filtrar Productos</h4>
+    </div>
+
+    <form method="GET" action="{% url 'products:products' %}" id="filtersForm">
+        
+        <!-- Precio -->
+        <div class="filter-group">
+            <h4><i class="fas fa-euro-sign me-2 text-gold"></i>Precio</h4>
+            <div class="price-range-inputs">
+                <input 
+                    type="number" 
+                    name="price_min" 
+                    placeholder="Mín" 
+                    value="{{ request.GET.price_min }}"
+                    min="0"
+                    class="form-control">
+                <span>-</span>
+                <input 
+                    type="number" 
+                    name="price_max" 
+                    placeholder="Máx" 
+                    value="{{ request.GET.price_max }}"
+                    min="0"
+                    class="form-control">
+            </div>
+            <div class="price-presets mt-3">
+                <button type="button" class="btn btn-sm btn-outline-gold" onclick="setPrice(0, 50)">Hasta 50€</button>
+                <button type="button" class="btn btn-sm btn-outline-gold" onclick="setPrice(50, 100)">50€ - 100€</button>
+                <button type="button" class="btn btn-sm btn-outline-gold" onclick="setPrice(100, 999)">Más de 100€</button>
+            </div>
+        </div>
+
+        <!-- Género -->
+        <div class="filter-group">
+            <h4><i class="fas fa-venus-mars me-2 text-gold"></i>Género</h4>
+            {% for gender in genders %}
+            <label class="filter-option">
+                <input 
+                    type="checkbox" 
+                    name="gender" 
+                    value="{{ gender.db_name }}"
+                    {% if gender.db_name in request.GET.getlist.'gender' %}checked{% endif %}>
+                <span>{{ gender.get_friendly_name }}</span>
+            </label>
+            {% endfor %}
+        </div>
+
+        <!-- Familia Olfativa -->
+        <div class="filter-group">
+            <h4><i class="fas fa-spa me-2 text-gold"></i>Familia Olfativa</h4>
+            {% for family in families %}
+            <label class="filter-option">
+                <input 
+                    type="checkbox" 
+                    name="family" 
+                    value="{{ family.id }}"
+                    {% if family.id|stringformat:"s" in request.GET.getlist.'family' %}checked{% endif %}>
+                <span>{{ family.name }}</span>
+            </label>
+            {% endfor %}
+        </div>
+
+        <!-- Marca -->
+        <div class="filter-group">
+            <h4><i class="fas fa-tags me-2 text-gold"></i>Marca</h4>
+            <div class="brand-search mb-3">
+                <input 
+                    type="text" 
+                    class="form-control form-control-sm" 
+                    id="brandSearch"
+                    placeholder="Buscar marca...">
+            </div>
+            <div class="brand-list" style="max-height: 200px; overflow-y: auto;">
+                {% for brand in brands %}
+                <label class="filter-option brand-option" data-brand="{{ brand.name|lower }}">
+                    <input 
+                        type="checkbox" 
+                        name="brand" 
+                        value="{{ brand.db_name }}"
+                        {% if brand.db_name in request.GET.getlist.'brand' %}checked{% endif %}>
+                    <span>{{ brand.name }}</span>
+                </label>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Categoría -->
+        <div class="filter-group">
+            <h4><i class="fas fa-layer-group me-2 text-gold"></i>Categoría</h4>
+            {% for category in categories %}
+            <label class="filter-option">
+                <input 
+                    type="radio" 
+                    name="category" 
+                    value="{{ category.db_name }}"
+                    {% if category.db_name == request.GET.category %}checked{% endif %}>
+                <span>{{ category.get_friendly_name }}</span>
+            </label>
+            {% endfor %}
+        </div>
+
+        <!-- Valoración -->
+        <div class="filter-group">
+            <h4><i class="fas fa-star me-2 text-gold"></i>Valoración</h4>
+            {% for rating in "54321" %}
+            <label class="filter-option">
+                <input 
+                    type="radio" 
+                    name="min_rating" 
+                    value="{{ rating }}"
+                    {% if rating == request.GET.min_rating %}checked{% endif %}>
+                <span>
+                    {% for i in "12345" %}
+                        <span class="{% if forloop.counter <= rating|add:0 %}gold-star{% else %}gray-star{% endif %}">★</span>
+                    {% endfor %}
+                    y más
+                </span>
+            </label>
+            {% endfor %}
+        </div>
+
+        <!-- Botones -->
+        <div class="filter-actions mt-4">
+            <button type="submit" class="btn btn-gold w-100 mb-2">
+                <i class="fas fa-filter me-2"></i>Aplicar Filtros
+            </button>
+            <a href="{% url 'products:products' %}" class="btn btn-outline-gold w-100">
+                <i class="fas fa-redo me-2"></i>Limpiar Filtros
+            </a>
+        </div>
+    </form>
+</div>
+
+<script>
+// Auto-submit al cambiar checkboxes/radios
+document.querySelectorAll('.filters-sidebar input[type="checkbox"], .filters-sidebar input[type="radio"]').forEach(input => {
+    input.addEventListener('change', () => {
+        document.getElementById('filtersForm').submit();
+    });
+});
+
+// Búsqueda de marcas
+document.getElementById('brandSearch')?.addEventListener('input', (e) => {
+    const search = e.target.value.toLowerCase();
+    document.querySelectorAll('.brand-option').forEach(option => {
+        const brand = option.getAttribute('data-brand');
+        option.style.display = brand.includes(search) ? 'flex' : 'none';
+    });
+});
+
+// Presets de precio
+function setPrice(min, max) {
+    document.querySelector('input[name="price_min"]').value = min;
+    document.querySelector('input[name="price_max"]').value = max;
+    document.getElementById('filtersForm').submit();
+}
+</script>
+
+<style>
+.price-presets {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.price-presets .btn {
+    text-align: left;
+    font-size: 0.85rem;
+}
+
+.brand-search {
+    position: sticky;
+    top: 0;
+    background: white;
+    padding-bottom: 10px;
+    z-index: 10;
+}
+
+.filter-actions .btn {
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 0.85rem;
+}
+</style>

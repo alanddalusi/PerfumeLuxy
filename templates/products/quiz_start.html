@@ -1,0 +1,412 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_title %} - Quiz de Fragancias{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Header -->
+    <div class="text-center mb-5">
+        <h1 class="section-header">Encuentra tu perfume ideal</h1>
+        <p class="lead text-muted">Responde 6 preguntas y descubre fragancias perfectas para ti</p>
+        
+        <!-- Progress bar -->
+        <div class="quiz-progress mt-4">
+            <div class="progress-bar-custom" id="progressBar" style="width: 0%"></div>
+        </div>
+        <p class="mt-2 text-muted">
+            <span id="currentStep">1</span> de 6 preguntas
+        </p>
+    </div>
+    
+    <form method="post" id="quizForm">
+        {% csrf_token %}
+        
+        <!-- Question 1: Gender -->
+        <div class="quiz-question active" data-question="1">
+            <h3 class="question-title">¿Para quién es el perfume?</h3>
+            <div class="options-grid">
+                <label class="option-card">
+                    <input type="radio" name="gender" value="men" required>
+                    <div class="option-content">
+                        <i class="fas fa-mars"></i>
+                        <span>Hombre</span>
+                    </div>
+                </label>
+                <label class="option-card">
+                    <input type="radio" name="gender" value="women">
+                    <div class="option-content">
+                        <i class="fas fa-venus"></i>
+                        <span>Mujer</span>
+                    </div>
+                </label>
+                <label class="option-card">
+                    <input type="radio" name="gender" value="unisex">
+                    <div class="option-content">
+                        <i class="fas fa-venus-mars"></i>
+                        <span>Unisex</span>
+                    </div>
+                </label>
+            </div>
+        </div>
+        
+        <!-- Question 2: Intensity -->
+        <div class="quiz-question" data-question="2">
+            <h3 class="question-title">¿Qué intensidad prefieres?</h3>
+            <div class="options-grid">
+                <label class="option-card">
+                    <input type="radio" name="intensity" value="light" required>
+                    <div class="option-content">
+                        <i class="fas fa-feather-alt"></i>
+                        <span>Ligera</span>
+                        <small>Sutil y delicada</small>
+                    </div>
+                </label>
+                <label class="option-card">
+                    <input type="radio" name="intensity" value="moderate">
+                    <div class="option-content">
+                        <i class="fas fa-balance-scale"></i>
+                        <span>Moderada</span>
+                        <small>Equilibrada</small>
+                    </div>
+                </label>
+                <label class="option-card">
+                    <input type="radio" name="intensity" value="strong">
+                    <div class="option-content">
+                        <i class="fas fa-bolt"></i>
+                        <span>Fuerte</span>
+                        <small>Potente y duradera</small>
+                    </div>
+                </label>
+            </div>
+        </div>
+        
+        <!-- Question 3: Occasion -->
+        <div class="quiz-question" data-question="3">
+            <h3 class="question-title">¿Para qué ocasión?</h3>
+            <div class="options-grid">
+                <label class="option-card">
+                    <input type="radio" name="occasion" value="daily" required>
+                    <div class="option-content">
+                        <i class="fas fa-sun"></i>
+                        <span>Diario</span>
+                        <small>Día a día</small>
+                    </div>
+                </label>
+                <label class="option-card">
+                    <input type="radio" name="occasion" value="work">
+                    <div class="option-content">
+                        <i class="fas fa-briefcase"></i>
+                        <span>Trabajo</span>
+                        <small>Profesional</small>
+                    </div>
+                </label>
+                <label class="option-card">
+                    <input type="radio" name="occasion" value="night">
+                    <div class="option-content">
+                        <i class="fas fa-moon"></i>
+                        <span>Noche</span>
+                        <small>Eventos nocturnos</small>
+                    </div>
+                </label>
+                <label class="option-card">
+                    <input type="radio" name="occasion" value="formal">
+                    <div class="option-content">
+                        <i class="fas fa-gem"></i>
+                        <span>Formal</span>
+                        <small>Ocasiones especiales</small>
+                    </div>
+                </label>
+            </div>
+        </div>
+        
+        <!-- Question 4: Season -->
+        <div class="quiz-question" data-question="4">
+            <h3 class="question-title">¿En qué temporada lo usarás más?</h3>
+            <div class="options-grid">
+                <label class="option-card">
+                    <input type="radio" name="season" value="spring" required>
+                    <div class="option-content">
+                        <i class="fas fa-seedling"></i>
+                        <span>Primavera</span>
+                    </div>
+                </label>
+                <label class="option-card">
+                    <input type="radio" name="season" value="summer">
+                    <div class="option-content">
+                        <i class="fas fa-umbrella-beach"></i>
+                        <span>Verano</span>
+                    </div>
+                </label>
+                <label class="option-card">
+                    <input type="radio" name="season" value="autumn">
+                    <div class="option-content">
+                        <i class="fas fa-leaf"></i>
+                        <span>Otoño</span>
+                    </div>
+                </label>
+                <label class="option-card">
+                    <input type="radio" name="season" value="winter">
+                    <div class="option-content">
+                        <i class="fas fa-snowflake"></i>
+                        <span>Invierno</span>
+                    </div>
+                </label>
+            </div>
+        </div>
+        
+        <!-- Question 5: Price range -->
+        <div class="quiz-question" data-question="5">
+            <h3 class="question-title">¿Cuál es tu presupuesto?</h3>
+            <div class="options-grid">
+                <label class="option-card">
+                    <input type="radio" name="price_range" value="budget" required>
+                    <div class="option-content">
+                        <i class="fas fa-tag"></i>
+                        <span>Económico</span>
+                        <small>Hasta 50€</small>
+                    </div>
+                </label>
+                <label class="option-card">
+                    <input type="radio" name="price_range" value="mid">
+                    <div class="option-content">
+                        <i class="fas fa-tags"></i>
+                        <span>Medio</span>
+                        <small>50€ - 100€</small>
+                    </div>
+                </label>
+                <label class="option-card">
+                    <input type="radio" name="price_range" value="premium">
+                    <div class="option-content">
+                        <i class="fas fa-crown"></i>
+                        <span>Premium</span>
+                        <small>100€ - 200€</small>
+                    </div>
+                </label>
+                <label class="option-card">
+                    <input type="radio" name="price_range" value="luxury">
+                    <div class="option-content">
+                        <i class="fas fa-gem"></i>
+                        <span>Lujo</span>
+                        <small>+200€</small>
+                    </div>
+                </label>
+            </div>
+        </div>
+        
+        <!-- Question 6: Fragrance families -->
+        <div class="quiz-question" data-question="6">
+            <h3 class="question-title">¿Qué familias olfativas te atraen? (Selecciona hasta 3)</h3>
+            <div class="options-grid families">
+                {% for family in families %}
+                <label class="option-card">
+                    <input type="checkbox" name="families" value="{{ family.id }}">
+                    <div class="option-content">
+                        <span>{{ family.name }}</span>
+                        {% if family.description %}
+                        <small>{{ family.description|truncatewords:8 }}</small>
+                        {% endif %}
+                    </div>
+                </label>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <!-- Navigation buttons -->
+        <div class="quiz-navigation">
+            <button type="button" class="btn btn-outline-secondary" id="prevBtn" onclick="changeQuestion(-1)" disabled>
+                <i class="fas fa-arrow-left"></i> Anterior
+            </button>
+            <button type="button" class="btn btn-gold" id="nextBtn" onclick="changeQuestion(1)">
+                Siguiente <i class="fas fa-arrow-right"></i>
+            </button>
+            <button type="submit" class="btn btn-gold" id="submitBtn" style="display: none;">
+                Ver resultados <i class="fas fa-sparkles"></i>
+            </button>
+        </div>
+    </form>
+</div>
+
+<style>
+.quiz-progress {
+    width: 100%;
+    height: 8px;
+    background: var(--gray-light);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progress-bar-custom {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold) 0%, var(--gold-light) 100%);
+    transition: width 0.5s ease;
+}
+
+.quiz-question {
+    display: none;
+    animation: fadeIn 0.5s ease;
+}
+
+.quiz-question.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.question-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    color: var(--black-soft);
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.options-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    max-width: 1000px;
+    margin: 0 auto 50px;
+}
+
+.options-grid.families {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.option-card {
+    cursor: pointer;
+    position: relative;
+}
+
+.option-card input {
+    position: absolute;
+    opacity: 0;
+}
+
+.option-content {
+    background: white;
+    border: 2px solid var(--gray-light);
+    border-radius: var(--radius-lg);
+    padding: 30px 20px;
+    text-align: center;
+    transition: var(--transition-medium);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.option-content i {
+    font-size: 2.5rem;
+    color: var(--gold);
+    margin-bottom: 10px;
+}
+
+.option-content span {
+    font-weight: 700;
+    color: var(--black-soft);
+    font-size: 1.1rem;
+}
+
+.option-content small {
+    color: var(--gray-dark);
+    font-size: 0.85rem;
+}
+
+.option-card:hover .option-content {
+    border-color: var(--gold);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-5px);
+}
+
+.option-card input:checked + .option-content {
+    border-color: var(--gold);
+    background: linear-gradient(135deg, rgba(212,175,55,0.05) 0%, rgba(212,175,55,0.15) 100%);
+    box-shadow: var(--shadow-gold);
+}
+
+.quiz-navigation {
+    display: flex;
+    justify-content: space-between;
+    max-width: 600px;
+    margin: 0 auto;
+    gap: 15px;
+}
+
+@media (max-width: 768px) {
+    .options-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .quiz-navigation {
+        flex-direction: column;
+    }
+}
+</style>
+
+<script>
+let currentQuestion = 1;
+const totalQuestions = 6;
+
+function changeQuestion(direction) {
+    // Validar pregunta actual
+    const currentQ = document.querySelector(`.quiz-question[data-question="${currentQuestion}"]`);
+    const required = currentQ.querySelector('input[required]');
+    
+    if (direction > 0 && required) {
+        const inputs = currentQ.querySelectorAll('input[type="radio"]');
+        let isChecked = false;
+        inputs.forEach(input => {
+            if (input.checked) isChecked = true;
+        });
+        
+        if (!isChecked) {
+            showToast('Por favor selecciona una opción', 'warning');
+            return;
+        }
+    }
+    
+    // Cambiar pregunta
+    currentQuestion += direction;
+    
+    // Actualizar visibilidad
+    document.querySelectorAll('.quiz-question').forEach(q => q.classList.remove('active'));
+    document.querySelector(`.quiz-question[data-question="${currentQuestion}"]`).classList.add('active');
+    
+    // Actualizar progress bar
+    const progress = ((currentQuestion - 1) / totalQuestions) * 100;
+    document.getElementById('progressBar').style.width = progress + '%';
+    document.getElementById('currentStep').textContent = currentQuestion;
+    
+    // Actualizar botones
+    document.getElementById('prevBtn').disabled = currentQuestion === 1;
+    
+    if (currentQuestion === totalQuestions) {
+        document.getElementById('nextBtn').style.display = 'none';
+        document.getElementById('submitBtn').style.display = 'block';
+    } else {
+        document.getElementById('nextBtn').style.display = 'block';
+        document.getElementById('submitBtn').style.display = 'none';
+    }
+    
+    // Scroll to top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Limitar selección de familias a 3
+document.querySelectorAll('input[name="families"]').forEach(checkbox => {
+    checkbox.addEventListener('change', function() {
+        const checked = document.querySelectorAll('input[name="families"]:checked');
+        if (checked.length > 3) {
+            this.checked = false;
+            showToast('Puedes seleccionar máximo 3 familias', 'warning');
+        }
+    });
+});
+</script>
+{% endblock %}

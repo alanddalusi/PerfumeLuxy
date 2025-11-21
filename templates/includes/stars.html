@@ -1,0 +1,46 @@
+<!-- Rating Stars Component -->
+{% load static %}
+
+<div class="stars-rating {% if show_count %}with-count{% endif %}">
+    {% if rating %}
+        {% for i in "12345" %}
+            <span class="{% if forloop.counter <= rating %}gold-star{% else %}gray-star{% endif %}">★</span>
+        {% endfor %}
+        
+        {% if show_count and review_count %}
+            <span class="review-count">({{ review_count }})</span>
+        {% endif %}
+    {% else %}
+        <span class="no-rating">Sin valoraciones</span>
+    {% endif %}
+</div>
+
+<style>
+.stars-rating {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.stars-rating .gold-star {
+    color: #D4AF37;
+    font-size: 1.1rem;
+}
+
+.stars-rating .gray-star {
+    color: #ddd;
+    font-size: 1.1rem;
+}
+
+.stars-rating .review-count {
+    font-size: 0.9rem;
+    color: #666;
+    margin-left: 5px;
+}
+
+.stars-rating .no-rating {
+    font-size: 0.85rem;
+    color: #999;
+    font-style: italic;
+}
+</style>

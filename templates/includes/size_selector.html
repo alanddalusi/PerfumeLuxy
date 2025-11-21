@@ -1,0 +1,226 @@
+<!-- Product Size Selector Component -->
+{% load static %}
+
+<div class="size-selector-container">
+    <h4 class="size-selector-title">Selecciona tu tamaño</h4>
+    
+    <div class="size-options">
+        {% for size in product.sizes.all %}
+        <div class="size-option {% if forloop.first %}active{% endif %}" 
+             data-size-id="{{ size.id }}"
+             data-price="{{ size.price }}"
+             data-stock="{{ size.stock }}"
+             onclick="selectSize(this)">
+            
+            <!-- Imagen del tamaño -->
+            <div class="size-image">
+                {% if size.image %}
+                    <img src="{{ size.image.url }}" alt="{{ size.size_ml }}ml">
+                {% else %}
+                    <img src="{{ product.image.url }}" alt="{{ size.size_ml }}ml">
+                {% endif %}
+            </div>
+            
+            <!-- Información -->
+            <div class="size-info">
+                <p class="size-ml">{{ size.size_ml }}ml</p>
+                <p class="size-price">€{{ size.price }}</p>
+                <small class="size-per-ml">€{{ size.price_per_ml }}/ml</small>
+            </div>
+            
+            <!-- Badges -->
+            {% if size.is_popular %}
+            <span class="size-badge badge-popular">Más popular</span>
+            {% endif %}
+            
+            {% if size.is_best_value %}
+            <span class="size-badge badge-value">Mejor valor</span>
+            {% endif %}
+            
+            <!-- Stock -->
+            {% if not size.in_stock %}
+            <div class="size-out-of-stock">
+                <i class="fas fa-times-circle"></i>
+                <span>Agotado</span>
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+.size-selector-container {
+    margin: 30px 0;
+}
+
+.size-selector-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    margin-bottom: 20px;
+    color: var(--black-soft);
+}
+
+.size-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+}
+
+.size-option {
+    background: white;
+    border: 2px solid var(--gray-medium);
+    border-radius: var(--radius-md);
+    padding: 20px 15px;
+    cursor: pointer;
+    transition: var(--transition-medium);
+    position: relative;
+    text-align: center;
+}
+
+.size-option:hover {
+    border-color: var(--gold);
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+}
+
+.size-option.active {
+    border-color: var(--gold);
+    background: linear-gradient(135deg, rgba(212,175,55,0.05) 0%, rgba(212,175,55,0.15) 100%);
+    box-shadow: var(--shadow-gold);
+}
+
+.size-option.out-of-stock {
+    opacity: 0.5;
+    cursor: not-allowed;
+    filter: grayscale(100%);
+}
+
+.size-image {
+    margin-bottom: 15px;
+}
+
+.size-image img {
+    width: 80px;
+    height: 120px;
+    object-fit: contain;
+}
+
+.size-info {
+    margin-bottom: 10px;
+}
+
+.size-ml {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--black-soft);
+    margin-bottom: 5px;
+}
+
+.size-price {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--gold);
+    margin-bottom: 3px;
+}
+
+.size-per-ml {
+    font-size: 0.75rem;
+    color: var(--gray-dark);
+}
+
+.size-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.badge-popular {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+}
+
+.badge-value {
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+    color: var(--black-soft);
+}
+
+.size-out-of-stock {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(220, 53, 69, 0.95);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+@media (max-width: 768px) {
+    .size-options {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+</style>
+
+<script>
+let selectedSizeId = null;
+let selectedPrice = null;
+
+function selectSize(element) {
+    // Verificar si está agotado
+    const stock = parseInt(element.getAttribute('data-stock'));
+    if (stock <= 0) {
+        showToast('Este tamaño está agotado', 'error');
+        return;
+    }
+    
+    // Remover clase active de todos
+    document.querySelectorAll('.size-option').forEach(opt => {
+        opt.classList.remove('active');
+    });
+    
+    // Añadir clase active al seleccionado
+    element.classList.add('active');
+    
+    // Guardar datos seleccionados
+    selectedSizeId = element.getAttribute('data-size-id');
+    selectedPrice = element.getAttribute('data-price');
+    
+    // Actualizar precio mostrado (si existe elemento de precio principal)
+    const mainPrice = document.querySelector('.product-main-price');
+    if (mainPrice) {
+        mainPrice.textContent = '€' + selectedPrice;
+        
+        // Animación
+        mainPrice.style.transform = 'scale(1.1)';
+        setTimeout(() => {
+            mainPrice.style.transform = 'scale(1)';
+        }, 200);
+    }
+    
+    // Actualizar campo hidden si existe formulario
+    const sizeInput = document.querySelector('input[name="size_id"]');
+    if (sizeInput) {
+        sizeInput.value = selectedSizeId;
+    }
+}
+
+// Seleccionar primer tamaño disponible al cargar
+document.addEventListener('DOMContentLoaded', function() {
+    const firstAvailable = document.querySelector('.size-option:not(.out-of-stock)');
+    if (firstAvailable) {
+        selectSize(firstAvailable);
+    }
+});
+</script>

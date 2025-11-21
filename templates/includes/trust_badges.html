@@ -1,0 +1,139 @@
+<!-- Trust Badges Component -->
+{% load static %}
+
+<div class="trust-badges-container">
+    <div class="trust-badge">
+        <div class="badge-icon">
+            <i class="fas fa-certificate"></i>
+        </div>
+        <div class="badge-content">
+            <h6 class="badge-title">100% Original</h6>
+            <p class="badge-description">Garantía de autenticidad</p>
+        </div>
+    </div>
+    
+    <div class="trust-badge">
+        <div class="badge-icon">
+            <i class="fas fa-shield-alt"></i>
+        </div>
+        <div class="badge-content">
+            <h6 class="badge-title">Garantía 2 años</h6>
+            <p class="badge-description">Protección completa</p>
+        </div>
+    </div>
+    
+    <div class="trust-badge">
+        <div class="badge-icon">
+            <i class="fas fa-truck"></i>
+        </div>
+        <div class="badge-content">
+            <h6 class="badge-title">Envío Gratis</h6>
+            <p class="badge-description">En pedidos +50€</p>
+        </div>
+    </div>
+    
+    <div class="trust-badge">
+        <div class="badge-icon">
+            <i class="fas fa-undo-alt"></i>
+        </div>
+        <div class="badge-content">
+            <h6 class="badge-title">Devolución 30 días</h6>
+            <p class="badge-description">Sin preguntas</p>
+        </div>
+    </div>
+    
+    <div class="trust-badge">
+        <div class="badge-icon">
+            <i class="fas fa-lock"></i>
+        </div>
+        <div class="badge-content">
+            <h6 class="badge-title">Pago Seguro</h6>
+            <p class="badge-description">Encriptación SSL</p>
+        </div>
+    </div>
+    
+    <div class="trust-badge">
+        <div class="badge-icon">
+            <i class="fas fa-headset"></i>
+        </div>
+        <div class="badge-content">
+            <h6 class="badge-title">Soporte 24/7</h6>
+            <p class="badge-description">Asistencia experta</p>
+        </div>
+    </div>
+</div>
+
+<style>
+.trust-badges-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 20px;
+    margin: 40px 0;
+}
+
+.trust-badge {
+    background: white;
+    border: 1px solid var(--gray-light);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    transition: var(--transition-medium);
+}
+
+.trust-badge:hover {
+    border-color: var(--gold);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-3px);
+}
+
+.badge-icon {
+    flex-shrink: 0;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    color: white;
+    box-shadow: var(--shadow-sm);
+}
+
+.badge-content {
+    flex: 1;
+}
+
+.badge-title {
+    font-weight: 700;
+    color: var(--black-soft);
+    margin: 0 0 5px 0;
+    font-size: 0.95rem;
+}
+
+.badge-description {
+    font-size: 0.8rem;
+    color: var(--gray-dark);
+    margin: 0;
+}
+
+@media (max-width: 768px) {
+    .trust-badges-container {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+    
+    .trust-badge {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+
+@media (max-width: 576px) {
+    .trust-badges-container {
+        grid-template-columns: 1fr;
+    }
+}
+</style>

@@ -1,0 +1,271 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_title %} - Mis Muestras{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Header -->
+    <div class="text-center mb-5">
+        <h1 class="section-header">Mis Solicitudes de Muestras</h1>
+        <p class="lead text-muted">Sigue el estado de tus muestras solicitadas</p>
+    </div>
+    
+    {% if sample_requests %}
+    <!-- Tabla de muestras -->
+    <div class="table-responsive">
+        <table class="table samples-table">
+            <thead>
+                <tr>
+                    <th>Producto</th>
+                    <th>Fecha Solicitud</th>
+                    <th>Estado</th>
+                    <th>Dirección</th>
+                    <th class="text-center">Seguimiento</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for request in sample_requests %}
+                <tr>
+                    <td>
+                        <div class="d-flex align-items-center gap-3">
+                            <img src="{{ request.product.image.url }}" alt="{{ request.product.name }}" class="sample-thumb">
+                            <div>
+                                <strong>{{ request.product.name }}</strong>
+                                <br>
+                                <small class="text-muted">{{ request.product.brand.name }}</small>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        {{ request.created_at|date:"d/m/Y" }}
+                        <br>
+                        <small class="text-muted">{{ request.created_at|time:"H:i" }}</small>
+                    </td>
+                    <td>
+                        {% if request.status == 'pending' %}
+                        <span class="badge badge-warning">
+                            <i class="fas fa-hourglass-half"></i> Pendiente
+                        </span>
+                        {% elif request.status == 'approved' %}
+                        <span class="badge badge-info">
+                            <i class="fas fa-check-circle"></i> Aprobada
+                        </span>
+                        {% elif request.status == 'sent' %}
+                        <span class="badge badge-primary">
+                            <i class="fas fa-shipping-fast"></i> Enviada
+                        </span>
+                        {% elif request.status == 'delivered' %}
+                        <span class="badge badge-success">
+                            <i class="fas fa-box-open"></i> Entregada
+                        </span>
+                        {% elif request.status == 'rejected' %}
+                        <span class="badge badge-danger">
+                            <i class="fas fa-times-circle"></i> Rechazada
+                        </span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <small>
+                            {{ request.address }}<br>
+                            {{ request.postal_code }} {{ request.city }}<br>
+                            {{ request.country }}
+                        </small>
+                    </td>
+                    <td class="text-center">
+                        {% if request.tracking_number %}
+                        <a href="#" class="btn btn-sm btn-outline-gold" title="Ver seguimiento">
+                            <i class="fas fa-search"></i> {{ request.tracking_number }}
+                        </a>
+                        {% else %}
+                        <small class="text-muted">Sin seguimiento</small>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Estadísticas -->
+    <div class="row mt-5">
+        <div class="col-md-3 mb-3">
+            <div class="stat-card">
+                <div class="stat-icon pending">
+                    <i class="fas fa-hourglass-half"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>{{ stats.pending }}</h3>
+                    <p>Pendientes</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="stat-card">
+                <div class="stat-icon approved">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>{{ stats.approved }}</h3>
+                    <p>Aprobadas</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="stat-card">
+                <div class="stat-icon sent">
+                    <i class="fas fa-shipping-fast"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>{{ stats.sent }}</h3>
+                    <p>En camino</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="stat-card">
+                <div class="stat-icon delivered">
+                    <i class="fas fa-box-open"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>{{ stats.delivered }}</h3>
+                    <p>Entregadas</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    {% else %}
+    <!-- Empty state -->
+    <div class="empty-state text-center py-5">
+        <i class="fas fa-vial fa-5x text-muted mb-4"></i>
+        <h3>No has solicitado muestras todavía</h3>
+        <p class="text-muted">Explora nuestros perfumes y solicita muestras gratis</p>
+        <a href="{% url 'products' %}" class="btn btn-gold mt-3">
+            <i class="fas fa-shopping-bag"></i> Explorar productos
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.samples-table {
+    background: white;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+}
+
+.samples-table thead {
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+    color: white;
+}
+
+.samples-table th {
+    font-weight: 700;
+    padding: 15px;
+    border: none;
+}
+
+.samples-table td {
+    padding: 15px;
+    vertical-align: middle;
+}
+
+.sample-thumb {
+    width: 60px;
+    height: 90px;
+    object-fit: contain;
+    border-radius: var(--radius-sm);
+}
+
+.badge {
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.badge-warning {
+    background: #ffc107;
+    color: #000;
+}
+
+.badge-info {
+    background: #17a2b8;
+    color: white;
+}
+
+.badge-primary {
+    background: #007bff;
+    color: white;
+}
+
+.badge-success {
+    background: #28a745;
+    color: white;
+}
+
+.badge-danger {
+    background: #dc3545;
+    color: white;
+}
+
+.stat-card {
+    background: white;
+    border: 1px solid var(--gray-light);
+    border-radius: var(--radius-lg);
+    padding: 25px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition-medium);
+}
+
+.stat-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-3px);
+}
+
+.stat-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: white;
+}
+
+.stat-icon.pending {
+    background: linear-gradient(135deg, #ffc107 0%, #ffb300 100%);
+}
+
+.stat-icon.approved {
+    background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+}
+
+.stat-icon.sent {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+}
+
+.stat-icon.delivered {
+    background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+}
+
+.stat-content h3 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--black-soft);
+    margin: 0;
+}
+
+.stat-content p {
+    color: var(--gray-dark);
+    margin: 0;
+    font-size: 0.9rem;
+}
+</style>
+{% endblock %}

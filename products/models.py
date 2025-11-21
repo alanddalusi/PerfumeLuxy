@@ -356,3 +356,13 @@ class StockAlert(models.Model):
     def __str__(self):
         return f"Alerta de stock: {self.user.username} - {self.product.name}"
 
+
+# Importar modelos extendidos
+from .models_extended import (
+    ProductSize,
+    ProductVideo,
+    SampleRequest,
+    UserFragranceProfile,
+    FragranceEvolution,
+    ProductComparison
+)

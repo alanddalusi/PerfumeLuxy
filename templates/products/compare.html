@@ -1,0 +1,403 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_title %} - Comparar Perfumes{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Header -->
+    <div class="text-center mb-5">
+        <h1 class="section-header">Comparador de Perfumes</h1>
+        <p class="lead text-muted">Compara hasta 3 perfumes lado a lado</p>
+    </div>
+    
+    {% if products %}
+    <!-- Tabla de comparación -->
+    <div class="comparison-table-container">
+        <table class="comparison-table">
+            <thead>
+                <tr>
+                    <th class="feature-column">Características</th>
+                    {% for product in products %}
+                    <th class="product-column">
+                        <div class="product-header">
+                            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
+                            <h5 class="product-name">{{ product.name }}</h5>
+                            <p class="product-brand">{{ product.brand.name }}</p>
+                            <div class="product-rating">
+                                {% include 'includes/stars.html' with rating=product.avg_rating %}
+                                <small>({{ product.review_count }} reviews)</small>
+                            </div>
+                            <p class="product-price">
+                                {% if product.min_price == product.max_price %}
+                                    €{{ product.price }}
+                                {% else %}
+                                    €{{ product.min_price }} - €{{ product.max_price }}
+                                {% endif %}
+                            </p>
+                            <a href="{{ product.get_absolute_url }}" class="btn btn-gold btn-sm mt-2">
+                                Ver detalles
+                            </a>
+                            <button onclick="removeFromComparison('{{ product.id }}')" class="btn btn-outline-danger btn-sm mt-1">
+                                <i class="fas fa-times"></i> Quitar
+                            </button>
+                        </div>
+                    </th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Familia olfativa -->
+                <tr>
+                    <td class="feature-label">
+                        <i class="fas fa-palette"></i>
+                        Familia Olfativa
+                    </td>
+                    {% for product in products %}
+                    <td class="feature-value">
+                        <span class="badge badge-gold">{{ product.fragrance_family.name }}</span>
+                    </td>
+                    {% endfor %}
+                </tr>
+                
+                <!-- Género -->
+                <tr>
+                    <td class="feature-label">
+                        <i class="fas fa-venus-mars"></i>
+                        Género
+                    </td>
+                    {% for product in products %}
+                    <td class="feature-value">{{ product.gender.name }}</td>
+                    {% endfor %}
+                </tr>
+                
+                <!-- Concentración -->
+                <tr>
+                    <td class="feature-label">
+                        <i class="fas fa-tint"></i>
+                        Concentración
+                    </td>
+                    {% for product in products %}
+                    <td class="feature-value">{{ product.get_concentration_display }}</td>
+                    {% endfor %}
+                </tr>
+                
+                <!-- Intensidad -->
+                <tr>
+                    <td class="feature-label">
+                        <i class="fas fa-signal"></i>
+                        Intensidad
+                    </td>
+                    {% for product in products %}
+                    <td class="feature-value">
+                        <div class="intensity-bar">
+                            <div class="intensity-fill" style="width: {% if product.intensity == 'light' %}33%{% elif product.intensity == 'moderate' %}66%{% else %}100%{% endif %}"></div>
+                        </div>
+                        {{ product.get_intensity_display }}
+                    </td>
+                    {% endfor %}
+                </tr>
+                
+                <!-- Duración -->
+                <tr>
+                    <td class="feature-label">
+                        <i class="far fa-clock"></i>
+                        Duración
+                    </td>
+                    {% for product in products %}
+                    <td class="feature-value">{{ product.get_duration_display }}</td>
+                    {% endfor %}
+                </tr>
+                
+                <!-- Proyección -->
+                <tr>
+                    <td class="feature-label">
+                        <i class="fas fa-broadcast-tower"></i>
+                        Proyección
+                    </td>
+                    {% for product in products %}
+                    <td class="feature-value">{{ product.get_projection_display }}</td>
+                    {% endfor %}
+                </tr>
+                
+                <!-- Ocasión -->
+                <tr>
+                    <td class="feature-label">
+                        <i class="fas fa-calendar-day"></i>
+                        Ocasión
+                    </td>
+                    {% for product in products %}
+                    <td class="feature-value">{{ product.get_occasion_display }}</td>
+                    {% endfor %}
+                </tr>
+                
+                <!-- Temporada -->
+                <tr>
+                    <td class="feature-label">
+                        <i class="fas fa-sun"></i>
+                        Temporada
+                    </td>
+                    {% for product in products %}
+                    <td class="feature-value">{{ product.get_season_display }}</td>
+                    {% endfor %}
+                </tr>
+                
+                <!-- Notas principales -->
+                <tr>
+                    <td class="feature-label">
+                        <i class="fas fa-spa"></i>
+                        Notas Principales
+                    </td>
+                    {% for product in products %}
+                    <td class="feature-value">
+                        <div class="notes-list">
+                            {% for note in product.fragrance_notes.all|slice:":5" %}
+                            <span class="note-badge">{{ note.name }}</span>
+                            {% endfor %}
+                        </div>
+                    </td>
+                    {% endfor %}
+                </tr>
+                
+                <!-- Stock -->
+                <tr>
+                    <td class="feature-label">
+                        <i class="fas fa-box"></i>
+                        Disponibilidad
+                    </td>
+                    {% for product in products %}
+                    <td class="feature-value">
+                        {% if product.in_stock %}
+                        <span class="badge badge-success">En stock</span>
+                        {% else %}
+                        <span class="badge badge-danger">Agotado</span>
+                        {% endif %}
+                    </td>
+                    {% endfor %}
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Botones de acción -->
+    <div class="comparison-actions text-center mt-4">
+        <a href="{% url 'products' %}" class="btn btn-outline-gold">
+            <i class="fas fa-plus"></i> Añadir más productos
+        </a>
+        <button onclick="clearComparison()" class="btn btn-outline-danger">
+            <i class="fas fa-trash"></i> Limpiar comparación
+        </button>
+        {% if user.is_authenticated %}
+        <button onclick="saveComparison()" class="btn btn-gold">
+            <i class="fas fa-save"></i> Guardar comparación
+        </button>
+        {% endif %}
+    </div>
+    
+    {% else %}
+    <!-- Empty state -->
+    <div class="empty-comparison text-center py-5">
+        <i class="fas fa-balance-scale fa-5x text-muted mb-4"></i>
+        <h3>No hay productos para comparar</h3>
+        <p class="text-muted">Añade productos a tu comparador desde la página de productos</p>
+        <a href="{% url 'products' %}" class="btn btn-gold mt-3">
+            <i class="fas fa-shopping-bag"></i> Explorar productos
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.comparison-table-container {
+    overflow-x: auto;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+}
+
+.comparison-table {
+    width: 100%;
+    background: white;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.comparison-table th,
+.comparison-table td {
+    padding: 20px;
+    border-bottom: 1px solid var(--gray-light);
+}
+
+.feature-column {
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+    color: white;
+    font-weight: 700;
+    min-width: 200px;
+    position: sticky;
+    left: 0;
+    z-index: 10;
+}
+
+.product-column {
+    background: var(--gray-lightest);
+    min-width: 300px;
+}
+
+.product-header {
+    text-align: center;
+}
+
+.product-image {
+    width: 120px;
+    height: 180px;
+    object-fit: contain;
+    margin-bottom: 15px;
+}
+
+.product-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    color: var(--black-soft);
+    margin-bottom: 5px;
+}
+
+.product-brand {
+    color: var(--gray-dark);
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+}
+
+.product-price {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--gold);
+    margin: 10px 0;
+}
+
+.feature-label {
+    background: white;
+    font-weight: 600;
+    color: var(--black-soft);
+    position: sticky;
+    left: 0;
+    z-index: 5;
+}
+
+.feature-label i {
+    color: var(--gold);
+    margin-right: 8px;
+}
+
+.feature-value {
+    background: white;
+    text-align: center;
+}
+
+.badge-gold {
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+    color: white;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+}
+
+.intensity-bar {
+    width: 100%;
+    height: 8px;
+    background: var(--gray-light);
+    border-radius: 10px;
+    margin: 5px 0;
+    overflow: hidden;
+}
+
+.intensity-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold) 0%, var(--gold-light) 100%);
+    transition: var(--transition-medium);
+}
+
+.notes-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+}
+
+.note-badge {
+    background: var(--gray-lightest);
+    border: 1px solid var(--gray-light);
+    padding: 5px 12px;
+    border-radius: 15px;
+    font-size: 0.85rem;
+    color: var(--gray-dark);
+}
+
+.comparison-actions {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+    .comparison-table th,
+    .comparison-table td {
+        padding: 15px 10px;
+    }
+    
+    .product-column {
+        min-width: 250px;
+    }
+}
+</style>
+
+<script>
+function removeFromComparison(productId) {
+    fetch(`/products/comparison/remove/${productId}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        }
+    });
+}
+
+function clearComparison() {
+    if (confirm('¿Seguro que quieres limpiar toda la comparación?')) {
+        fetch('/products/comparison/clear/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            }
+        });
+    }
+}
+
+function saveComparison() {
+    fetch('/products/comparison/save/', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showToast('Comparación guardada correctamente', 'success');
+        } else {
+            showToast('Error al guardar la comparación', 'error');
+        }
+    });
+}
+</script>
+{% endblock %}

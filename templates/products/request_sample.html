@@ -1,0 +1,286 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_title %} - Solicitar Muestra{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Header -->
+            <div class="text-center mb-5">
+                <h1 class="section-header">Solicitar Muestra Gratis</h1>
+                <p class="lead text-muted">Prueba antes de comprar. Envío gratuito.</p>
+            </div>
+            
+            <!-- Producto -->
+            <div class="sample-product-card mb-4">
+                <div class="row align-items-center">
+                    <div class="col-md-4 text-center">
+                        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="sample-product-image">
+                    </div>
+                    <div class="col-md-8">
+                        <h3 class="product-name">{{ product.name }}</h3>
+                        <p class="product-brand">{{ product.brand.name }}</p>
+                        <p class="product-family">
+                            <span class="badge badge-gold">{{ product.fragrance_family.name }}</span>
+                        </p>
+                        <p class="product-description">{{ product.description|truncatewords:30 }}</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Formulario -->
+            <div class="sample-form-card">
+                <form method="post" id="sampleForm">
+                    {% csrf_token %}
+                    
+                    <div class="form-section">
+                        <h5 class="form-section-title">
+                            <i class="fas fa-user"></i>
+                            Información Personal
+                        </h5>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="full_name" class="form-label">Nombre completo *</label>
+                                <input type="text" class="form-control" id="full_name" name="full_name" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="email" class="form-label">Email *</label>
+                                <input type="email" class="form-control" id="email" name="email" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">Teléfono</label>
+                            <input type="tel" class="form-control" id="phone" name="phone">
+                            <small class="text-muted">Opcional, para confirmar el envío</small>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h5 class="form-section-title">
+                            <i class="fas fa-map-marker-alt"></i>
+                            Dirección de Envío
+                        </h5>
+                        
+                        <div class="mb-3">
+                            <label for="address" class="form-label">Dirección completa *</label>
+                            <input type="text" class="form-control" id="address" name="address" required>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="postal_code" class="form-label">Código postal *</label>
+                                <input type="text" class="form-control" id="postal_code" name="postal_code" required>
+                            </div>
+                            <div class="col-md-8 mb-3">
+                                <label for="city" class="form-label">Ciudad *</label>
+                                <input type="text" class="form-control" id="city" name="city" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="country" class="form-label">País *</label>
+                            <select class="form-control" id="country" name="country" required>
+                                <option value="">Selecciona un país</option>
+                                <option value="ES" selected>España</option>
+                                <option value="PT">Portugal</option>
+                                <option value="FR">Francia</option>
+                                <option value="IT">Italia</option>
+                                <option value="DE">Alemania</option>
+                                <option value="UK">Reino Unido</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h5 class="form-section-title">
+                            <i class="fas fa-comment"></i>
+                            Comentarios Adicionales
+                        </h5>
+                        
+                        <div class="mb-3">
+                            <textarea class="form-control" id="notes" name="notes" rows="3" placeholder="¿Algo que debamos saber? (opcional)"></textarea>
+                        </div>
+                    </div>
+                    
+                    <!-- Información importante -->
+                    <div class="alert alert-info">
+                        <h6><i class="fas fa-info-circle"></i> Información Importante</h6>
+                        <ul class="mb-0">
+                            <li>Solo 1 muestra gratis por producto y usuario</li>
+                            <li>Muestra de 1.5ml en atomizador</li>
+                            <li>Envío en 3-5 días laborables</li>
+                            <li>Disponible solo en península</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Términos -->
+                    <div class="form-check mb-4">
+                        <input class="form-check-input" type="checkbox" id="accept_terms" required>
+                        <label class="form-check-label" for="accept_terms">
+                            Acepto los <a href="#">términos y condiciones</a> y la <a href="#">política de privacidad</a> *
+                        </label>
+                    </div>
+                    
+                    <!-- Botones -->
+                    <div class="d-flex gap-3 justify-content-between">
+                        <a href="{{ product.get_absolute_url }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left"></i> Volver
+                        </a>
+                        <button type="submit" class="btn btn-gold">
+                            <i class="fas fa-paper-plane"></i> Solicitar Muestra
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.sample-product-card {
+    background: white;
+    border: 1px solid var(--gray-light);
+    border-radius: var(--radius-lg);
+    padding: 30px;
+    box-shadow: var(--shadow-md);
+}
+
+.sample-product-image {
+    width: 100%;
+    max-width: 200px;
+    height: auto;
+    object-fit: contain;
+}
+
+.product-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    color: var(--black-soft);
+    margin-bottom: 10px;
+}
+
+.product-brand {
+    color: var(--gray-dark);
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+}
+
+.product-family {
+    margin-bottom: 15px;
+}
+
+.sample-form-card {
+    background: white;
+    border: 1px solid var(--gray-light);
+    border-radius: var(--radius-lg);
+    padding: 40px;
+    box-shadow: var(--shadow-md);
+}
+
+.form-section {
+    margin-bottom: 35px;
+    padding-bottom: 35px;
+    border-bottom: 1px solid var(--gray-light);
+}
+
+.form-section:last-of-type {
+    border-bottom: none;
+}
+
+.form-section-title {
+    font-family: 'Playfair Display', serif;
+    color: var(--black-soft);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.form-section-title i {
+    color: var(--gold);
+}
+
+.form-label {
+    font-weight: 600;
+    color: var(--black-soft);
+    margin-bottom: 8px;
+}
+
+.form-control {
+    border: 2px solid var(--gray-light);
+    border-radius: var(--radius-sm);
+    padding: 12px 16px;
+    transition: var(--transition-medium);
+}
+
+.form-control:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 0.2rem rgba(212, 175, 55, 0.25);
+}
+
+.alert-info {
+    background: linear-gradient(135deg, rgba(212,175,55,0.05) 0%, rgba(212,175,55,0.15) 100%);
+    border: 1px solid var(--gold);
+    border-radius: var(--radius-md);
+}
+
+.alert-info h6 {
+    color: var(--black-soft);
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.alert-info ul {
+    padding-left: 20px;
+    color: var(--gray-dark);
+}
+
+@media (max-width: 768px) {
+    .sample-form-card {
+        padding: 25px;
+    }
+    
+    .d-flex.gap-3 {
+        flex-direction: column;
+    }
+    
+    .d-flex.gap-3 .btn {
+        width: 100%;
+    }
+}
+</style>
+
+<script>
+document.getElementById('sampleForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    
+    fetch(window.location.href, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showToast('¡Solicitud enviada! Te confirmaremos por email', 'success');
+            setTimeout(() => {
+                window.location.href = data.redirect || '/products/my-samples/';
+            }, 2000);
+        } else {
+            showToast(data.message || 'Error al enviar la solicitud', 'error');
+        }
+    })
+    .catch(error => {
+        showToast('Error de conexión. Inténtalo de nuevo', 'error');
+    });
+});
+</script>
+{% endblock %}

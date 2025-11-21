@@ -1,0 +1,121 @@
+<!-- Review Form Component -->
+{% load static %}
+
+<div class="review-form-container" id="reviewForm">
+    <h3 class="mb-4">Deja tu opinión</h3>
+    
+    {% if user.is_authenticated %}
+        <form method="POST" action="{% url 'products:add_review' product.id %}" class="review-form">
+            {% csrf_token %}
+            
+            <!-- Rating -->
+            <div class="form-group mb-4">
+                <label class="form-label fw-bold">Calificación <span class="text-danger">*</span></label>
+                <div class="star-rating-input">
+                    <input type="radio" name="rating" value="5" id="star5" required>
+                    <label for="star5" title="5 estrellas">★</label>
+                    
+                    <input type="radio" name="rating" value="4" id="star4">
+                    <label for="star4" title="4 estrellas">★</label>
+                    
+                    <input type="radio" name="rating" value="3" id="star3">
+                    <label for="star3" title="3 estrellas">★</label>
+                    
+                    <input type="radio" name="rating" value="2" id="star2">
+                    <label for="star2" title="2 estrellas">★</label>
+                    
+                    <input type="radio" name="rating" value="1" id="star1">
+                    <label for="star1" title="1 estrella">★</label>
+                </div>
+                <small class="text-muted d-block mt-2">Selecciona las estrellas para calificar</small>
+            </div>
+            
+            <!-- Title -->
+            <div class="form-group mb-4">
+                <label for="reviewTitle" class="form-label fw-bold">Título de la reseña <span class="text-danger">*</span></label>
+                <input 
+                    type="text" 
+                    class="form-control" 
+                    id="reviewTitle" 
+                    name="title" 
+                    placeholder="Ej: Excelente fragancia para el día"
+                    maxlength="200"
+                    required>
+            </div>
+            
+            <!-- Comment -->
+            <div class="form-group mb-4">
+                <label for="reviewComment" class="form-label fw-bold">Tu opinión <span class="text-danger">*</span></label>
+                <textarea 
+                    class="form-control" 
+                    id="reviewComment" 
+                    name="comment" 
+                    rows="5"
+                    placeholder="Cuéntanos tu experiencia con este perfume..."
+                    required></textarea>
+                <small class="text-muted">Mínimo 20 caracteres</small>
+            </div>
+            
+            <!-- Submit -->
+            <button type="submit" class="btn btn-gold">
+                <i class="fas fa-paper-plane me-2"></i>Publicar Reseña
+            </button>
+        </form>
+    {% else %}
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle me-2"></i>
+            <a href="{% url 'account_login' %}?next={{ request.path }}">Inicia sesión</a> o 
+            <a href="{% url 'account_signup' %}?next={{ request.path }}">regístrate</a> para dejar una reseña.
+        </div>
+    {% endif %}
+</div>
+
+<style>
+.review-form-container {
+    background: var(--gray-light);
+    padding: 40px;
+    border-radius: var(--radius-md);
+    margin-top: 40px;
+}
+
+.review-form .form-control {
+    border: 2px solid var(--gray-medium);
+    border-radius: var(--radius-sm);
+    padding: 12px 15px;
+    transition: var(--transition-fast);
+}
+
+.review-form .form-control:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 0.2rem rgba(212, 175, 55, 0.25);
+}
+
+/* Star Rating Input */
+.star-rating-input {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+    gap: 5px;
+    font-size: 2.5rem;
+}
+
+.star-rating-input input {
+    display: none;
+}
+
+.star-rating-input label {
+    color: #ddd;
+    cursor: pointer;
+    transition: color 0.2s ease;
+    margin: 0;
+}
+
+.star-rating-input label:hover,
+.star-rating-input label:hover ~ label {
+    color: var(--gold);
+}
+
+.star-rating-input input:checked ~ label {
+    color: var(--gold);
+}
+</style>

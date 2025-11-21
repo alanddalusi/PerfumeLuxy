@@ -1,0 +1,315 @@
+<!-- Fragrance Evolution Timeline Component -->
+{% load static %}
+
+{% if evolution %}
+<div class="evolution-timeline-container">
+    <h4 class="timeline-title">
+        <i class="fas fa-chart-line"></i>
+        Evolución del perfume
+    </h4>
+    <p class="timeline-subtitle">Descubre cómo se desarrolla esta fragancia en tu piel</p>
+    
+    <div class="timeline-track">
+        <!-- Notas de Salida -->
+        <div class="timeline-phase phase-top">
+            <div class="phase-icon">
+                <i class="fas fa-play-circle"></i>
+            </div>
+            <div class="phase-content">
+                <h5 class="phase-name">Notas de Salida</h5>
+                <p class="phase-duration">
+                    <i class="far fa-clock"></i>
+                    {{ evolution.top_notes_duration_display }}
+                </p>
+                <div class="phase-notes">
+                    {{ evolution.top_notes }}
+                </div>
+                <p class="phase-description">{{ evolution.top_notes_description }}</p>
+            </div>
+        </div>
+        
+        <!-- Notas de Corazón -->
+        <div class="timeline-phase phase-heart">
+            <div class="phase-icon">
+                <i class="fas fa-heart"></i>
+            </div>
+            <div class="phase-content">
+                <h5 class="phase-name">Notas de Corazón</h5>
+                <p class="phase-duration">
+                    <i class="far fa-clock"></i>
+                    {{ evolution.heart_notes_duration_display }}
+                </p>
+                <div class="phase-notes">
+                    {{ evolution.heart_notes }}
+                </div>
+                <p class="phase-description">{{ evolution.heart_notes_description }}</p>
+            </div>
+        </div>
+        
+        <!-- Notas de Fondo -->
+        <div class="timeline-phase phase-base">
+            <div class="phase-icon">
+                <i class="fas fa-anchor"></i>
+            </div>
+            <div class="phase-content">
+                <h5 class="phase-name">Notas de Fondo</h5>
+                <p class="phase-duration">
+                    <i class="far fa-clock"></i>
+                    {{ evolution.base_notes_duration_display }}
+                </p>
+                <div class="phase-notes">
+                    {{ evolution.base_notes }}
+                </div>
+                <p class="phase-description">{{ evolution.base_notes_description }}</p>
+            </div>
+        </div>
+        
+        <!-- Línea de progreso -->
+        <div class="timeline-line"></div>
+    </div>
+    
+    <!-- Leyenda de tiempo -->
+    <div class="timeline-legend">
+        <div class="legend-item">
+            <span class="legend-marker marker-top"></span>
+            <span>0-15 min</span>
+        </div>
+        <div class="legend-item">
+            <span class="legend-marker marker-heart"></span>
+            <span>15 min - 4h</span>
+        </div>
+        <div class="legend-item">
+            <span class="legend-marker marker-base"></span>
+            <span>4h+</span>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<style>
+.evolution-timeline-container {
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    border: 1px solid var(--gray-light);
+    border-radius: var(--radius-lg);
+    padding: 40px;
+    margin: 40px 0;
+}
+
+.timeline-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    color: var(--black-soft);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.timeline-title i {
+    color: var(--gold);
+}
+
+.timeline-subtitle {
+    color: var(--gray-dark);
+    font-size: 0.95rem;
+    margin-bottom: 40px;
+}
+
+.timeline-track {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 30px;
+}
+
+.timeline-line {
+    position: absolute;
+    top: 30px;
+    left: 5%;
+    right: 5%;
+    height: 3px;
+    background: linear-gradient(90deg, 
+        #FFD700 0%, 
+        #FFD700 33%, 
+        #FFA500 33%, 
+        #FFA500 66%, 
+        #FF6347 66%, 
+        #FF6347 100%
+    );
+    border-radius: 10px;
+    z-index: 1;
+}
+
+.timeline-phase {
+    flex: 1;
+    text-align: center;
+    position: relative;
+    z-index: 2;
+}
+
+.phase-icon {
+    width: 60px;
+    height: 60px;
+    margin: 0 auto 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: white;
+    box-shadow: var(--shadow-md);
+    transition: var(--transition-medium);
+}
+
+.phase-top .phase-icon {
+    background: linear-gradient(135deg, #FFD700 0%, #FFC107 100%);
+}
+
+.phase-heart .phase-icon {
+    background: linear-gradient(135deg, #FFA500 0%, #FF8C00 100%);
+}
+
+.phase-base .phase-icon {
+    background: linear-gradient(135deg, #FF6347 0%, #DC143C 100%);
+}
+
+.timeline-phase:hover .phase-icon {
+    transform: scale(1.15) rotate(5deg);
+}
+
+.phase-content {
+    background: white;
+    border-radius: var(--radius-md);
+    padding: 20px;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition-medium);
+}
+
+.timeline-phase:hover .phase-content {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-5px);
+}
+
+.phase-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    color: var(--black-soft);
+    margin-bottom: 10px;
+}
+
+.phase-duration {
+    color: var(--gold);
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.phase-notes {
+    background: linear-gradient(135deg, rgba(212,175,55,0.05) 0%, rgba(212,175,55,0.15) 100%);
+    border: 1px solid var(--gold);
+    border-radius: var(--radius-sm);
+    padding: 12px;
+    margin-bottom: 12px;
+    font-weight: 600;
+    color: var(--black-soft);
+    line-height: 1.6;
+}
+
+.phase-description {
+    color: var(--gray-dark);
+    font-size: 0.9rem;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.timeline-legend {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid var(--gray-light);
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.85rem;
+    color: var(--gray-dark);
+}
+
+.legend-marker {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+}
+
+.marker-top {
+    background: linear-gradient(135deg, #FFD700 0%, #FFC107 100%);
+}
+
+.marker-heart {
+    background: linear-gradient(135deg, #FFA500 0%, #FF8C00 100%);
+}
+
+.marker-base {
+    background: linear-gradient(135deg, #FF6347 0%, #DC143C 100%);
+}
+
+@media (max-width: 992px) {
+    .timeline-track {
+        flex-direction: column;
+        gap: 30px;
+    }
+    
+    .timeline-line {
+        top: 30px;
+        left: 30px;
+        right: auto;
+        width: 3px;
+        height: calc(100% - 60px);
+        background: linear-gradient(180deg, 
+            #FFD700 0%, 
+            #FFD700 33%, 
+            #FFA500 33%, 
+            #FFA500 66%, 
+            #FF6347 66%, 
+            #FF6347 100%
+        );
+    }
+    
+    .phase-icon {
+        margin: 0 0 20px 0;
+    }
+    
+    .timeline-phase {
+        display: flex;
+        gap: 20px;
+        text-align: left;
+    }
+    
+    .phase-content {
+        flex: 1;
+    }
+    
+    .phase-duration {
+        justify-content: flex-start;
+    }
+}
+
+@media (max-width: 576px) {
+    .evolution-timeline-container {
+        padding: 20px;
+    }
+    
+    .timeline-legend {
+        flex-direction: column;
+        gap: 12px;
+    }
+}
+</style>

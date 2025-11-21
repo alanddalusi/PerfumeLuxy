@@ -1,0 +1,70 @@
+<!-- Related Products Section Component -->
+{% load static %}
+
+{% if related_products %}
+<section class="related-products-section py-5">
+    <div class="container">
+        <div class="section-header">
+            <h2>Productos Relacionados</h2>
+            <p>Te podrían interesar estas fragancias similares</p>
+            <div class="underline"></div>
+        </div>
+
+        <div class="row g-4">
+            {% for product in related_products %}
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                <div class="product-card">
+                    <!-- Wishlist Button -->
+                    {% if user.is_authenticated %}
+                        {% include 'includes/wishlist_button.html' with product=product %}
+                    {% endif %}
+                    
+                    <!-- Product Image -->
+                    <a href="{% url 'products:product_detail' product.slug %}">
+                        <img src="{{ product.image.url }}" 
+                             alt="{{ product.name }}" 
+                             class="product-card-image"
+                             loading="lazy">
+                    </a>
+                    
+                    <!-- Brand -->
+                    <p class="product-card-brand">{{ product.brand.name }}</p>
+                    
+                    <!-- Title -->
+                    <h3 class="product-card-title">
+                        <a href="{% url 'products:product_detail' product.slug %}">
+                            {{ product.name }}
+                        </a>
+                    </h3>
+                    
+                    <!-- Rating -->
+                    {% if product.reviews.all %}
+                    <div class="product-card-rating">
+                        {% with avg=product.reviews.all.aggregate.rating__avg %}
+                        <div class="stars">
+                            {% for i in "12345" %}
+                                <span class="{% if forloop.counter <= avg %}gold-star{% else %}gray-star{% endif %}">★</span>
+                            {% endfor %}
+                        </div>
+                        {% endwith %}
+                        <span class="count">({{ product.reviews.count }})</span>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Price -->
+                    <p class="product-card-price">€{{ product.price }}</p>
+                    
+                    <!-- Actions -->
+                    <div class="product-card-actions">
+                        <a href="{% url 'products:product_detail' product.slug %}" 
+                           class="btn btn-outline-gold btn-sm w-100">
+                            Ver Detalles
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}

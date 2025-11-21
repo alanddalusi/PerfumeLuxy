@@ -1,0 +1,300 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_title %} - Resultados del Quiz{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Header -->
+    <div class="text-center mb-5">
+        <h1 class="section-header">
+            <i class="fas fa-sparkles"></i>
+            ¡Tus perfumes perfectos!
+        </h1>
+        <p class="lead text-muted">Basado en tus preferencias, hemos encontrado {{ products|length }} fragancias ideales para ti</p>
+    </div>
+    
+    <!-- Resumen de preferencias -->
+    <div class="preferences-summary mb-5">
+        <h4 class="text-center mb-4">Tu perfil olfativo</h4>
+        <div class="row">
+            <div class="col-md-2 col-6 mb-3">
+                <div class="preference-badge">
+                    <i class="fas fa-venus-mars"></i>
+                    <span>{{ request.POST.gender|title }}</span>
+                </div>
+            </div>
+            <div class="col-md-2 col-6 mb-3">
+                <div class="preference-badge">
+                    <i class="fas fa-signal"></i>
+                    <span>{{ request.POST.intensity|title }}</span>
+                </div>
+            </div>
+            <div class="col-md-2 col-6 mb-3">
+                <div class="preference-badge">
+                    <i class="fas fa-calendar-day"></i>
+                    <span>{{ request.POST.occasion|title }}</span>
+                </div>
+            </div>
+            <div class="col-md-2 col-6 mb-3">
+                <div class="preference-badge">
+                    <i class="fas fa-sun"></i>
+                    <span>{{ request.POST.season|title }}</span>
+                </div>
+            </div>
+            <div class="col-md-2 col-6 mb-3">
+                <div class="preference-badge">
+                    <i class="fas fa-tags"></i>
+                    <span>{{ request.POST.price_range|title }}</span>
+                </div>
+            </div>
+            <div class="col-md-2 col-6 mb-3">
+                <div class="preference-badge">
+                    <i class="fas fa-palette"></i>
+                    <span>{{ request.POST.families|length }} familias</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Productos recomendados -->
+    {% if products %}
+    <div class="row">
+        {% for product in products %}
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="product-card recommended">
+                <!-- Badge de match -->
+                <div class="match-badge">
+                    <i class="fas fa-heart"></i>
+                    {{ product.match_score|default:"95" }}% Match
+                </div>
+                
+                <!-- Wishlist button -->
+                <div class="wishlist-toggle">
+                    {% include 'includes/wishlist_button.html' with product=product %}
+                </div>
+                
+                <!-- Imagen -->
+                <a href="{{ product.get_absolute_url }}">
+                    <div class="product-image-container">
+                        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
+                    </div>
+                </a>
+                
+                <!-- Info -->
+                <div class="product-info">
+                    <p class="product-brand">{{ product.brand.name }}</p>
+                    <h5 class="product-name">
+                        <a href="{{ product.get_absolute_url }}">{{ product.name }}</a>
+                    </h5>
+                    
+                    <!-- Rating -->
+                    <div class="product-rating">
+                        {% include 'includes/stars.html' with rating=product.avg_rating %}
+                        <small>({{ product.review_count }} reviews)</small>
+                    </div>
+                    
+                    <!-- Familia -->
+                    <p class="product-family">
+                        <span class="badge badge-gold">{{ product.fragrance_family.name }}</span>
+                    </p>
+                    
+                    <!-- Notas principales -->
+                    <div class="product-notes">
+                        {% for note in product.fragrance_notes.all|slice:":3" %}
+                        <span class="note-tag">{{ note.name }}</span>
+                        {% endfor %}
+                    </div>
+                    
+                    <!-- Precio -->
+                    <p class="product-price">€{{ product.price }}</p>
+                    
+                    <!-- Botones -->
+                    <div class="product-actions">
+                        <a href="{{ product.get_absolute_url }}" class="btn btn-gold btn-block">
+                            Ver detalles
+                        </a>
+                        <button onclick="addToComparison({{ product.id }})" class="btn btn-outline-gold btn-block mt-2">
+                            <i class="fas fa-balance-scale"></i> Comparar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Acciones adicionales -->
+    <div class="quiz-actions text-center mt-5">
+        <a href="{% url 'fragrance_quiz' %}" class="btn btn-outline-gold">
+            <i class="fas fa-redo"></i> Repetir quiz
+        </a>
+        <a href="{% url 'products' %}" class="btn btn-outline-secondary">
+            <i class="fas fa-shopping-bag"></i> Ver todos los productos
+        </a>
+        {% if user.is_authenticated %}
+        <button onclick="saveProfile()" class="btn btn-gold">
+            <i class="fas fa-save"></i> Guardar preferencias
+        </button>
+        {% endif %}
+    </div>
+    
+    {% else %}
+    <!-- No results -->
+    <div class="empty-state text-center py-5">
+        <i class="fas fa-search fa-5x text-muted mb-4"></i>
+        <h3>No encontramos perfumes que coincidan exactamente</h3>
+        <p class="text-muted">Intenta ajustar tus preferencias o explora todo nuestro catálogo</p>
+        <div class="mt-4">
+            <a href="{% url 'fragrance_quiz' %}" class="btn btn-gold">
+                <i class="fas fa-redo"></i> Intentar de nuevo
+            </a>
+            <a href="{% url 'products' %}" class="btn btn-outline-gold">
+                <i class="fas fa-shopping-bag"></i> Ver todos los productos
+            </a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.preferences-summary {
+    background: linear-gradient(135deg, rgba(212,175,55,0.05) 0%, rgba(212,175,55,0.15) 100%);
+    border: 1px solid var(--gold);
+    border-radius: var(--radius-lg);
+    padding: 30px;
+}
+
+.preference-badge {
+    background: white;
+    border: 1px solid var(--gray-light);
+    border-radius: var(--radius-md);
+    padding: 15px;
+    text-align: center;
+    transition: var(--transition-medium);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.preference-badge:hover {
+    border-color: var(--gold);
+    box-shadow: var(--shadow-sm);
+}
+
+.preference-badge i {
+    font-size: 1.5rem;
+    color: var(--gold);
+}
+
+.preference-badge span {
+    font-weight: 600;
+    color: var(--black-soft);
+    font-size: 0.9rem;
+}
+
+.product-card.recommended {
+    position: relative;
+    height: 100%;
+}
+
+.match-badge {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    z-index: 5;
+    box-shadow: var(--shadow-md);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.product-notes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin: 10px 0;
+}
+
+.note-tag {
+    background: var(--gray-lightest);
+    border: 1px solid var(--gray-light);
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    color: var(--gray-dark);
+}
+
+.quiz-actions {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+    .quiz-actions {
+        flex-direction: column;
+    }
+    
+    .quiz-actions .btn {
+        width: 100%;
+    }
+}
+</style>
+
+<script>
+function addToComparison(productId) {
+    fetch(`/products/comparison/add/${productId}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showToast('Producto añadido a comparación', 'success');
+        } else {
+            showToast(data.message || 'Error al añadir', 'error');
+        }
+    });
+}
+
+function saveProfile() {
+    const formData = new FormData();
+    formData.append('gender', '{{ request.POST.gender }}');
+    formData.append('intensity', '{{ request.POST.intensity }}');
+    formData.append('occasion', '{{ request.POST.occasion }}');
+    formData.append('season', '{{ request.POST.season }}');
+    formData.append('price_range', '{{ request.POST.price_range }}');
+    {% for family_id in request.POST.families %}
+    formData.append('families', '{{ family_id }}');
+    {% endfor %}
+    
+    fetch('/products/fragrance-profile/', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showToast('Perfil guardado correctamente', 'success');
+        } else {
+            showToast('Error al guardar el perfil', 'error');
+        }
+    });
+}
+</script>
+{% endblock %}
