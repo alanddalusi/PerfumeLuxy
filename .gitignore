@@ -25,3 +25,5 @@ deploy/.env*
 deploy/secrets/
 backups/
 staticfiles/
+deploy/shared/.env*
+!deploy/shared/env.production.example

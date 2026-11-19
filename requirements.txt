@@ -9,3 +9,4 @@ psycopg[binary]==3.3.9
 Pillow==13.0.0
 gunicorn==27.0.1
 stripe==17.1.0
+whitenoise==6.12.0

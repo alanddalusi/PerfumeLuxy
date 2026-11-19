@@ -1,0 +1,234 @@
+# Despliegue en el VPS compartido con Foro IA al Día
+
+Estado: **preparado, no desplegado.** Nada de lo descrito aquí se ha ejecutado en el VPS.
+
+VPS OVHcloud con Ubuntu 26.04, 4 vCores, 8 GB de RAM (6,2 GiB libres) y 61 GB de disco libres. Foro IA al Día ya funciona con 7 contenedores; su Caddy (`foroia-production-caddy-1`) ocupa 80/443 en las redes `foroia-production_backend` y `foroia-production_edge`. Dominio nuevo: `perfumeriaelbuenolor.es`.
+
+## Leyenda de autorización
+
+| Marca | Significado |
+|---|---|
+| 🟢 | Solo lectura. No cambia nada en el VPS. |
+| 🟡 | Crea recursos **nuevos y exclusivos** de la perfumería (archivos en `/srv/perfumeria`, imagen, contenedores y volúmenes `perfumeria-production_*`). No toca el foro. **Requiere tu autorización para empezar a ejecutar en el VPS.** |
+| 🔴 | Toca algo compartido o público: la red del foro, el Caddyfile del foro, la recarga de Caddy, el DNS o datos de producción. **Requiere tu autorización expresa en cada paso.** |
+
+## Arquitectura
+
+```
+Internet ──443──▶ foroia-production-caddy-1 (del foro, sin reiniciar)
+                     │  foro: rutas existentes, sin cambios
+                     │  perfumeriaelbuenolor.es ──▶ perfumeria-web:8000
+                     ▼
+        red foroia-production_edge (del foro, external)
+                     │
+              perfumeria-web (Gunicorn + Django + WhiteNoise)
+                     │
+        red perfumeria-production_backend (internal: true, exclusiva)
+                     │
+              perfumeria-db (PostgreSQL 17, volumen propio)
+```
+
+- **Proyecto Compose `perfumeria-production`**, en [deploy/shared/compose.yaml](deploy/shared/compose.yaml). No incluye Caddy ni publica puertos. Volúmenes propios `perfumeria-production_{pgdata,static,media,catalog_assets}`.
+- **Nombres únicos.** Compose registra el nombre de cada servicio como alias DNS en todas sus redes. Un servicio `web` en `foroia-production_edge` respondería también a `web`, y el Caddy del foro podría repartir el tráfico del foro hacia la perfumería. Por eso los servicios se llaman `perfumeria-web` y `perfumeria-db`, y `preflight.sh` comprueba que ningún contenedor del foro use esos nombres.
+- **Solo `perfumeria-web`** se une a `foroia-production_edge`. `perfumeria-db` solo está en la red interna exclusiva, separado del PostgreSQL del foro (otra red, otro volumen y otras credenciales).
+- **Estáticos con WhiteNoise** (`DJANGO_SERVE_STATIC=1`). El Caddy del foro no puede montar nuestro volumen sin recrearse. `/media/` y `/healthz/` no se publican; las imágenes aprobadas salen por Django.
+- **IP del visitante.** Django solo acepta `X-Forwarded-For` del contenedor `foroia-production-caddy-1`, resuelto por nombre cada 30 s, de modo que si el foro recrea su Caddy y cambia de IP sigue funcionando. Si el nombre no resuelve, no confía en nadie.
+- **Fijado en el Compose**, sin que el archivo de entorno pueda cambiarlo: `STORE_MODE=prelaunch`, `EMAIL_DELIVERY=disabled`, `INTEREST_EMAIL_DELIVERY=0` y claves de Stripe vacías. Los formularios de aviso, registro y recuperación de contraseña siguen ocultos (Fase 6A).
+- **Logs.** El log de acceso de la perfumería lo escribe el Caddy del foro en su volumen `/data`, en `/data/perfumeria/access.log` (20 MiB × 10, 30 días, tokens redactados e IP enmascaradas). Los logs de nuestros contenedores rotan en Docker.
+- **Límites:** `perfumeria-db` 1 CPU y 768 MiB; `perfumeria-web` 1,5 CPU y 1 GiB (2 workers × 2 hilos). Total máximo: 2,5 CPU y unos 1,8 GiB. Ambos con `pids_limit` y logs rotados a 10 MB × 5.
+
+### Riesgo aceptado al compartir `foroia-production_edge`
+
+Cualquier contenedor del foro conectado a esa red puede alcanzar `perfumeria-web:8000` sin pasar por Caddy, y la perfumería puede alcanzar los servicios del foro en esa red. `preflight.sh` lista los contenedores conectados. La mitigación actual: Gunicorn no confía en cabeceras salvo las del Caddy, no hay datos sensibles en abierto, y la base de datos está en una red aparte. **Mejora posible (requiere cambiar el Compose del foro):** una red `perfumeria_edge` exclusiva a la que se conecte solo el Caddy del foro.
+
+## Archivos
+
+| Archivo | Uso | Autorización |
+|---|---|---|
+| [deploy/shared/compose.yaml](deploy/shared/compose.yaml) | Stack de la perfumería para el VPS compartido | 🟡 / 🔴 (unirse a la red del foro) |
+| [deploy/shared/env.production.example](deploy/shared/env.production.example) | Plantilla de `deploy/shared/.env.production` (600, ignorado por Git) | 🟡 |
+| [deploy/shared/perfumeria.caddy](deploy/shared/perfumeria.caddy) | Bloque delimitado para el Caddyfile del foro | 🔴 al aplicarlo |
+| [deploy/shared/preflight.sh](deploy/shared/preflight.sh) | Validación previa completa | 🟢 |
+| [deploy/shared/caddy-check.sh](deploy/shared/caddy-check.sh) | Valida «Caddyfile actual + bloque» con la imagen del Caddy del foro en un contenedor desechable sin red | 🟢 |
+| [deploy/shared/caddy-apply.sh](deploy/shared/caddy-apply.sh) | Copia, añade el bloque, valida y recarga sin reiniciar; compara las respuestas del foro antes y después | 🔴 |
+| [deploy/shared/caddy-rollback.sh](deploy/shared/caddy-rollback.sh) | Retira solo el bloque y recarga | 🔴 |
+| [deploy/backup/backup.sh](deploy/backup/backup.sh), [restore.sh](deploy/backup/restore.sh) | Ya admiten el modo compartido (servicios `perfumeria-*`, nunca detienen el Caddy del foro) | 🟡 / 🔴 restaurar |
+
+En el VPS conviene un alias para no olvidar ninguna opción:
+
+```bash
+cd /srv/perfumeria/app/deploy
+pc() { docker compose -p perfumeria-production -f shared/compose.yaml --env-file shared/.env.production "$@"; }
+```
+
+## Procedimiento
+
+### 0. Antes de empezar (en Windows) 🟢
+
+```powershell
+git status --short                       # vacío
+.\.venv-django52\Scripts\python.exe manage.py test --noinput
+git bundle create "$env:USERPROFILE\perfumeria-vps.bundle" feature/prelaunch-security
+git bundle verify "$env:USERPROFILE\perfumeria-vps.bundle"
+(Get-FileHash "$env:USERPROFILE\perfumeria-vps.bundle" -Algorithm SHA256).Hash
+git rev-parse --short feature/prelaunch-security      # = RELEASE
+scp "$env:USERPROFILE\perfumeria-vps.bundle" <usuario>@<vps>:~/
+```
+
+Prueba primero `deploy/smoke/run.sh` en la VM Ubuntu ([deploy/smoke/UBUNTU.md](deploy/smoke/UBUNTU.md)). Esa prueba valida la imagen y el stack autónomo; este modo compartido tiene su propia verificación en el paso 5.
+
+### 1. Código y secretos en el VPS 🟡
+
+```bash
+sha256sum ~/perfumeria-vps.bundle                          # comparar con Windows
+sudo install -d -m 750 -o "$USER" -g "$USER" /srv/perfumeria
+git clone --branch feature/prelaunch-security ~/perfumeria-vps.bundle /srv/perfumeria/app
+cd /srv/perfumeria/app/deploy
+cp shared/env.production.example shared/.env.production && chmod 600 shared/.env.production
+nano shared/.env.production       # RELEASE, SECRET_KEY, POSTGRES_PASSWORD (ver comentarios)
+```
+
+### 2. Validación previa 🟢
+
+```bash
+./shared/preflight.sh             # fails=0; los avisos de DNS son normales hasta el paso 6
+./shared/caddy-check.sh           # Caddyfile actual válido y válido también con el bloque añadido
+```
+
+`preflight.sh` comprueba, entre otras cosas:
+- versiones de Compose, RAM y disco;
+- que `foroia-production-caddy-1` está en marcha, conectado a `foroia-production_edge` y sirviendo el 443;
+- que su Caddyfile viene de un *bind mount* legible y que el API de administración no está desactivado (necesario para recargar sin reiniciar);
+- que no hay colisiones de nombres en la red;
+- el archivo de entorno: permisos 600, sin marcadores pendientes y `PROXY_SERVICE` vacío;
+- que el Compose resuelve con el proyecto y los servicios esperados, sin puertos y con prelanzamiento y correo fijados;
+- el DNS.
+
+`caddy-check.sh` lanza un contenedor temporal con la imagen del Caddy del foro: sin red, con los montajes del foro en solo lectura y con `/data` vacío. El Caddy en marcha no se toca. Si el Caddyfile del foro no está en un *bind mount* o tiene `admin off`, **para aquí**: añadir el sitio exigiría cambiar el Compose del foro.
+
+### 3. Imagen y base de datos 🟡 (y 🔴 para `pc run`, ver nota)
+
+```bash
+pc build                                  # compila en el VPS; mejor en horas de poco tráfico (no tiene límite de CPU)
+pc up -d perfumeria-db
+pc ps                                      # perfumeria-db healthy
+pc run --rm -T perfumeria-web python manage.py migrate --noinput
+pc run --rm -T perfumeria-web python manage.py migrate --check && echo "migraciones al día"
+pc run --rm perfumeria-web python manage.py createsuperuser
+```
+
+**Nota:** `pc run … perfumeria-web` crea contenedores temporales que también se conectan a `foroia-production_edge` mientras duran, así que la migración y `createsuperuser` entran en la autorización 2. Para no compilar en el VPS, puedes construir en la VM de pruebas y transferir la imagen con `docker save perfumeria-web:<RELEASE> | gzip | ssh <vps> 'gunzip | docker load'`.
+
+### 4. Arrancar la web y unirla a la red del foro 🔴
+
+```bash
+pc up -d perfumeria-web
+pc ps                                      # perfumeria-web healthy (unos 40-60 s)
+docker network inspect -f '{{range .Containers}}{{println .Name}}{{end}}' foroia-production_edge   # aparece perfumeria-production-perfumeria-web-1
+```
+
+### 5. Verificación interna, sin público 🟢
+
+```bash
+pc exec -T perfumeria-web python deploy/healthcheck.py && echo "salud OK"
+# Desde el Caddy del foro (solo lectura: wget dentro del contenedor, sin cambiar nada)
+docker exec foroia-production-caddy-1 wget -q -S -O /dev/null \
+  --header 'Host: perfumeriaelbuenolor.es' --header 'X-Forwarded-Proto: https' http://perfumeria-web:8000/ 2>&1 | head -n1   # HTTP/1.1 200
+docker exec foroia-production-caddy-1 wget -q -O - \
+  --header 'Host: perfumeriaelbuenolor.es' --header 'X-Forwarded-Proto: https' http://perfumeria-web:8000/checkout/ 2>&1 | head -n1  # 403
+pc exec -T perfumeria-web python manage.py shell --no-imports -c \
+  "from products.models import Product; print('publicados', Product.objects.published().count())"   # 0
+pc logs --tail 50 perfumeria-web
+```
+
+### 6. DNS 🔴 (en el registrador; no se ha modificado nada)
+
+Obtén las IP del VPS con `ip -o addr show scope global` (o en el panel de OVHcloud). Antes de cambiar nada, revisa los registros actuales del dominio (por ejemplo, una página de aparcamiento) y anótalos para poder revertir.
+
+| Tipo | Nombre | Valor | TTL | Nota |
+|---|---|---|---|---|
+| A | `@` | `<IPv4 del VPS>` | 300 (3600 cuando esté estable) | Sustituye cualquier A de aparcamiento |
+| AAAA | `@` | `<IPv6 del VPS>` | 300 | Solo si el foro ya sirve por IPv6 (`docker port foroia-production-caddy-1` muestra `[::]:443`); si no, ninguno |
+| CNAME | `www` | `perfumeriaelbuenolor.es.` | 300 | Caddy redirige `www` al dominio principal |
+| CAA | `@` | `0 issue "letsencrypt.org"` | 3600 | Añade `0 issue "sectigo.com"` si el Caddy del foro usa ZeroSSL como respaldo (es el comportamiento por defecto de Caddy) |
+| MX | `@` | `0 .` (MX nulo) | 3600 | Mientras el dominio no reciba correo |
+| TXT | `@` | `v=spf1 -all` | 3600 | El dominio no envía correo; se cambiará al configurar SMTP |
+| TXT | `_dmarc` | `v=DMARC1; p=reject` | 3600 | Ídem |
+
+Comprueba la propagación antes del paso 7: `REQUIRE_DNS=1 ./shared/preflight.sh` (DNS en PASS) y `resolvectl query perfumeriaelbuenolor.es`. Si Caddy recibe el dominio antes de que el DNS apunte al VPS, reintentará la emisión de certificados y puede acercarse a los límites de Let's Encrypt.
+
+### 7. Publicar en el Caddy del foro 🔴
+
+```bash
+sudo -E FORO_URLS="https://<dominio-del-foro>/ https://<dominio-del-foro>/<otra-ruta>" ./shared/caddy-apply.sh
+```
+
+Pasos que da el script:
+1. Repite la validación previa exigiendo que el DNS ya apunte al VPS.
+2. Guarda una copia del Caddyfile en `/srv/perfumeria/caddy-backups/` (con su `sha256`).
+3. Valida el candidato en un contenedor desechable.
+4. Anota el estado HTTP de las URL del foro.
+5. **Añade** el bloque al final del Caddyfile, sin sobrescribirlo y conservando el mismo archivo (inodo), y comprueba que el contenedor ve el cambio.
+6. Valida dentro del contenedor y ejecuta `caddy reload`, que es una recarga en caliente: sin reinicio y sin cortar conexiones.
+7. Si algo falla, o si las URL del foro responden distinto que antes, restaura el contenido original y vuelve a recargar.
+
+Después: `docker logs --since 5m foroia-production-caddy-1 | grep -i perfumeria` (emisión del certificado).
+
+### 8. Verificación pública 🟢
+
+```bash
+D=https://perfumeriaelbuenolor.es
+curl -sI $D/ | head -n1                                     # 200
+curl -sI $D/ | grep -iE 'strict-transport|x-frame|x-content-type|referrer-policy'
+curl -s -o /dev/null -w '%{http_code}\n' $D/checkout/       # 403
+curl -s -o /dev/null -w '%{http_code}\n' $D/healthz/        # 404
+curl -s -o /dev/null -w '%{http_code}\n' $D/media/x.jpg     # 404
+curl -s -o /dev/null -w '%{http_code} %{redirect_url}\n' http://perfumeriaelbuenolor.es/      # 308 -> https
+curl -s -o /dev/null -w '%{http_code} %{redirect_url}\n' https://www.perfumeriaelbuenolor.es/ # 301 -> apex
+curl -sI $D/static/css/storefront.css | grep -i cache-control                                # max-age=86400
+curl -sI $D/accounts/login/ | grep -i 'set-cookie: csrftoken'                              # Secure; SameSite=Lax
+curl -s $D/sitemap.xml | grep -c '<loc>'                    # sin fichas no aprobadas
+curl -s $D/ | grep -c 'name="consent"'                      # 0 (formularios de correo ocultos)
+curl -s -o /dev/null -w '%{http_code}\n' "$D/avisos/lanzamiento/confirmar/PRUEBA-TOKEN-$RANDOM/"   # 410
+docker exec foroia-production-caddy-1 tail -n 5 /data/perfumeria/access.log | grep -c 'PRUEBA-TOKEN'  # 0
+nc -zv -w 3 <IPv4 del VPS> 5432 ; nc -zv -w 3 <IPv4 del VPS> 8000       # desde fuera del VPS: ambos cerrados
+```
+
+Comprueba además que el foro responde igual que antes, en el navegador y con `curl`.
+
+### 9. Copias y mantenimiento 🟡
+
+```bash
+crontab -e
+# 15 3 * * * cd /srv/perfumeria/app/deploy && PERFUMERIA_ENV_FILE=shared/.env.production ./backup/backup.sh >> /srv/perfumeria/backup.log 2>&1
+# 40 3 * * * cd /srv/perfumeria/app/deploy && docker compose -p perfumeria-production -f shared/compose.yaml --env-file shared/.env.production exec -T perfumeria-web python manage.py purge_notice_data --apply >> /srv/perfumeria/maintenance.log 2>&1
+PERFUMERIA_ENV_FILE=shared/.env.production ./backup/backup.sh
+PERFUMERIA_ENV_FILE=shared/.env.production ./backup/restore.sh --verify /srv/perfumeria/backups/<run>    # base temporal, no toca producción
+```
+
+Las copias van a `/srv/perfumeria/backups` (700/600) y solo incluyen la base y los volúmenes de la perfumería; las del foro siguen su propio proceso. Copia externa: [deploy/backup/offsite.sh](deploy/backup/offsite.sh), pendiente de proveedor. El catálogo de referencia se puede cargar como borradores con `pc exec -T perfumeria-web python manage.py load_reference_catalog --apply` (🟡). No publica nada; las fichas se aprueban una a una en el admin.
+
+## Reversión
+
+Ordenada de menor a mayor impacto. Ningún nivel detiene ni modifica contenedores del foro.
+
+| Nivel | Acción | Órdenes | Autorización |
+|---|---|---|---|
+| R1 | Retirar el sitio del Caddy del foro | `sudo -E ./shared/caddy-rollback.sh`: solo quita el bloque entre marcadores, guarda copia, valida y recarga | 🔴 |
+| R2 | Parar la perfumería conservando datos | `pc stop perfumeria-web`, o `pc down` (quita nuestros contenedores y la red `perfumeria-production_backend`; la red del foro y los volúmenes se conservan). **Nunca `down -v`.** | 🟡 |
+| R3 | Volver a la versión anterior | `RELEASE=<commit anterior>` en `shared/.env.production` y después `pc up -d perfumeria-web`. Si la nueva versión aplicó migraciones, restaura la copia previa con `PERFUMERIA_ENV_FILE=shared/.env.production ./backup/restore.sh --replace-production <run>` (🔴, datos) | 🟡 / 🔴 |
+| R4 | DNS | Restaurar los registros anotados en el paso 6 | 🔴 |
+| R5 | Eliminar datos de la perfumería | Borrar volúmenes `perfumeria-production_*`: solo con autorización expresa y tras una copia verificada | 🔴 |
+
+Haz siempre una copia (`backup.sh`) antes de cualquier migración y antes de R3.
+
+## Resumen de autorizaciones necesarias
+
+1. 🟡 Empezar a trabajar en el VPS: crear `/srv/perfumeria`, copiar el bundle, crear `.env.production`, compilar la imagen y arrancar `perfumeria-db` (solo red interna propia).
+2. 🔴 Conectar contenedores `perfumeria-web` a `foroia-production_edge`: la migración y `createsuperuser` con `pc run` (temporales) y `pc up -d perfumeria-web` (permanente).
+3. 🔴 Cambiar el DNS de `perfumeriaelbuenolor.es` en el registrador.
+4. 🔴 `caddy-apply.sh`: añade el bloque al Caddyfile del foro y recarga Caddy en caliente.
+5. 🟡 Instalar las tareas de cron de copia y limpieza.
+6. 🔴 Cualquier restauración sobre la base de producción, rollback de Caddy o eliminación de volúmenes.
+
+Las órdenes 🟢 (`preflight.sh`, `caddy-check.sh` y las verificaciones con `curl`, `docker inspect`, `docker logs` y `wget` dentro del Caddy) no cambian nada y se pueden ejecutar en cualquier momento.

@@ -5,3 +5,5 @@ deploy/Caddyfile text eol=lf
 deploy/*.yaml text eol=lf
 deploy/*.py text eol=lf
 deploy/env.production.example text eol=lf
+# Everything under deploy/ runs or is parsed on Linux hosts.
+deploy/** text eol=lf

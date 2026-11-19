@@ -1,0 +1,112 @@
+# Perfumería El Buen Olor on the shared OVHcloud VPS (next to Foro IA al Día).
+#
+# No proxy of its own and no published ports. Only perfumeria-web joins the forum's
+# existing edge network, under service/alias names that cannot collide with the
+# forum's ("web", "db", "caddy"...). PostgreSQL lives on a private internal network.
+#
+# Always run from deploy/ with the three flags (see DESPLIEGUE_VPS_COMPARTIDO.md):
+#   docker compose -p perfumeria-production -f shared/compose.yaml --env-file shared/.env.production <cmd>
+
+name: perfumeria-production
+
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "5"
+
+services:
+  perfumeria-db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-perfumeria}
+      POSTGRES_USER: ${POSTGRES_USER:-perfumeria}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in shared/.env.production}
+      POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
+    command: ["postgres", "-c", "shared_buffers=128MB", "-c", "max_connections=40", "-c", "work_mem=4MB"]
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks: [backend]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\""]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 20s
+    shm_size: 128mb
+    cpus: "1.0"
+    mem_limit: 768m
+    mem_reservation: 256m
+    pids_limit: 200
+    security_opt: ["no-new-privileges:true"]
+    logging: *logging
+
+  perfumeria-web:
+    build:
+      context: ../..
+      dockerfile: Dockerfile
+    image: perfumeria-web:${RELEASE:?Set RELEASE (git commit) in shared/.env.production}
+    restart: unless-stopped
+    env_file: .env.production
+    environment:
+      # Pinned here so the env file cannot switch them on by mistake. Changing any of
+      # them requires a reviewed commit.
+      DJANGO_ENV: production
+      STORE_MODE: prelaunch
+      EMAIL_DELIVERY: disabled
+      INTEREST_EMAIL_DELIVERY: "0"
+      STRIPE_PUBLIC_KEY: ""
+      STRIPE_SECRET_KEY: ""
+      STRIPE_WEBHOOK_SECRET: ""
+      DATABASE_URL: postgresql://${POSTGRES_USER:-perfumeria}:${POSTGRES_PASSWORD}@perfumeria-db:5432/${POSTGRES_DB:-perfumeria}?sslmode=disable
+      DJANGO_DB_PLAINTEXT_HOSTS: perfumeria-db
+      DJANGO_TRUST_HTTPS_PROXY: "1"
+      # The forum's Caddy, resolved by container name so a recreated proxy keeps working.
+      DJANGO_TRUSTED_PROXY_HOSTS: ${SHARED_PROXY_CONTAINER:-foroia-production-caddy-1}
+      DJANGO_SERVE_STATIC: "1"
+      CATALOG_ASSET_ROOT: /srv/catalog_assets
+      GUNICORN_WORKERS: ${GUNICORN_WORKERS:-2}
+      GUNICORN_THREADS: ${GUNICORN_THREADS:-2}
+    volumes:
+      - static:/app/staticfiles
+      - media:/app/media
+      - catalog_assets:/srv/catalog_assets
+    depends_on:
+      perfumeria-db:
+        condition: service_healthy
+    networks:
+      backend: {}
+      shared_edge:
+        aliases: [perfumeria-web]
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt: ["no-new-privileges:true"]
+    cap_drop: [ALL]
+    healthcheck:
+      test: ["CMD", "python", "deploy/healthcheck.py"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
+    cpus: "1.5"
+    mem_limit: 1g
+    mem_reservation: 384m
+    pids_limit: 256
+    logging: *logging
+
+networks:
+  # Exclusive to this project and without a route outside: only perfumeria-web reaches it.
+  backend:
+    internal: true
+  # Created and owned by Foro IA al Día. Never created, modified or removed from here.
+  shared_edge:
+    external: true
+    name: ${SHARED_EDGE_NETWORK:-foroia-production_edge}
+
+volumes:
+  pgdata:
+  static:
+  media:            # Legacy originals and uploads. Private: never exposed by the proxy.
+  catalog_assets:   # Approved WebP derivatives, served only through Django.

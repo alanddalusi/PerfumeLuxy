@@ -1,0 +1,57 @@
+# >>> BEGIN perfumeria-el-buen-olor (managed block: added and removed only by deploy/shared/caddy-*.sh)
+# Perfumería El Buen Olor. Proxies to the perfumeria-web container on the shared edge network.
+www.perfumeriaelbuenolor.es {
+	redir https://perfumeriaelbuenolor.es{uri} permanent
+}
+
+perfumeriaelbuenolor.es {
+	encode zstd gzip
+
+	header {
+		?Strict-Transport-Security "max-age=31536000"
+		?X-Content-Type-Options "nosniff"
+		?Referrer-Policy "strict-origin-when-cross-origin"
+		?X-Frame-Options "DENY"
+		-Server
+		-Via
+	}
+
+	# Originals and the internal health endpoint are never public.
+	@perfumeria_private path /media/* /healthz* /.env* /.git*
+	respond @perfumeria_private 404
+
+	reverse_proxy perfumeria-web:8000 {
+		# Overwrite whatever the client sent; Django trusts only this proxy's address.
+		header_up X-Forwarded-For {remote_host}
+		header_up X-Forwarded-Proto {scheme}
+		header_up -X-Real-IP
+	}
+
+	log {
+		output file /data/perfumeria/access.log {
+			roll_size 20MiB
+			roll_keep 10
+			roll_keep_for 720h
+		}
+		format filter {
+			wrap json
+			fields {
+				# One-time confirmation, withdrawal, e-mail verification and password-reset tokens.
+				request>uri regexp "(/(?:confirmar|baja)/|/confirm-email/|/password/reset/key/)[^/?]+" "$1[redacted]"
+				request>headers>Cookie delete
+				request>headers>Authorization delete
+				request>headers>Referer delete
+				resp_headers>Set-Cookie delete
+				request>remote_ip ip_mask {
+					ipv4 24
+					ipv6 48
+				}
+				request>client_ip ip_mask {
+					ipv4 24
+					ipv6 48
+				}
+			}
+		}
+	}
+}
+# <<< END perfumeria-el-buen-olor

@@ -68,6 +68,8 @@ SECURE_REDIRECT_EXEMPT = [r"^healthz/$"]
 # Peers allowed to report the visitor address in X-Forwarded-For (the bundled Caddy).
 # Empty by default: REMOTE_ADDR is then always the TCP peer.
 TRUSTED_PROXY_NETWORKS = env_list("DJANGO_TRUSTED_PROXY_NETWORKS")
+# Shared VPS: container names of a proxy whose address may change (resolved every 30 s).
+TRUSTED_PROXY_HOSTS = env_list("DJANGO_TRUSTED_PROXY_HOSTS")
 
 
 INSTALLED_APPS = [
@@ -253,6 +255,16 @@ if env_flag("USE_AWS"):
     }
     STATIC_URL = f"https://{domain}/static/"
     MEDIA_URL = f"https://{domain}/media/"
+
+# Shared VPS: the existing reverse proxy cannot mount our static volume, so Django serves the
+# collected files itself (WhiteNoise). Off by default: the bundled Caddy serves /static/.
+SERVE_STATIC = env_flag("DJANGO_SERVE_STATIC")
+if SERVE_STATIC:
+    MIDDLEWARE.insert(
+        MIDDLEWARE.index("django.middleware.security.SecurityMiddleware") + 1,
+        "whitenoise.middleware.WhiteNoiseMiddleware",
+    )
+    WHITENOISE_MAX_AGE = 86400
 
 STORE_MODE = os.environ.get("STORE_MODE", "prelaunch").strip().lower()
 CATALOG_ASSET_ROOT = Path(os.environ.get("CATALOG_ASSET_ROOT") or BASE_DIR / "catalog_assets")

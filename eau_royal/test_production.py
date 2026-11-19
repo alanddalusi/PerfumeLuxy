@@ -1,4 +1,5 @@
 import io
+import re
 import logging
 import os
 import runpy
@@ -282,3 +283,115 @@ class SmokeTestFilesTests(SimpleTestCase):
                 self.assertNotRegex(script, r"(?i)(PGPASSWORD|POSTGRES_PASSWORD=|password=)")
                 self.assertIn("set -euo pipefail", script)
         self.assertIn("AGE-SECRET-KEY", (self.root / "backup" / "offsite.sh").read_text(encoding="utf-8"))
+
+
+class SharedVpsTests(SimpleTestCase):
+    root = Path(settings.BASE_DIR) / "deploy" / "shared"
+
+    def compose(self):
+        import yaml
+        return yaml.safe_load((self.root / "compose.yaml").read_text(encoding="utf-8"))
+
+    def test_shared_compose_is_isolated_from_the_forum(self):
+        config = self.compose()
+        self.assertEqual(config["name"], "perfumeria-production")
+        services = config["services"]
+        # Service names become DNS aliases on every network: generic names like "web"
+        # would collide with the forum's containers on the shared edge network.
+        self.assertEqual(set(services), {"perfumeria-db", "perfumeria-web"})
+        for name, service in services.items():
+            self.assertNotIn("ports", service, name)
+            self.assertNotIn("container_name", service, name)
+            self.assertIn("mem_limit", service, name)
+            self.assertIn("cpus", service, name)
+            self.assertIn("pids_limit", service, name)
+        self.assertEqual(services["perfumeria-db"]["networks"], ["backend"])
+        self.assertEqual(set(services["perfumeria-web"]["networks"]), {"backend", "shared_edge"})
+        self.assertTrue(config["networks"]["backend"]["internal"])
+        edge = config["networks"]["shared_edge"]
+        self.assertTrue(edge["external"])
+        self.assertIn("foroia-production_edge", edge["name"])
+        self.assertNotIn("caddy", " ".join(services))
+
+    def test_commerce_and_mail_are_pinned_off(self):
+        env = self.compose()["services"]["perfumeria-web"]["environment"]
+        self.assertEqual(env["STORE_MODE"], "prelaunch")
+        self.assertEqual(env["EMAIL_DELIVERY"], "disabled")
+        self.assertEqual(env["INTEREST_EMAIL_DELIVERY"], "0")
+        for key in ("STRIPE_PUBLIC_KEY", "STRIPE_SECRET_KEY", "STRIPE_WEBHOOK_SECRET"):
+            self.assertEqual(env[key], "")
+        self.assertEqual(env["DJANGO_SERVE_STATIC"], "1")
+        self.assertEqual(env["DJANGO_DB_PLAINTEXT_HOSTS"], "perfumeria-db")
+        self.assertIn("@perfumeria-db:5432/", env["DATABASE_URL"])
+        example = (self.root / "env.production.example").read_text(encoding="utf-8").splitlines()
+        self.assertIn("PROXY_SERVICE=", example)
+        self.assertNotRegex("\n".join(example), r"(?m)^(STRIPE_|STORE_MODE|EMAIL_DELIVERY)")
+
+    def test_caddy_block_is_delimited_and_targets_the_unique_alias(self):
+        block = (self.root / "perfumeria.caddy").read_text(encoding="utf-8")
+        lines = block.strip().splitlines()
+        self.assertTrue(lines[0].startswith("# >>> BEGIN perfumeria-el-buen-olor"))
+        self.assertEqual(lines[-1], "# <<< END perfumeria-el-buen-olor")
+        self.assertIn("reverse_proxy perfumeria-web:8000", block)
+        self.assertIn("www.perfumeriaelbuenolor.es", block)
+        self.assertIn("@perfumeria_private path /media/* /healthz*", block)
+        self.assertIn("[redacted]", block)
+        # Global options or snippets would leak into the forum's configuration.
+        self.assertNotRegex(block, r"(?m)^\{")
+        self.assertNotRegex(block, r"(?m)^\(")
+
+    def test_scripts_never_stop_or_remove_forum_resources(self):
+        for path in self.root.glob("*.sh"):
+            text = path.read_text(encoding="utf-8")
+            with self.subTest(script=path.name):
+                for forbidden in ("docker stop", "docker restart", "docker rm", "network rm", "volume rm",
+                                  "prune", "down -v", "compose down", "caddy stop", "caddy run", 'rm -- "$host_file'):
+                    self.assertNotIn(forbidden, text)
+                # The forum's Caddyfile only ever receives an append, the saved copy or the
+                # same file without our block; never generated content.
+                for line in re.findall(r'^.*>\s*"\$host_file".*$', text, flags=re.M):
+                    self.assertRegex(line, r'(>> "\$host_file"|cat -- "\$(backup|work/stripped\.Caddyfile)" > "\$host_file")')
+        restore = (self.root.parent / "backup" / "restore.sh").read_text(encoding="utf-8")
+        self.assertIn('compose stop "$WEB" $PROXY', restore)
+
+
+class SharedProxySettingsTests(SimpleTestCase):
+    def test_whitenoise_only_when_requested(self):
+        self.assertNotIn("whitenoise.middleware.WhiteNoiseMiddleware", load_production_settings()["MIDDLEWARE"])
+        middleware = load_production_settings(DJANGO_SERVE_STATIC="1")["MIDDLEWARE"]
+        security = middleware.index("django.middleware.security.SecurityMiddleware")
+        self.assertEqual(middleware[security + 1], "whitenoise.middleware.WhiteNoiseMiddleware")
+
+    def resolve(self, peer, forwarded, addresses):
+        from . import proxy
+
+        request = RequestFactory().get("/", REMOTE_ADDR=peer, HTTP_X_FORWARDED_FOR=forwarded)
+        seen = {}
+
+        def view(req):
+            seen["addr"] = req.META["REMOTE_ADDR"]
+            return HttpResponse()
+
+        def getaddrinfo(host, *args, **kwargs):
+            if host not in addresses:
+                raise OSError("unknown host")
+            return [(None, None, None, "", (address, 0)) for address in addresses[host]]
+
+        with self.settings(TRUSTED_PROXY_NETWORKS=[], TRUSTED_PROXY_HOSTS=["foroia-production-caddy-1"]), \
+                patch.object(proxy.socket, "getaddrinfo", side_effect=getaddrinfo):
+            proxy.TrustedProxyMiddleware(view)(request)
+        return seen["addr"]
+
+    def test_proxy_trusted_by_container_name(self):
+        forum = {"foroia-production-caddy-1": ["172.18.0.5"]}
+        self.assertEqual(self.resolve("172.18.0.5", "198.51.100.7", forum), "198.51.100.7")
+        # Another container on the shared network cannot claim a client address.
+        self.assertEqual(self.resolve("172.18.0.9", "198.51.100.7", forum), "172.18.0.9")
+        # Name not resolvable: nobody is trusted (fail closed).
+        self.assertEqual(self.resolve("172.18.0.5", "198.51.100.7", {}), "172.18.0.5")
+
+    def test_invalid_proxy_host_entries_fail_closed(self):
+        from . import proxy
+
+        with self.settings(TRUSTED_PROXY_HOSTS=["172.18.0.0/16"]), self.assertRaises(ImproperlyConfigured):
+            proxy.TrustedProxyMiddleware(lambda request: HttpResponse())

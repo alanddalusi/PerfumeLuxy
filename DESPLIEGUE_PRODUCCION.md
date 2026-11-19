@@ -1,5 +1,7 @@
 # Despliegue de producción (prelanzamiento)
 
+> VPS compartido con Foro IA al Día (Caddy existente): ver [DESPLIEGUE_VPS_COMPARTIDO.md](DESPLIEGUE_VPS_COMPARTIDO.md). Este documento describe el stack autónomo con Caddy propio.
+
 Estado: preparado, **no desplegado**. La tienda arranca siempre con `STORE_MODE=prelaunch`, sin pagos, y con el correo saliente desactivado.
 
 ## Arquitectura
