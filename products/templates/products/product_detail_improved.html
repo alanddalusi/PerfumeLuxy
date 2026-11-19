@@ -59,7 +59,9 @@
         {% if store_prelaunch or product.is_reference or not product.in_stock %}
           <section class="sf-stock-alert" aria-labelledby="aviso-disponibilidad">
             <h2 id="aviso-disponibilidad">Aviso de disponibilidad</h2>
-            {% if has_stock_alert %}
+            {% if not notice_signups_open %}
+              {% include 'includes/design/notice_closed.html' with title="Aviso de disponibilidad muy pronto" text="Pronto podrás pedir que te avisemos cuando este perfume esté disponible." only %}
+            {% elif has_stock_alert %}
               <p>Ya has solicitado el aviso para este perfume.</p>
             {% else %}
               <p>La solicitud queda vinculada al correo verificado de tu cuenta.</p>

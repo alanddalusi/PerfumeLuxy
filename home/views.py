@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.shortcuts import render, redirect, reverse
 from django.http import Http404
 from django.utils import timezone
@@ -12,7 +13,14 @@ from products.catalog import catalog_filter_url
 from eau_royal.seo import SEOManager
 
 
+NOTICE_CLOSED_MESSAGE = "Los avisos por correo se activarán muy pronto. Todavía no guardamos ninguna dirección."
+
+
 def index(request):
+    if request.method == "POST" and not settings.NOTICE_SIGNUPS_OPEN:
+        # Nothing is stored while the confirmation e-mail cannot be delivered.
+        messages.info(request, NOTICE_CLOSED_MESSAGE)
+        return redirect("home:index")
     if request.method == "POST":
         form = SubscribeForm(request.POST)
         if form.is_valid():

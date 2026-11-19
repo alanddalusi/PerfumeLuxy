@@ -126,6 +126,7 @@ TEMPLATES = [
                 "django.contrib.messages.context_processors.messages",
                 "bag.contexts.bag_contents",
                 "checkout.store_mode.store_mode_context",
+                "home.context.mail_context",
                 "eau_royal.seo.seo_context",
             ],
             "builtins": [
@@ -150,6 +151,7 @@ SITE_ID = 1
 ACCOUNT_LOGIN_METHODS = {"username", "email"}
 ACCOUNT_SIGNUP_FIELDS = ["email*", "username*", "password1*", "password2*"]
 ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+ACCOUNT_ADAPTER = "eau_royal.accounts.MailAwareAccountAdapter"
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_USERNAME_MIN_LENGTH = 4
 LOGIN_URL = "/accounts/login/"
@@ -264,6 +266,10 @@ if EMAIL_DELIVERY not in {"disabled", "smtp"}:
     raise ImproperlyConfigured("EMAIL_DELIVERY must be disabled or smtp.")
 SMTP_ENABLED = PRODUCTION and EMAIL_DELIVERY == "smtp"
 INTEREST_EMAIL_DELIVERY = SMTP_ENABLED and env_flag("INTEREST_EMAIL_DELIVERY")
+# Forms that promise a confirmation e-mail are offered only when that e-mail can really be
+# sent. Development keeps them open because mail goes to the console.
+NOTICE_SIGNUPS_OPEN = INTEREST_EMAIL_DELIVERY or not PRODUCTION
+ACCOUNT_SIGNUPS_OPEN = SMTP_ENABLED or not PRODUCTION
 INTEREST_PREVIEW_BACKEND = (
     "django.core.mail.backends.dummy.EmailBackend" if PRODUCTION
     else "django.core.mail.backends.console.EmailBackend"

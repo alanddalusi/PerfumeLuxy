@@ -29,7 +29,9 @@
     </nav>
     <div>
       <h2>Novedades por correo</h2>
-      {% if request.resolver_match.view_name == "home:index" %}
+      {% if not notice_signups_open %}
+        {% include 'includes/design/notice_closed.html' only %}
+      {% elif request.resolver_match.view_name == "home:index" %}
         <a class="eo-button" href="#avisos">Recibir aviso de lanzamiento</a>
       {% else %}
       <form class="eo-newsletter" method="post" action="{% url 'home:index' %}#avisos">

@@ -212,3 +212,8 @@
 @media (prefers-reduced-motion: reduce) {
   .eo-header *, .eo-footer *, .eo-breadcrumb *, .eo-empty * { transition: none; }
 }
+
+/* Replaces e-mail forms while outgoing mail is disabled. */
+.eo-notice-closed { padding: 1.1rem 1.25rem; border: 1px solid var(--eo-gold); border-radius: var(--eo-radius); background: linear-gradient(160deg, var(--eo-white), var(--eo-ivory)); color: var(--eo-muted); }
+.eo-notice-closed p { margin: 0; }
+.eo-notice-closed .eo-notice-closed-title { margin-bottom: .35rem; color: var(--eo-action-gold); font-family: var(--eo-heading); font-size: 1.1rem; }

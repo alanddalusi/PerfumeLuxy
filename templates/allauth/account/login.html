@@ -77,14 +77,16 @@
                 {% endif %}
               </div>
               <div class="my-2">
-                <a href="{% url 'account_reset_password' %}">¿Olvidaste tu Contraseña?</a>
+                {% if account_signups_open %}<a href="{% url 'account_reset_password' %}">¿Olvidaste tu Contraseña?</a>{% endif %}
               </div>
+              {% if account_signups_open %}
               <div class="my-2">
                 <p>
                   ¿No tienes una cuenta?
                   <a class="fw-bold" href="{{ signup_url }}">regístrate</a>
                   primero.</p>
               </div>
+              {% endif %}
               <div class="my-2 mx-auto">
                 <button class="button primaryAction btn btn-xl btn-dark bg-dp text-lv" type="submit">Iniciar Sesión</button>
               </div>

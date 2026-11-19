@@ -64,8 +64,9 @@
     <div>
       <p class="sf-kicker">Avisos de lanzamiento</p>
       <h2 id="lanzamiento">Primero, una nota.</h2>
-      <p>Déjanos tu correo si quieres que te avisemos cuando abramos la tienda.</p>
+      <p>{% if notice_signups_open %}Déjanos tu correo si quieres que te avisemos cuando abramos la tienda.{% else %}Muy pronto podrás pedirnos que te avisemos cuando abramos la tienda.{% endif %}</p>
     </div>
+    {% if notice_signups_open %}
     <form class="eo-newsletter sf-signup" method="post" action="{% url 'home:index' %}#avisos">
       {% csrf_token %}
       {% include 'includes/design/field.html' with id="launch-email" name="email" type="email" label="Correo electrónico" autocomplete="email" maxlength=40 required=True value=form.email.value error=form.email.errors.0 only %}
@@ -77,6 +78,9 @@
       <small>Usaremos tu correo para enviarte estos avisos. <a href="{% url 'home:privacy' %}">Cómo usamos tu correo</a>.</small>
       {% include 'includes/design/button.html' with type="submit" label="Quiero recibir el aviso" primary=True only %}
     </form>
+    {% else %}
+      {% include 'includes/design/notice_closed.html' with text="Estamos preparando el envío de avisos de lanzamiento. Vuelve pronto: mientras tanto no recogemos direcciones de correo." only %}
+    {% endif %}
   </section>
 </div>
 {% endblock %}

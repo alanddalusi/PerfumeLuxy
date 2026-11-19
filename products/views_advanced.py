@@ -1,3 +1,4 @@
+from django.conf import settings
 """
 Vistas para funcionalidades avanzadas de perfumería
 Tamaños, Muestras, Comparador, Quiz, Perfil Olfativo
@@ -297,7 +298,13 @@ def notify_when_available(request, product_id):
     from .models import StockAlert
     
     product = get_object_or_404(Product.objects.published(), id=product_id)
-    
+    if not settings.NOTICE_SIGNUPS_OPEN:
+        message = "Los avisos de disponibilidad se activarán muy pronto."
+        if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+            return JsonResponse({"success": False, "message": message}, status=503)
+        messages.info(request, message)
+        return redirect("products:product_detail", slug=product.slug)
+
     verified_email = EmailAddress.objects.filter(
         user=request.user, email__iexact=request.user.email, verified=True
     ).first()

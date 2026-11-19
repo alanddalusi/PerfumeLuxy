@@ -187,3 +187,87 @@ class DeploymentFilesTests(SimpleTestCase):
         ignored = (self.root / ".dockerignore").read_text(encoding="utf-8").splitlines()
         for entry in ("env.py", ".env", "*.sqlite3", "media", "catalog_assets", "deploy/.env*", ".git"):
             self.assertIn(entry, ignored)
+
+
+class MailClosedFormsTests(TestCase):
+    """Production without SMTP: no form may promise or collect a confirmation e-mail."""
+
+    def setUp(self):
+        from allauth.account.models import EmailAddress
+        from django.contrib.auth import get_user_model
+        from products.models import Brand, Product
+
+        self.user = get_user_model().objects.create_user(username="cliente", email="c@example.test", password="x-Very-long-pass-91")
+        EmailAddress.objects.create(user=self.user, email=self.user.email, verified=True, primary=True)
+        self.product = Product.objects.create(
+            name="Perfume publicado", brand=Brand.objects.create(db_name="b", name="Marca"),
+            description="x", publication_status=Product.Publication.APPROVED,
+        )
+
+    def test_production_flags_follow_real_mail_delivery(self):
+        closed = load_production_settings()
+        self.assertFalse(closed["NOTICE_SIGNUPS_OPEN"])
+        self.assertFalse(closed["ACCOUNT_SIGNUPS_OPEN"])
+        smtp = dict(EMAIL_DELIVERY="smtp", EMAIL_HOST="smtp.example.test", DEFAULT_FROM_EMAIL="a@example.test")
+        accounts_only = load_production_settings(**smtp)
+        self.assertTrue(accounts_only["ACCOUNT_SIGNUPS_OPEN"])
+        self.assertFalse(accounts_only["NOTICE_SIGNUPS_OPEN"])
+        self.assertTrue(load_production_settings(**smtp, INTEREST_EMAIL_DELIVERY="1")["NOTICE_SIGNUPS_OPEN"])
+
+    @override_settings(NOTICE_SIGNUPS_OPEN=False, ACCOUNT_SIGNUPS_OPEN=False)
+    def test_forms_are_hidden_and_submissions_store_nothing(self):
+        from django.core import mail
+        from django.urls import reverse
+        from products.models import StockAlert
+
+        home = self.client.get("/")
+        self.assertNotContains(home, 'name="consent"')
+        self.assertContains(home, "Avisos por correo muy pronto")
+        self.assertNotContains(home, reverse("account_signup"))
+        self.assertRedirects(self.client.post("/", {"email": "x@example.test", "consent": "on"}), "/")
+        self.assertFalse(Subscriber.objects.exists())
+
+        self.client.force_login(self.user)
+        detail = self.client.get(self.product.get_absolute_url())
+        self.assertNotContains(detail, reverse("products:notify_when_available", args=[self.product.pk]))
+        self.assertContains(detail, "Aviso de disponibilidad muy pronto")
+        self.client.post(reverse("products:notify_when_available", args=[self.product.pk]), {"consent": "on"})
+        self.assertFalse(StockAlert.objects.exists())
+        self.client.logout()
+
+        self.assertNotContains(self.client.get(reverse("account_login")), reverse("account_reset_password"))
+        self.assertNotContains(self.client.get(reverse("account_reset_password")), 'name="email"')
+        signup = self.client.post(reverse("account_signup"), {
+            "email": "new@example.test", "username": "nuevo", "password1": "x-Very-long-pass-91", "password2": "x-Very-long-pass-91",
+        })
+        self.assertEqual(signup.status_code, 200)
+        self.assertFalse(Subscriber.objects.exists())
+        from django.contrib.auth import get_user_model
+        self.assertFalse(get_user_model().objects.filter(username="nuevo").exists())
+        self.assertEqual(len(mail.outbox), 0)
+
+
+class SmokeTestFilesTests(SimpleTestCase):
+    root = Path(settings.BASE_DIR) / "deploy"
+
+    def test_smoke_run_is_isolated_and_production_defaults_are_kept(self):
+        compose = (self.root / "compose.yaml").read_text(encoding="utf-8")
+        self.assertIn('"${HTTP_BIND:-80}:80"', compose)
+        self.assertIn('"${HTTPS_BIND:-443}:443"', compose)
+        web_block = compose.split("\n  web:\n", 1)[1].split("\n  caddy:\n", 1)[0]
+        self.assertNotIn("ipv4_address", web_block)  # one-off runs must not collide with web
+        smoke = (self.root / "smoke" / "run.sh").read_text(encoding="utf-8")
+        self.assertIn('COMPOSE_PROJECT_NAME="perfumeria-smoke"', smoke)
+        self.assertIn("HTTP_BIND=127.0.0.1:", smoke)
+        self.assertIn("HTTPS_BIND=127.0.0.1:", smoke)
+        for line in ("STORE_MODE=prelaunch", "EMAIL_DELIVERY=disabled", "INTEREST_EMAIL_DELIVERY=0"):
+            self.assertIn(line, smoke)
+        self.assertNotIn("STRIPE_", smoke.split("cat > \"$PERFUMERIA_ENV_FILE\"", 1)[1].split("EOF", 2)[1])
+
+    def test_backup_scripts_hold_no_credentials_and_offsite_refuses_private_keys(self):
+        for name in ("backup.sh", "restore.sh", "offsite.sh"):
+            script = (self.root / "backup" / name).read_text(encoding="utf-8")
+            with self.subTest(script=name):
+                self.assertNotRegex(script, r"(?i)(PGPASSWORD|POSTGRES_PASSWORD=|password=)")
+                self.assertIn("set -euo pipefail", script)
+        self.assertIn("AGE-SECRET-KEY", (self.root / "backup" / "offsite.sh").read_text(encoding="utf-8"))

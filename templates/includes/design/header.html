@@ -21,7 +21,7 @@
             <li><a href="{% url 'account_logout' %}">Cerrar sesión</a></li>
           {% else %}
             <li><a href="{% url 'account_login' %}">Iniciar sesión</a></li>
-            <li><a href="{% url 'account_signup' %}">Registrarse</a></li>
+            {% if account_signups_open %}<li><a href="{% url 'account_signup' %}">Registrarse</a></li>{% endif %}
           {% endif %}
         </ul>
       </details>
