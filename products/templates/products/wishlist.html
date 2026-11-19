@@ -27,13 +27,13 @@
                     {% for product in wishlist_products %}
                         <div class="col-sm-6 col-md-6 col-lg-4 col-xl-3">
                             <div class="card h-100 border-0">
-                                {% if product.image %}
+                                {% if product.public_image_url %}
                                 <a href="{% url 'products:product_detail' product.slug %}">
-                                    <img class="card-img-top img-fluid" src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy">
+                                    <img class="card-img-top img-fluid" src="{{ product.public_image_url }}" alt="{{ product.name }}" loading="lazy">
                                 </a>
                                 {% else %}
                                 <a href="{% url 'products:product_detail' product.slug %}">
-                                    <img class="card-img-top img-fluid" src="{{ MEDIA_URL }}noimage.png" alt="{{ product.name }">
+                                    <img class="card-img-top img-fluid" src="{% static 'img/noimage.png' %}" alt="{{ product.name }">
                                 </a>
                                 {% endif %}
                                 <div class="card-body pb-0">
@@ -53,7 +53,8 @@
                                                 <p class="text-danger mb-0"><small>Agotado</small></p>
                                             {% endif %}
                                             
-                                            <form method="POST" action="{% url 'toggle_wishlist' product.id %}" class="mt-2">
+                                            <form method="POST" action="{% url 'products:toggle_wishlist' product.id %}" class="mt-2">
+                                                <input type="hidden" name="next" value="{{ request.path }}">
                                                 {% csrf_token %}
                                                 <button type="submit" class="btn btn-sm btn-outline-danger">
                                                     <i class="fas fa-trash"></i> Eliminar

@@ -1,0 +1,13 @@
+{% if user.is_authenticated %}
+  <form method="post" action="{% url 'products:toggle_wishlist' product.pk %}">
+    {% csrf_token %}
+    <input type="hidden" name="next" value="{{ request.get_full_path }}">
+    <button class="{% if compact %}sf-text-link{% else %}eo-button{% endif %}" type="submit" aria-pressed="{{ is_favorite|yesno:'true,false' }}" aria-label="Favoritos: {{ product.name }}">
+      {% if is_favorite %}Guardado{% elif compact %}Guardar{% else %}Guardar en favoritos{% endif %}
+    </button>
+  </form>
+{% else %}
+  <a class="{% if compact %}sf-text-link{% else %}eo-button{% endif %}" href="{% url 'account_login' %}?next={{ request.get_full_path|urlencode:'' }}" aria-label="Accede para guardar {{ product.name }}">
+    {% if compact %}Guardar{% else %}Guardar en favoritos{% endif %}
+  </a>
+{% endif %}

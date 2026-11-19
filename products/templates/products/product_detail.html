@@ -25,18 +25,18 @@
       </div>
       <div class="row gx-4 gx-lg-5 align-items-center">
         <div class="col-md-7 col-12 mb-4 mb-md-0">
-          {% if product.image %}
-            <a href="{{ product.image.url }}" target="_blank">
-              <img class="card-img-top" src="{{ product.image.url }}" alt="{{ product.brand.name|lower }} {{ product.name|lower }}" loading="lazy"/>
+          {% if product.public_image_url %}
+            <a href="{{ product.public_image_url }}" target="_blank">
+              <img class="card-img-top" src="{{ product.public_image_url }}" alt="{{ product.brand.name|lower }} {{ product.name|lower }}" loading="lazy"/>
             </a>
           {% else %}
-            <img class="card-img-top" src="{{ MEDIA_URL }}noimage.png" alt="{{ product.brand.name|lower }} {{ product.name|lower }}"/>
+            <img class="card-img-top" src="{% static 'img/noimage.png' %}" alt="{{ product.brand.name|lower }} {{ product.name|lower }}"/>
           {% endif %}
         </div>
         <div class="col-md-5 col-12 mt-5 mt-md-0 mb-4 mb-md-0">
           <h2 class="display-5 fw-bolder mb-3">{{ product.brand.name }}</h2>
           <h4 class="mb-3">{{ product.name }}</h4>
-          
+
           <!-- Concentración y Tamaño - INFORMACIÓN CRÍTICA -->
           {% if product.concentration or product.size %}
           <div class="mb-3 d-flex gap-2 align-items-center">
@@ -52,7 +52,7 @@
             {% endif %}
           </div>
           {% endif %}
-          
+
           {% if product.category.name == "Perfumes" %}
             {% for g in product.gender.db_name %}
               <h6 class="mb-3">Eau de toilette para
@@ -155,10 +155,10 @@
               </div>
             </div>
             <div class="mb-4 mb-md-3 d-grid gap-2 col-12 col-md-9">
-              <input class="btn btn-dp btn-lg" type="submit" value="Añadir al Carrito" />
+              {% if not store_prelaunch %}<input class="btn btn-dp btn-lg" type="submit" value="Añadir al Carrito" />{% endif %}
               {% if request.user.is_superuser %}
-                <a class="btn btn-outline-dp" href="{% url 'edit_product' product.id %}">Editar</a>
-                <a class="btn btn-outline-danger" href="{% url 'delete_product' product.id %}">Eliminar</a>
+                <a class="btn btn-outline-dp" href="{% url 'products:edit_product' product.id %}">Editar</a>
+                <button type="submit" formaction="{% url 'products:delete_product' product.id %}" class="btn btn-outline-danger">Eliminar</button>
               {% endif %}
             </div>
             <input type="hidden" name="redirect_url" value="{{ request.path }}" />
@@ -178,14 +178,14 @@
             </p>
           </div>
         </div>
-        
+
         <!-- Pirámide Olfativa -->
         <div class="row">
           <div class="col-12">
             {% include 'includes/fragrance_pyramid.html' %}
           </div>
         </div>
-        
+
         <!-- Información de Rendimiento -->
         {% if product.intensity or product.duration or product.projection %}
         <div class="row mt-4">
@@ -219,14 +219,14 @@
           </div>
         </div>
         {% endif %}
-        
+
         <!-- Autenticidad y Garantías -->
         <div class="row mt-4">
           <div class="col-12">
             {% include 'includes/authenticity_guarantee.html' %}
           </div>
         </div>
-        
+
       </div>
     </div>
   </section>
@@ -260,61 +260,4 @@
   </script>
   {% include 'products/includes/quantity_input_script.html' %}
 
-  <!-- Schema.org Structured Data for Product -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org/",
-    "@type": "Product",
-    "name": "{{ product.name }}",
-    "description": "{{ product.description|truncatewords:30 }}",
-    "brand": {
-      "@type": "Brand",
-      "name": "{{ product.brand.name|default:'Eau Royal' }}"
-    },
-    "sku": "{{ product.sku|default:product.id }}",
-    {% if product.image %}
-    "image": [
-      "{{ request.scheme }}://{{ request.get_host }}{{ product.image.url }}"
-    ],
-    {% endif %}
-    "offers": {
-      "@type": "Offer",
-      "url": "{{ request.build_absolute_uri }}",
-      "priceCurrency": "EUR",
-      "price": "{{ product.price }}",
-      "availability": "{% if product.in_stock %}https://schema.org/InStock{% else %}https://schema.org/OutOfStock{% endif %}",
-      "seller": {
-        "@type": "Organization",
-        "name": "Eau Royal"
-      }
-    },
-    {% if product.average_rating > 0 %}
-    "aggregateRating": {
-      "@type": "AggregateRating",
-      "ratingValue": "{{ product.average_rating|floatformat:1 }}",
-      "reviewCount": "{{ product.review_count }}"
-    },
-    {% endif %}
-    "category": "{% if product.category %}{{ product.category.name }}{% else %}Perfumes{% endif %}",
-    {% if product.fragrance_family %}
-    "additionalProperty": [
-      {
-        "@type": "PropertyValue",
-        "name": "Familia Olfativa",
-        "value": "{{ product.fragrance_family.name }}"
-      }{% if product.concentration %},
-      {
-        "@type": "PropertyValue", 
-        "name": "Concentración",
-        "value": "{{ product.get_concentration_display }}"
-      }{% endif %}{% if product.intensity %},
-      {
-        "@type": "PropertyValue",
-        "name": "Intensidad", 
-        "value": "{{ product.get_intensity_display }}"
-      }{% endif %}
-    ]
-    {% endif %}
-  }
-  </script>
 {% endblock %}

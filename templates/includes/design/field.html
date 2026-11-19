@@ -1,0 +1,10 @@
+<label{% if hide_label %} class="eo-sr-only"{% endif %} for="{{ id }}">{{ label }}</label>
+<input class="eo-field" id="{{ id }}" name="{{ name }}" type="{{ type|default:'text' }}"
+       {% if value %}value="{{ value }}"{% endif %}
+       {% if placeholder %}placeholder="{{ placeholder }}"{% endif %}
+       {% if autocomplete %}autocomplete="{{ autocomplete }}"{% endif %}
+       {% if maxlength %}maxlength="{{ maxlength }}"{% endif %}
+       {% if required %}required{% endif %}
+       {% if suggestions_url %}data-search-url="{{ suggestions_url }}" aria-controls="{{ id }}-results"{% endif %}
+       {% if error %}aria-invalid="true" aria-describedby="{{ id }}-error"{% endif %}>
+{% if error %}<small class="eo-field-error" id="{{ id }}-error">{{ error }}</small>{% endif %}

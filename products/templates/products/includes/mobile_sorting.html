@@ -1,5 +1,4 @@
 
-{% load urls %}
 <form action="{% url 'products:products' %}" method="GET" id="form-mobile-sorting">
   <div class="row text-center pb-2 mb-2" id="mobile-sorting">
     <div class="dropdown col-6 bg-white px-0">
@@ -11,7 +10,7 @@
         <div class="bg-lv-60 pt-0">
           <div class="dropdown-header text-dp bg-white mx-0 mb-3 py-2 d-flex justify-content-between align-items-center">
             <div>Sort by</div>
-            <a class="btn btn-outline-dp btn-sm" href="{% del_params request.get_full_path 'sort' 'direction' %}" role="button">Clear</a>
+            <a class="btn btn-outline-dp btn-sm" href="{{ request.path }}{% querystring sort=None direction=None %}" role="button">Clear</a>
           </div>
           <div class="mx-3">
             <div class="btn-group-vertical w-100" role="group" aria-label="Sort radio toggle button group">
@@ -57,7 +56,7 @@
             <i class="fa-solid fa-chevron-left icon"></i>
           </button>
           <h5 class="offcanvas-title text-dp">Filter</h5>
-          <a class="btn btn-outline-dp btn-sm" href="{% del_params request.get_full_path 'price' 'direction' 'brand' 'gender' 'price_to' 'price_from' %}" role="button">Clear All</a>
+          <a class="btn btn-outline-dp btn-sm" href="{{ request.path }}{% querystring price=None direction=None brand=None gender=None price_to=None price_from=None %}" role="button">Clear All</a>
         </div>
         <div class="offcanvas-body pt-0" id="mobile-filter-offcanvas-body">
           <div class="accordion" id="accordionFilter">
@@ -111,7 +110,7 @@
                     selected
                   </div>
                   <div>
-                    <a class="btn btn-outline-dp btn-sm me-2" href="{% del_params request.get_full_path 'category' 'gender' %}" role="button">Clear</a>
+                    <a class="btn btn-outline-dp btn-sm me-2" href="{{ request.path }}{% querystring category=None gender=None %}" role="button">Clear</a>
                     <button type="submit" class="btn btn-dp btn-sm">Submit</button>
                   </div>
                 </div>
@@ -150,7 +149,7 @@
                 <div class="dropdown-header text-dp bg-white mx-0 py-2 d-flex justify-content-between align-items-center">
                   <div>{{ current_brands|length }} selected</div>
                   <div>
-                    <a class="btn btn-outline-dp btn-sm me-2" href="{% del_params request.get_full_path 'brand' %}" role="button">Clear</a>
+                    <a class="btn btn-outline-dp btn-sm me-2" href="{{ request.path }}{% querystring brand=None %}" role="button">Clear</a>
                     <button type="submit" class="btn btn-dp btn-sm">Submit</button>
                   </div>
                 </div>
@@ -184,7 +183,7 @@
                   </div>
                 </div>
                 <div class="dropdown-header text-dp bg-white mx-0 py-2 d-flex justify-content-end align-items-center">
-                  <a class="btn btn-outline-dp btn-sm me-2" href="{% del_params request.get_full_path 'price_from' 'price_to' %}" role="button">Reset</a>
+                  <a class="btn btn-outline-dp btn-sm me-2" href="{{ request.path }}{% querystring price_from=None price_to=None %}" role="button">Reset</a>
                   <button type="submit" class="btn btn-dp btn-sm">Submit</button>
                 </div>
               </div>

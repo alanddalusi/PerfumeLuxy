@@ -1,0 +1,54 @@
+<header class="eo-header" id="page-top">
+  <div class="eo-wrap eo-header-main">
+    <a class="eo-wordmark" href="{% url 'home:index' %}">
+      <span class="eo-monogram" aria-hidden="true">EO</span>
+      <span><span class="eo-wordmark-caption">Perfumería</span><span>El Buen Olor</span></span>
+    </a>
+    <form class="eo-search" method="get" action="{% url 'products:products' %}" role="search">
+      {% url 'products:search_suggestions' as suggestions_url %}
+      {% include 'includes/design/field.html' with id="store-search" name="q" type="search" label="Buscar perfumes" hide_label=True placeholder="Buscar perfumes, marcas o notas" autocomplete="off" value=search_term suggestions_url=suggestions_url only %}
+      {% include 'includes/design/button.html' with type="submit" label="Buscar" primary=True only %}
+      <div class="search-results" id="store-search-results"></div>
+    </form>
+    <div class="eo-header-actions">
+      <details class="eo-disclosure" data-eo-disclosure>
+        <summary>Cuenta</summary>
+        <ul class="eo-panel eo-list" aria-label="Cuenta">
+          {% if user.is_authenticated %}
+            <li><a href="{% url 'profiles:profile' %}">Mi perfil</a></li>
+            <li><a href="{% url 'products:view_wishlist' %}">Favoritos</a></li>
+            {% if user.is_superuser %}<li><a href="{% url 'products:add_product' %}">Gestión de productos</a></li>{% endif %}
+            <li><a href="{% url 'account_logout' %}">Cerrar sesión</a></li>
+          {% else %}
+            <li><a href="{% url 'account_login' %}">Iniciar sesión</a></li>
+            <li><a href="{% url 'account_signup' %}">Registrarse</a></li>
+          {% endif %}
+        </ul>
+      </details>
+      {% if bag_items %}
+        <details class="eo-disclosure" data-eo-disclosure>
+          <summary>Carrito <span class="eo-tag">{{ product_count }}</span></summary>
+          <div class="eo-panel eo-cart">
+            <ul class="eo-list">
+              {% for item in bag_items %}
+                <li><a href="{{ item.product.get_absolute_url }}">{{ item.product.name }}</a> <span>× {{ item.quantity }}</span></li>
+              {% endfor %}
+            </ul>
+            <a class="eo-button eo-button--primary" href="{% url 'bag:view_bag' %}">Ver carrito</a>
+          </div>
+        </details>
+      {% else %}
+        <a class="eo-action" href="{% url 'bag:view_bag' %}">Carrito</a>
+      {% endif %}
+    </div>
+  </div>
+  <nav class="eo-nav" aria-label="Navegación principal">
+    <div class="eo-wrap">
+      <ul class="eo-nav-desktop eo-list">{% include 'includes/design/navigation_links.html' %}</ul>
+      <details class="eo-mobile-nav" data-eo-disclosure>
+        <summary>Explorar la perfumería</summary>
+        <ul class="eo-list">{% include 'includes/design/navigation_links.html' %}</ul>
+      </details>
+    </div>
+  </nav>
+</header>

@@ -1,0 +1,13 @@
+<nav aria-label="Migas de pan" class="eo-breadcrumb">
+  <ol class="eo-list">
+    {% if home_url %}
+      <li><a href="{{ home_url }}">Inicio</a></li>
+      <li aria-current="page">{{ current_name }}</li>
+    {% endif %}
+    {% for item in breadcrumb_items %}
+      <li{% if forloop.last %} aria-current="page"{% endif %}>
+        {% if item.url and not forloop.last %}<a href="{{ item.url }}">{{ item.name }}</a>{% else %}{{ item.name }}{% endif %}
+      </li>
+    {% endfor %}
+  </ol>
+</nav>

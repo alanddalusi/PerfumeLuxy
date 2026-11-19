@@ -18,25 +18,25 @@
                     {% if user.is_authenticated %}
                         {% include 'includes/wishlist_button.html' with product=product %}
                     {% endif %}
-                    
+
                     <!-- Product Image -->
                     <a href="{% url 'products:product_detail' product.slug %}">
-                        <img src="{{ product.image.url }}" 
-                             alt="{{ product.name }}" 
+                        <img src="{{ product.public_image_url }}"
+                             alt="{{ product.name }}"
                              class="product-card-image"
                              loading="lazy">
                     </a>
-                    
+
                     <!-- Brand -->
                     <p class="product-card-brand">{{ product.brand.name }}</p>
-                    
+
                     <!-- Title -->
                     <h3 class="product-card-title">
                         <a href="{% url 'products:product_detail' product.slug %}">
                             {{ product.name }}
                         </a>
                     </h3>
-                    
+
                     <!-- Rating -->
                     {% if product.reviews.all %}
                     <div class="product-card-rating">
@@ -50,13 +50,13 @@
                         <span class="count">({{ product.reviews.count }})</span>
                     </div>
                     {% endif %}
-                    
+
                     <!-- Price -->
                     <p class="product-card-price">€{{ product.price }}</p>
-                    
+
                     <!-- Actions -->
                     <div class="product-card-actions">
-                        <a href="{% url 'products:product_detail' product.slug %}" 
+                        <a href="{% url 'products:product_detail' product.slug %}"
                            class="btn btn-outline-gold btn-sm w-100">
                             Ver Detalles
                         </a>

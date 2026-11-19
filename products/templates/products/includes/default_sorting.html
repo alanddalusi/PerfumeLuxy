@@ -1,4 +1,3 @@
-{% load urls %}
 <form action="{% url 'products:products' %}" method="GET" id="form-default-sorting">
   <div class="row text-center pb-2 mb-2">
     <div class="dropdown col-3 bg-white px-0 scroll">
@@ -24,7 +23,7 @@
         <div class="bg-lv-60 pt-0">
           <div class="dropdown-header text-dp bg-white mx-0 mb-3 py-2 d-flex justify-content-between align-items-center">
             <div>Sort by</div>
-            <a class="btn btn-outline-dp btn-sm" href="{% del_params request.get_full_path 'sort' 'direction' %}" role="button">Clear</a>
+            <a class="btn btn-outline-dp btn-sm" href="{{ request.path }}{% querystring sort=None direction=None %}" role="button">Clear</a>
           </div>
           <div class="mx-3">
             <div class="btn-group-vertical w-100" role="group" aria-label="Sort radio toggle button group">
@@ -83,7 +82,7 @@
         <div class="bg-lv-60 pt-0">
           <div class="dropdown-header text-dp bg-white mx-0 mb-3 py-2 d-flex justify-content-between align-items-center">
             <div>Category</div>
-            <a class="btn btn-outline-dp btn-sm" href="{% del_params request.get_full_path 'category' 'gender' %}" role="button">Clear</a>
+            <a class="btn btn-outline-dp btn-sm" href="{{ request.path }}{% querystring category=None gender=None %}" role="button">Clear</a>
           </div>
           <div class="mx-3">
             <div class="btn-group-vertical w-100" role="group" aria-label="Category radio toggle button group">
@@ -142,7 +141,7 @@
         <div class="bg-lv-60 pt-0">
           <div class="dropdown-header text-dp bg-white mx-0 mb-3 py-2 d-flex justify-content-between align-items-center">
             <div>Brand</div>
-            <a class="btn btn-outline-dp btn-sm" href="{% del_params request.get_full_path 'brand' %}" role="button">Clear</a>
+            <a class="btn btn-outline-dp btn-sm" href="{{ request.path }}{% querystring brand=None %}" role="button">Clear</a>
           </div>
           <div class="scroll-brands">
             <div class="mx-3">
@@ -177,7 +176,7 @@
         <div class="bg-lv-60 pt-0">
           <div class="dropdown-header text-dp bg-white mx-0 mb-3 py-2 d-flex justify-content-between align-items-center">
             <div>price range</div>
-            <a class="btn btn-outline-dp btn-sm" href="{% del_params request.get_full_path 'price_from' 'price_to' %}" role="button">Reset</a>
+            <a class="btn btn-outline-dp btn-sm" href="{{ request.path }}{% querystring price_from=None price_to=None %}" role="button">Reset</a>
           </div>
           <div class="mx-3 mb-3 py-2 px-3 bg-white">
             <div class="dropdown-item">

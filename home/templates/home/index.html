@@ -1,524 +1,82 @@
-{% extends "base.html" %}
-{% load static %}
-
-{% block title %}PerfumeLuxe - Perfumes Auténticos de Lujo | Chanel, Dior, Gucci | Envío Gratis +50€{% endblock %}
-{% block meta_description %}Descubre la mejor selección de perfumes auténticos de lujo. Chanel, Dior, Tom Ford, Gucci y más marcas premium. Envío gratis en pedidos +50€. Devolución garantizada 30 días. 100% auténtico.{% endblock %}
-{% block meta_keywords %}perfumes de lujo, perfume auténtico, comprar perfume online, Chanel perfume, Dior perfume, Tom Ford, fragancias exclusivas, eau de parfum, perfume para mujer, perfume para hombre{% endblock %}
-
-{% block og_title %}PerfumeLuxe - Fragancias Auténticas de las Mejores Marcas del Mundo{% endblock %}
-{% block og_description %}Tienda online de perfumes de lujo 100% auténticos. Descubre nuestra colección exclusiva de Chanel, Dior, Gucci y más. Envío gratis y garantía total.{% endblock %}
-
-{% block extra_css %}
-  <link rel="stylesheet" href="{% static 'home/css/home.css' %}">
-  <link rel="stylesheet" href="{% static 'css/luxury-home-enhancements.css' %}">
-  <link rel="stylesheet" href="{% static 'css/home-enhancements-2025.css' %}">
-{% endblock %}
-
-{% block postloadjs %}
-  {{ block.super }}
-  <script src="{% static 'home/js/home.js' %}" defer></script>
-{% endblock %}
+{% extends "includes/design/storefront.html" %}
 
 {% block content %}
-  <!-- Hero Section Luxury -->
-  <section class="luxury-hero">
-    <div class="container">
-      <div class="row align-items-center min-vh-75">
-        <div class="col-lg-6 hero-content-luxury">
-          <p class="luxury-display" style="font-size: 0.875rem; margin-bottom: 1rem;">Fragancias de Lujo</p>
-          <h1 class="luxury-hero-title">
-            Descubre la esencia
-            <span class="text-luxury-gold d-block">de la elegancia</span>
-          </h1>
-          <p class="luxury-hero-subtitle">
-            Catálogo exclusivo de fragancias de diseñador y nicho. Autenticidad garantizada, precios competitivos.
-          </p>
-          <div class="d-flex gap-3 flex-wrap mb-4">
-            <a href="{% url 'products:products' %}" class="btn-luxury">
-              <i class="fas fa-shopping-bag me-2"></i>Explorar Colección
-            </a>
-            <a href="{% url 'products:products' %}?has_discount=True" class="btn-luxury-outline">
-              Ver Ofertas
-            </a>
-          </div>
-          <!-- Trust Badges Luxury -->
-          <div class="d-flex gap-4 flex-wrap" style="margin-top: 3rem;">
-            <div class="d-flex align-items-center gap-2">
-              <i class="fas fa-certificate" style="color: var(--gold); font-size: 1.25rem;"></i>
-              <span style="color: var(--charcoal); font-size: 0.875rem;">100% Auténtico</span>
-            </div>
-            <div class="d-flex align-items-center gap-2">
-              <i class="fas fa-shipping-fast" style="color: var(--gold); font-size: 1.25rem;"></i>
-              <span style="color: var(--charcoal); font-size: 0.875rem;">Envío Gratis +50€</span>
-            </div>
-            <div class="d-flex align-items-center gap-2">
-              <i class="fas fa-undo" style="color: var(--gold); font-size: 1.25rem;"></i>
-              <span style="color: var(--charcoal); font-size: 0.875rem;">Devolución 30 días</span>
-            </div>
-          </div>
+<div class="sf">
+  <section class="sf-hero">
+    <div class="eo-wrap sf-hero-grid">
+      <div class="sf-hero-copy">
+        <p class="sf-kicker">Perfumería El Buen Olor</p>
+        <h1>El arte de<br><em>oler bien.</em></h1>
+        <p class="sf-lead">Descubre el universo de las fragancias a través de sus familias, sus notas y los matices que hacen tuyo un perfume.</p>
+        <div class="sf-actions">
+          <a class="eo-button eo-button--primary" href="{% url 'products:products' %}">Explorar el catálogo <span aria-hidden="true">↗</span></a>
+          <a class="sf-text-link" href="#descubrir">Descubrir familias</a>
         </div>
-        <div class="col-lg-6">
-          <div class="hero-image-luxury">
-            <img src="https://res.cloudinary.com/datonex/image/upload/v1650202214/eau-royal/eau-royal-hompage/home-his-category_mp0kcv.jpg" 
-                 alt="Luxury Fragrances" 
-                 style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 20px 60px rgba(0,0,0,0.1);">
-          </div>
-        </div>
+      </div>
+      <div class="sf-hero-art" aria-hidden="true">
+        <div class="sf-art-orbit"></div>
+        <div class="sf-art-bottle"><span class="sf-art-cap"></span><span class="sf-art-mark">EO</span></div>
       </div>
     </div>
   </section>
-
-  <!-- Stats Counter Section -->
-  <section class="stats-counter-section">
-    <div class="container">
-      <div class="row">
-        <div class="col-md-3 col-6">
-          <div class="stat-item">
-            <span class="stat-number" data-target="50000">0</span>
-            <span class="stat-label">Clientes Felices</span>
-          </div>
-        </div>
-        <div class="col-md-3 col-6">
-          <div class="stat-item">
-            <span class="stat-number" data-target="265">0</span>
-            <span class="stat-label">Fragancias Premium</span>
-          </div>
-        </div>
-        <div class="col-md-3 col-6">
-          <div class="stat-item">
-            <span class="stat-number" data-target="98">0</span>
-            <span class="stat-label">% Satisfacción</span>
-          </div>
-        </div>
-        <div class="col-md-3 col-6">
-          <div class="stat-item">
-            <span class="stat-number" data-target="45">0</span>
-            <span class="stat-label">Marcas de Lujo</span>
-          </div>
-        </div>
-      </div>
+  <section class="eo-wrap sf-section" id="descubrir" aria-labelledby="familias">
+    <div class="sf-section-heading">
+      <div><p class="sf-kicker">Guía olfativa</p><h2 id="familias">Encuentra tu familia.</h2></div>
+      <a class="sf-text-link" href="{% url 'products:fragrance_families' %}">Ver guía olfativa <span aria-hidden="true">↗</span></a>
     </div>
-  </section>
-
-  <!-- Divider -->
-  <div class="divider-luxury"></div>
-
-  <!-- Testimonials Section Luxury -->
-  <section style="padding: 5rem 0; background: var(--ivory);">
-    <div class="container">
-      <div class="text-center mb-5">
-        <p class="luxury-subtitle text-uppercase" style="color: var(--gold); font-size: 0.875rem; letter-spacing: 0.15em;">Explora Colecciones</p>
-        <h2 class="luxury-title" style="font-size: 2.5rem; margin-bottom: 1rem;">Compra por Categoría</h2>
-        <p class="luxury-subtitle" style="max-width: 600px; margin: 0 auto;">Descubre la fragancia perfecta para cada ocasión</p>
-      </div>
-      
-      <div class="divider-center"></div>
-      
-      <div class="category-grid-luxury">
-        <a href="{% url 'products:products' %}?gender=M" class="category-card-luxury">
-          <div class="category-card-image">
-            <img src="https://res.cloudinary.com/datonex/image/upload/v1650202214/eau-royal/eau-royal-hompage/home-his-category_mp0kcv.jpg" alt="Men's Fragrances"/>
-          </div>
-          <div class="category-card-icon">
-            <i class="fas fa-male"></i>
-          </div>
-          <h3 class="category-card-title">Para Él</h3>
-          <p class="category-card-desc">Masculino y Audaz</p>
-        </a>
-        
-        <a href="{% url 'products:products' %}?gender=F" class="category-card-luxury">
-          <div class="category-card-image">
-            <img src="https://res.cloudinary.com/datonex/image/upload/v1650202214/eau-royal/eau-royal-hompage/home-hers-category_kex1e8.jpg" alt="Women's Fragrances"/>
-          </div>
-          <div class="category-card-icon">
-            <i class="fas fa-female"></i>
-          </div>
-          <h3 class="category-card-title">Para Ella</h3>
-          <p class="category-card-desc">Elegante y Refinado</p>
-        </a>
-        
-        <a href="{% url 'products:products' %}?category=candles" class="category-card-luxury">
-          <div class="category-card-image">
-            <img src="https://res.cloudinary.com/datonex/image/upload/v1650202214/eau-royal/eau-royal-hompage/home-candles-category_yi7fya.jpg" alt="Scented Candles"/>
-          </div>
-          <div class="category-card-icon">
-            <i class="fas fa-candle-holder"></i>
-          </div>
-          <h3 class="category-card-title">Velas</h3>
-          <p class="category-card-desc">Ambiente y Calidez</p>
-        </a>
-        
-        <a href="{% url 'products:products' %}?has_discount=True" class="category-card-luxury">
-          <div class="category-card-image">
-            <img src="https://res.cloudinary.com/datonex/image/upload/v1650202214/eau-royal/eau-royal-hompage/home-sale-category_k33age.jpg" alt="Sale Items"/>
-            <span class="category-sale-badge">Hasta 50% Dto</span>
-          </div>
-          <div class="category-card-icon">
-            <i class="fas fa-tag"></i>
-          </div>
-          <h3 class="category-card-title">Rebajas</h3>
-          <p class="category-card-desc">Ofertas Limitadas</p>
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <!-- Divider -->
-  <div class="divider-luxury"></div>
-
-  <!-- Features Section Luxury -->
-  <section style="padding: 4rem 0; background: var(--white-pure);">
-    <div class="container">
-      <div class="row g-4">
-        <div class="col-lg-3 col-md-6">
-          <div class="text-center" style="padding: 2rem 1rem;">
-            <div style="width: 80px; height: 80px; border: 0.5px solid var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem;">
-              <i class="fas fa-shipping-fast" style="font-size: 2rem; color: var(--gold);"></i>
-            </div>
-            <h5 style="font-family: var(--font-luxury); color: var(--charcoal); margin-bottom: 0.75rem; font-size: 1.125rem;">Envío Gratis</h5>
-            <p style="color: #666; font-size: 0.875rem; margin: 0;">En pedidos superiores a 50€</p>
-          </div>
-        </div>
-        <div class="col-lg-3 col-md-6">
-          <div class="text-center" style="padding: 2rem 1rem;">
-            <div style="width: 80px; height: 80px; border: 0.5px solid var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem;">
-              <i class="fas fa-shield-alt" style="font-size: 2rem; color: var(--gold);"></i>
-            </div>
-            <h5 style="font-family: var(--font-luxury); color: var(--charcoal); margin-bottom: 0.75rem; font-size: 1.125rem;">100% Auténtico</h5>
-            <p style="color: #666; font-size: 0.875rem; margin: 0;">Productos genuinos garantizados</p>
-          </div>
-        </div>
-        <div class="col-lg-3 col-md-6">
-          <div class="text-center" style="padding: 2rem 1rem;">
-            <div style="width: 80px; height: 80px; border: 0.5px solid var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem;">
-              <i class="fas fa-undo" style="font-size: 2rem; color: var(--gold);"></i>
-            </div>
-            <h5 style="font-family: var(--font-luxury); color: var(--charcoal); margin-bottom: 0.75rem; font-size: 1.125rem;">Devoluciones Fáciles</h5>
-            <p style="color: #666; font-size: 0.875rem; margin: 0;">Política de devolución de 30 días</p>
-          </div>
-        </div>
-        <div class="col-lg-3 col-md-6">
-          <div class="text-center" style="padding: 2rem 1rem;">
-            <div style="width: 80px; height: 80px; border: 0.5px solid var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem;">
-              <i class="fas fa-headset" style="font-size: 2rem; color: var(--gold);"></i>
-            </div>
-            <h5 style="font-family: var(--font-luxury); color: var(--charcoal); margin-bottom: 0.75rem; font-size: 1.125rem;">Soporte 24/7</h5>
-            <p style="color: #666; font-size: 0.875rem; margin: 0;">Atención al cliente disponible</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Divider -->
-  <div class="divider-luxury"></div>
-
-  <!-- Featured Brands Section Luxury -->
-  <section style="padding: 5rem 0; background: var(--ivory);">
-    <div class="container">
-      <div class="text-center mb-5">
-        <p class="luxury-subtitle text-uppercase" style="color: var(--gold); font-size: 0.875rem; letter-spacing: 0.15em;">Socios Premium</p>
-        <h2 class="luxury-title" style="font-size: 2.5rem; margin-bottom: 1rem;">Marcas de Lujo</h2>
-        <p class="luxury-subtitle" style="max-width: 600px; margin: 0 auto;">Fragancias premium de las casas más reconocidas del mundo</p>
-      </div>
-      <div class="divider-center"></div>
-      <div style="display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 3rem; margin-top: 3rem;">
-        <div style="font-family: var(--font-elegant); font-size: 1.5rem; letter-spacing: 0.2em; color: var(--charcoal); opacity: 0.7; transition: all 0.3s ease;" onmouseover="this.style.color='var(--gold)'; this.style.opacity='1'" onmouseout="this.style.color='var(--charcoal)'; this.style.opacity='0.7'">CHANEL</div>
-        <div style="font-family: var(--font-elegant); font-size: 1.5rem; letter-spacing: 0.2em; color: var(--charcoal); opacity: 0.7; transition: all 0.3s ease;" onmouseover="this.style.color='var(--gold)'; this.style.opacity='1'" onmouseout="this.style.color='var(--charcoal)'; this.style.opacity='0.7'">DIOR</div>
-        <div style="font-family: var(--font-elegant); font-size: 1.5rem; letter-spacing: 0.2em; color: var(--charcoal); opacity: 0.7; transition: all 0.3s ease;" onmouseover="this.style.color='var(--gold)'; this.style.opacity='1'" onmouseout="this.style.color='var(--charcoal)'; this.style.opacity='0.7'">TOM FORD</div>
-        <div style="font-family: var(--font-elegant); font-size: 1.5rem; letter-spacing: 0.2em; color: var(--charcoal); opacity: 0.7; transition: all 0.3s ease;" onmouseover="this.style.color='var(--gold)'; this.style.opacity='1'" onmouseout="this.style.color='var(--charcoal)'; this.style.opacity='0.7'">GUCCI</div>
-        <div style="font-family: var(--font-elegant); font-size: 1.5rem; letter-spacing: 0.2em; color: var(--charcoal); opacity: 0.7; transition: all 0.3s ease;" onmouseover="this.style.color='var(--gold)'; this.style.opacity='1'" onmouseout="this.style.color='var(--charcoal)'; this.style.opacity='0.7'">VERSACE</div>
-        <div style="font-family: var(--font-elegant); font-size: 1.5rem; letter-spacing: 0.2em; color: var(--charcoal); opacity: 0.7; transition: all 0.3s ease;" onmouseover="this.style.color='var(--gold)'; this.style.opacity='1'" onmouseout="this.style.color='var(--charcoal)'; this.style.opacity='0.7'">YSL</div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Divider -->
-  <div class="divider-luxury"></div>
-
-  <!-- Top Selling Products Section Luxury -->
-  <section class="bg-luxury-gray" style="padding: var(--luxury-spacing-xxl) 0;">
-    <div class="container">
-      <div class="text-center mb-5">
-        <p class="luxury-display">Favoritos de los Clientes</p>
-        <h2 class="luxury-title" style="font-size: 2.5rem; margin-bottom: var(--luxury-spacing-md);">Los Más Vendidos</h2>
-        <p class="luxury-hero-subtitle" style="max-width: 600px; margin: 0 auto;">Nuestras fragancias más amadas elegidas por clientes como tú</p>
-      </div>
-      
-      <div class="luxury-product-grid">
-        {% for product in top_products %}
-        {% if product.id %}
-          <div class="luxury-product-card">
-            <a href="{% url 'products:product_detail' product.slug %}" style="display: block; text-decoration: none; color: inherit;">
-              {% if product.image %}
-                <img src="{{ product.image.url }}" alt="{{ product.brand.name }} {{ product.name }}" class="luxury-product-image" loading="lazy"/>
-              {% else %}
-                <img src="{{ MEDIA_URL }}noimage.png" alt="{{ product.brand.name }} {{ product.name }}" class="luxury-product-image" loading="lazy"/>
-              {% endif %}
-              {% if product.has_discount %}
-                <span class="luxury-badge luxury-badge-sale" style="position: absolute; top: var(--luxury-spacing-sm); right: var(--luxury-spacing-sm);">Oferta</span>
-              {% endif %}
-              
-              <div class="luxury-product-info">
-                <div class="luxury-product-brand">{{ product.brand.name }}</div>
-                <h5 class="luxury-product-title">{{ product.name }}</h5>
-                {% if product.rating %}
-                <div class="d-flex align-items-center gap-2 mb-2">
-                  <div class="text-warning">
-                    {% for i in "12345" %}
-                      {% if forloop.counter <= product.rating %}
-                        <i class="fas fa-star"></i>
-                      {% else %}
-                        <i class="far fa-star"></i>
-                      {% endif %}
-                    {% endfor %}
-                  </div>
-                  <span class="text-muted small">{{ product.rating }}</span>
-                </div>
-                {% endif %}
-                <div class="luxury-product-price">
-                  {% if product.has_discount %}
-                    <span class="text-muted text-decoration-line-through small me-2">€{{ product.price }}</span>
-                    <span>€{{ product.discounted_price|floatformat:2 }}</span>
-                  {% else %}
-                    €{{ product.price }}
-                  {% endif %}
-                </div>
-              </div>
-            </a>
-          </div>
-        {% endif %}
+    {% if families %}
+      <div class="sf-discovery">
+        {% for family, url in families %}
+          <a class="sf-discovery-item" href="{{ url }}">
+            <h3>{{ family.name }}</h3><span aria-hidden="true">↗</span>
+            {% if family.description %}<p>{{ family.description|truncatewords:17 }}</p>{% endif %}
+          </a>
         {% endfor %}
       </div>
-      
-      <div class="text-center" style="margin-top: var(--luxury-spacing-xl);">
-        <a href="{% url 'products:products' %}" class="btn-luxury">
-          <i class="fas fa-th me-2"></i>Ver Todos los Productos
-        </a>
+    {% else %}
+      {% include 'includes/design/empty.html' with text="Estamos preparando las familias olfativas del escaparate." only %}
+    {% endif %}
+  </section>
+  <section class="eo-wrap sf-section sf-categories" aria-labelledby="categorias">
+    <div class="sf-section-heading">
+      <div><p class="sf-kicker">Explorar</p><h2 id="categorias">Por categoría.</h2></div>
+      <a class="sf-text-link" href="{% url 'products:products' %}">Ver catálogo <span aria-hidden="true">↗</span></a>
+    </div>
+    {% if categories %}
+      <ul class="sf-category-links">
+        {% for name, url in categories %}<li><a href="{{ url }}">{{ name }} <span aria-hidden="true">↗</span></a></li>{% endfor %}
+      </ul>
+    {% endif %}
+    {% if not has_products %}
+      {% include 'includes/design/empty.html' with text="Aún no hay productos publicados. Puedes apuntarte para recibir el aviso de lanzamiento." only %}
+    {% endif %}
+  </section>
+  <section class="sf-editorial" aria-labelledby="identidad">
+    <div class="eo-wrap sf-editorial-grid">
+      <div>
+        <p class="sf-kicker">Nuestra mirada</p>
+        <h2 id="identidad">Un perfume empieza<br>por la curiosidad.</h2>
       </div>
+      <p>El Buen Olor nace para acercarte a la perfumería con calma. Queremos que puedas leer una ficha, reconocer sus notas y entender por qué una fragancia despierta tu interés.</p>
     </div>
   </section>
-
-
-  <!-- Divider -->
-  <div class="divider-luxury"></div>
-
-  <!-- Testimonials Section Enhanced -->
-  <section style="padding: 5rem 0; background: var(--ivory);">
-    <div class="container">
-      <div class="text-center mb-5">
-        <p class="luxury-subtitle text-uppercase" style="color: var(--gold); font-size: 0.875rem; letter-spacing: 0.15em;">Testimonios</p>
-        <h2 class="luxury-title" style="font-size: 2.5rem; margin-bottom: 1rem;">Lo Que Dicen Nuestros Clientes</h2>
-        <p class="luxury-subtitle" style="max-width: 600px; margin: 0 auto;">Únete a miles de amantes de las fragancias satisfechos</p>
-      </div>
-      <div class="divider-center"></div>
-      <div class="row g-4 mt-5">
-        <div class="col-md-4">
-          <div class="testimonial-card-enhanced">
-            <div class="testimonial-rating">
-              <i class="fas fa-star"></i>
-              <i class="fas fa-star"></i>
-              <i class="fas fa-star"></i>
-              <i class="fas fa-star"></i>
-              <i class="fas fa-star"></i>
-            </div>
-            <p class="testimonial-text">
-              Me encanta absolutamente la calidad y autenticidad de los perfumes. Entrega rápida y excelente servicio al cliente. El certificado de autenticidad me dio total confianza.
-            </p>
-            <div class="testimonial-author">
-              <div style="width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, #D4AF37 0%, #E9D8A6 100%); display: flex; align-items: center; justify-content: center;">
-                <i class="fas fa-user" style="color: white; font-size: 1.5rem;"></i>
-              </div>
-              <div>
-                <h6 style="margin: 0; font-family: 'Cinzel', serif; color: #333333; font-weight: 700;">Sara Martínez</h6>
-                <p class="testimonial-verified">
-                  <i class="fas fa-check-circle" style="color: #D4AF37;"></i> Compra Verificada
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="testimonial-card-enhanced">
-            <div class="testimonial-rating">
-              <i class="fas fa-star"></i>
-              <i class="fas fa-star"></i>
-              <i class="fas fa-star"></i>
-              <i class="fas fa-star"></i>
-              <i class="fas fa-star"></i>
-            </div>
-            <p class="testimonial-text">
-              La mejor tienda de fragancias online. La guía de familias olfativas me ayudó a encontrar mi aroma perfecto. Las muestras gratuitas son un detalle increíble.
-            </p>
-            <div class="testimonial-author">
-              <div style="width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, #D4AF37 0%, #E9D8A6 100%); display: flex; align-items: center; justify-content: center;">
-                <i class="fas fa-user" style="color: white; font-size: 1.5rem;"></i>
-              </div>
-              <div>
-                <h6 style="margin: 0; font-family: 'Cinzel', serif; color: #333333; font-weight: 700;">Miguel Álvarez</h6>
-                <p class="testimonial-verified">
-                  <i class="fas fa-check-circle" style="color: #D4AF37;"></i> Compra Verificada
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="testimonial-card-enhanced">
-            <div class="testimonial-rating">
-              <i class="fas fa-star"></i>
-              <i class="fas fa-star"></i>
-              <i class="fas fa-star"></i>
-              <i class="fas fa-star"></i>
-              <i class="fas fa-star"></i>
-            </div>
-            <p class="testimonial-text">
-              Selección y precios increíbles. Encontré fragancias de nicho que no podía conseguir en ningún otro sitio. La pirámide olfativa en cada producto es muy útil.
-            </p>
-            <div class="testimonial-author">
-              <div style="width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, #D4AF37 0%, #E9D8A6 100%); display: flex; align-items: center; justify-content: center;">
-                <i class="fas fa-user" style="color: white; font-size: 1.5rem;"></i>
-              </div>
-              <div>
-                <h6 style="margin: 0; font-family: 'Cinzel', serif; color: #333333; font-weight: 700;">Laura García</h6>
-                <p class="testimonial-verified">
-                  <i class="fas fa-check-circle" style="color: #D4AF37;"></i> Compra Verificada
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+  <section class="eo-wrap sf-section sf-launch" id="avisos" aria-labelledby="lanzamiento">
+    <div>
+      <p class="sf-kicker">Avisos de lanzamiento</p>
+      <h2 id="lanzamiento">Primero, una nota.</h2>
+      <p>Déjanos tu correo si quieres que te avisemos cuando abramos la tienda.</p>
     </div>
+    <form class="eo-newsletter sf-signup" method="post" action="{% url 'home:index' %}#avisos">
+      {% csrf_token %}
+      {% include 'includes/design/field.html' with id="launch-email" name="email" type="email" label="Correo electrónico" autocomplete="email" maxlength=40 required=True value=form.email.value error=form.email.errors.0 only %}
+      <label class="eo-consent">
+        <input type="checkbox" name="consent" required{% if form.consent.value %} checked{% endif %}{% if form.consent.errors %} aria-invalid="true" aria-describedby="launch-consent-error"{% endif %}>
+        <span>Acepto recibir avisos de lanzamiento por correo electrónico.</span>
+      </label>
+      {% if form.consent.errors %}<small class="eo-field-error" id="launch-consent-error">{{ form.consent.errors.0 }}</small>{% endif %}
+      <small>Usaremos tu correo para enviarte estos avisos. <a href="{% url 'home:privacy' %}">Cómo usamos tu correo</a>.</small>
+      {% include 'includes/design/button.html' with type="submit" label="Quiero recibir el aviso" primary=True only %}
+    </form>
   </section>
-
-  <!-- Divider -->
-  <div class="divider-luxury"></div>
-
-  <!-- Instagram Feed Section Luxury -->
-  <section style="padding: 5rem 0; background: var(--white-pure);">
-    <div class="container">
-      <div class="text-center mb-5">
-        <p class="luxury-subtitle text-uppercase" style="color: var(--gold); font-size: 0.875rem; letter-spacing: 0.15em;">Redes Sociales</p>
-        <h2 class="luxury-title" style="font-size: 2.5rem; margin-bottom: 1rem;">Síguenos en Instagram</h2>
-        <p class="luxury-subtitle" style="max-width: 600px; margin: 0 auto;">Inspírate con nuestra comunidad de fragancias</p>
-      </div>
-      <div class="divider-center"></div>
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-top: 3rem;">
-        <div style="aspect-ratio: 1; background: var(--ivory); border: 0.5px solid var(--gold); border-radius: 8px; display: flex; align-items: center; justify-content: center; transition: transform 0.3s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
-          <i class="fab fa-instagram" style="font-size: 2rem; color: var(--gold);"></i>
-        </div>
-        <div style="aspect-ratio: 1; background: var(--ivory); border: 0.5px solid var(--gold); border-radius: 8px; display: flex; align-items: center; justify-content: center; transition: transform 0.3s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
-          <i class="fab fa-instagram" style="font-size: 2rem; color: var(--gold);"></i>
-        </div>
-        <div style="aspect-ratio: 1; background: var(--ivory); border: 0.5px solid var(--gold); border-radius: 8px; display: flex; align-items: center; justify-content: center; transition: transform 0.3s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
-          <i class="fab fa-instagram" style="font-size: 2rem; color: var(--gold);"></i>
-        </div>
-        <div style="aspect-ratio: 1; background: var(--ivory); border: 0.5px solid var(--gold); border-radius: 8px; display: flex; align-items: center; justify-content: center; transition: transform 0.3s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
-          <i class="fab fa-instagram" style="font-size: 2rem; color: var(--gold);"></i>
-        </div>
-        <div style="aspect-ratio: 1; background: var(--ivory); border: 0.5px solid var(--gold); border-radius: 8px; display: flex; align-items: center; justify-content: center; transition: transform 0.3s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
-          <i class="fab fa-instagram" style="font-size: 2rem; color: var(--gold);"></i>
-        </div>
-        <div style="aspect-ratio: 1; background: var(--ivory); border: 0.5px solid var(--gold); border-radius: 8px; display: flex; align-items: center; justify-content: center; transition: transform 0.3s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
-          <i class="fab fa-instagram" style="font-size: 2rem; color: var(--gold);"></i>
-        </div>
-      </div>
-      <div class="text-center mt-4">
-        <a href="https://instagram.com" target="_blank" class="btn-luxury-outline">
-          <i class="fab fa-instagram me-2"></i>Seguir en Instagram
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <!-- Divider -->
-  <div class="divider-luxury"></div>
-
-  <!-- Newsletter Section Enhanced -->
-  <section class="newsletter-luxury-enhanced">
-    <div class="container">
-      <div class="row align-items-center justify-content-center">
-        <div class="col-lg-8 text-center">
-          <i class="fas fa-envelope" style="font-size: 3.5rem; color: #D4AF37; margin-bottom: 1.5rem; display: inline-block;"></i>
-          <h3 class="luxury-title" style="font-size: 2.5rem; margin-bottom: 1rem; color: white;">
-            Suscríbete a Nuestra Newsletter Exclusiva
-          </h3>
-          <p style="font-size: 1.125rem; margin-bottom: 3rem; color: rgba(255,255,255,0.9);">
-            Obtén acceso anticipado a lanzamientos, ofertas VIP y consejos de expertos en perfumería
-          </p>
-          
-          <!-- Newsletter Form Inline -->
-          <form method="POST" action="{% url 'home:index' %}" class="newsletter-form-enhanced">
-            {% csrf_token %}
-            <input type="email" name="email" placeholder="Tu email" required />
-            <button type="submit">
-              <i class="fas fa-paper-plane me-2"></i>Suscribirse
-            </button>
-          </form>
-          
-          <!-- Trust Badges -->
-          <div class="trust-badges-enhanced">
-            <div class="trust-badge-item">
-              <i class="fas fa-lock trust-badge-icon"></i>
-              <p class="trust-badge-text">Privacidad protegida</p>
-            </div>
-            <div class="trust-badge-item">
-              <i class="fas fa-gift trust-badge-icon"></i>
-              <p class="trust-badge-text">Ofertas exclusivas</p>
-            </div>
-            <div class="trust-badge-item">
-              <i class="fas fa-bell trust-badge-icon"></i>
-              <p class="trust-badge-text">Primeros en saber</p>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <!-- Payment Methods -->
-      <div class="payment-icons mt-5">
-        <div class="payment-icon">
-          <i class="fab fa-cc-visa"></i>
-        </div>
-        <div class="payment-icon">
-          <i class="fab fa-cc-mastercard"></i>
-        </div>
-        <div class="payment-icon">
-          <i class="fab fa-cc-amex"></i>
-        </div>
-        <div class="payment-icon">
-          <i class="fab fa-cc-paypal"></i>
-        </div>
-        <div class="payment-icon">
-          <i class="fas fa-shield-alt"></i>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Newsletter Modal -->
-  <div class="modal fade" id="newsletterSignUp" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="newsletterSignUpLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content newsletter-modal">
-        <div class="modal-header border-0">
-          <h5 class="modal-title fw-bold" id="newsletterSignUpLabel">
-            <i class="fas fa-envelope-open-text text-gold me-2"></i>Suscripción a la Newsletter
-          </h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-        </div>
-        <div class="modal-body px-4 py-4">
-          <p class="text-center mb-4">Regístrate para recibir ofertas exclusivas, consejos sobre fragancias y novedades.</p>
-          <form method="POST" action="{% url 'home:index' %}">
-            {% csrf_token %}
-            {{ form|crispy }}
-            <div class="text-center mt-4">
-              <button class="btn btn-gold btn-lg" type="submit">
-                <i class="fas fa-paper-plane me-2"></i>Suscribirse
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
+</div>
 {% endblock %}

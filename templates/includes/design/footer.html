@@ -1,0 +1,58 @@
+<div class="eo-wrap">
+  <div class="eo-footer-grid">
+    <div>
+      <a class="eo-wordmark" href="{% url 'home:index' %}">
+        <span class="eo-monogram" aria-hidden="true">EO</span>
+        <span><span class="eo-wordmark-caption">Perfumería</span><span>El Buen Olor</span></span>
+      </a>
+    </div>
+    <nav aria-label="Explorar el catálogo">
+      <h2>Explorar</h2>
+      <ul class="eo-list">
+        <li><a href="{% url 'products:products' %}">Catálogo</a></li>
+        <li><a href="{% url 'products:products' %}?gender=F">Mujer</a></li>
+        <li><a href="{% url 'products:products' %}?gender=M">Hombre</a></li>
+        <li><a href="{% url 'products:products' %}?gender=U">Unisex</a></li>
+        {% if not store_prelaunch %}<li><a href="{% url 'products:products' %}?special_offers=true">Ofertas especiales</a></li>{% endif %}
+        <li><a href="{% url 'products:products' %}?new_arrivals=true">Novedades</a></li>
+        <li><a href="{% url 'products:products' %}?sort=rating_desc">Más valorados</a></li>
+      </ul>
+    </nav>
+    <nav aria-label="Área de cliente">
+      <h2>Tu cuenta</h2>
+      <ul class="eo-list">
+        <li><a href="{% url 'products:fragrance_families' %}">Guía de familias olfativas</a></li>
+        <li><a href="{% url 'bag:view_bag' %}">Carrito</a></li>
+        <li><a href="{% url 'profiles:profile' %}">Mi perfil</a></li>
+        <li><a href="{% url 'products:view_wishlist' %}">Favoritos</a></li>
+      </ul>
+    </nav>
+    <div>
+      <h2>Novedades por correo</h2>
+      {% if request.resolver_match.view_name == "home:index" %}
+        <a class="eo-button" href="#avisos">Recibir aviso de lanzamiento</a>
+      {% else %}
+      <form class="eo-newsletter" method="post" action="{% url 'home:index' %}#avisos">
+        {% csrf_token %}
+        {% include 'includes/design/field.html' with id="footer-email" name="email" type="email" label="Correo electrónico" autocomplete="email" maxlength=40 required=True only %}
+        <label class="eo-consent"><input type="checkbox" name="consent" required><span>Acepto recibir avisos de lanzamiento por correo electrónico.</span></label>
+        <small>Usaremos tu correo para enviarte estos avisos. <a href="{% url 'home:privacy' %}">Cómo usamos tu correo</a>.</small>
+        {% include 'includes/design/button.html' with type="submit" label="Suscribirme" primary=True only %}
+      </form>
+      {% endif %}
+    </div>
+  </div>
+  <div class="eo-footer-bottom">
+    <small>© {% now "Y" %} Perfumería El Buen Olor</small>
+    <nav aria-label="Redes sociales">
+      <ul class="eo-list eo-social">
+        <li><a href="https://www.instagram.com" rel="noopener" target="_blank">Instagram</a></li>
+        <li><a href="https://www.facebook.com" rel="noopener" target="_blank">Facebook</a></li>
+        <li><a href="https://www.pinterest.com" rel="noopener" target="_blank">Pinterest</a></li>
+        <li><a href="https://www.twitter.com" rel="noopener" target="_blank">X</a></li>
+        <li><a href="https://www.youtube.com" rel="noopener" target="_blank">YouTube</a></li>
+      </ul>
+    </nav>
+    <a href="#top">Volver arriba ↑</a>
+  </div>
+</div>

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
   {% load static %}
 
   <head>
@@ -11,51 +11,34 @@
       {% if seo_data %}
         {% include 'seo/meta_tags.html' with seo_data=seo_data %}
       {% else %}
-        <!-- Meta Tags por defecto -->
-        <meta name="description" content="Descubre PerfumeLuxe - Fragancias 100% auténticas de las mejores marcas. Chanel, Dior, Tom Ford, Gucci y más. Envío gratis +50€, devolución 30 días. Compra perfumes de lujo con garantía total." />
-        <meta name="keywords" content="perfumes auténticos, fragancias de lujo, perfume mujer, perfume hombre, eau de parfum, eau de toilette, comprar perfume online, tienda perfumes" />
-        <meta name="author" content="PerfumeLuxe" />
-        <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
-        <meta name="theme-color" content="#d4af37" />
-        <link rel="canonical" href="{{ request.build_absolute_uri }}" />
-        
-        <!-- Open Graph / Facebook -->
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content="{{ request.build_absolute_uri }}" />
-        <meta property="og:title" content="PerfumeLuxe - Fragancias Auténticas de Lujo" />
-        <meta property="og:description" content="Descubre nuestra colección exclusiva de perfumes de lujo. Marcas premium con envío gratis y garantía de autenticidad." />
-        <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{% static 'img/og-image.jpg' %}" />
-        <meta property="og:site_name" content="PerfumeLuxe" />
-        <meta property="og:locale" content="es_ES" />
-        
-        <!-- Twitter Card -->
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:url" content="{{ request.build_absolute_uri }}" />
-        <meta name="twitter:title" content="PerfumeLuxe - Fragancias Auténticas de Lujo" />
-        <meta name="twitter:description" content="Perfumes 100% auténticos de las mejores marcas del mundo. Envío gratis y garantía total." />
-        <meta name="twitter:image" content="{{ request.scheme }}://{{ request.get_host }}{% static 'img/twitter-card.jpg' %}" />
+        <meta name="description" content="Descubre familias olfativas y perfumes en Perfumería El Buen Olor.">
+        <meta name="theme-color" content="#FAF8F3">
+        <link rel="canonical" href="{{ request.build_absolute_uri }}">
       {% endif %}
     {% endblock %}
 
     {% block extra_meta %}{% endblock %}
 
     {% block corecss %}
+      {% block legacy_styles %}
       <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
       <link rel="preconnect" href="https://fonts.googleapis.com">
       <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
-      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700;900&family=Cinzel:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700;900&family=Cinzel:wght@400;500;600;700&display=swap" rel="stylesheet">
       <link rel="stylesheet" href="{% static 'css/luxury-premium.css' %}">
       <link rel="stylesheet" href="{% static 'css/luxury-white-gold.css' %}">
       <link rel="stylesheet" href="{% static 'css/base.css' %}">
       <link rel="stylesheet" href="{% static 'css/luxury.css' %}">
       <link rel="stylesheet" href="{% static 'css/components.css' %}">
       <link rel="stylesheet" href="{% static 'css/accessibility-improvements.css' %}">
+      {% endblock %}
       <link rel="stylesheet" href="{% static 'css/search-autocomplete.css' %}">
-      <link rel="stylesheet" href="{% static 'css/advanced-filters.css' %}">
+
     {% endblock %}
 
     {% block extra_css %}{% endblock %}
+    <link rel="stylesheet" href="{% static 'css/design-system.css' %}">
 
     <link rel="apple-touch-icon" sizes="180x180" href="{% static 'favicon/apple-touch-icon.png' %}">
     <link rel="icon" type="image/png" sizes="32x32" href="{% static 'favicon/favicon-32x32.png' %}">
@@ -63,369 +46,48 @@
     <link rel="manifest" href="{% static 'favicon/site.webmanifest' %}">
 
     {% block corejs %}
-      <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+      {% block legacy_jquery %}{% include "includes/design/jquery.html" %}{% endblock %}
+      {% block legacy_bootstrap %}
       <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
-      <script src="https://js.stripe.com/v3/"></script>
+      {% endblock %}
       <script src="{% static 'js/search-autocomplete.js' %}" defer></script>
-      <script src="{% static 'js/ecommerce.js' %}" defer></script>
+      <script src="{% static 'js/design-shell.js' %}" defer></script>
+      {% block page_interactions %}{% endblock %}
     {% endblock %}
 
     {% block extrajs %}{% endblock %}
 
-    <title>{% if seo_data %}{{ seo_data.title }}{% else %}{% block title %}PerfumeLuxe - Perfumes Auténticos de Lujo | Envío Gratis +50€{% endblock %}{% endif %}</title>
+    <title>{% if seo_data %}{{ seo_data.title }}{% else %}{% block title %}Perfumería El Buen Olor{% endblock %}{% endif %}</title>
     
     <!-- Schema.org Structured Data -->
-    {% if organization_schema %}{{ organization_schema|safe }}{% endif %}
-    {% if website_schema %}{{ website_schema|safe }}{% endif %}
-    {% if product_schema %}{{ product_schema|safe }}{% endif %}
-    {% if breadcrumb_schema %}{{ breadcrumb_schema|safe }}{% endif %}
+    {% if organization_schema %}{{ organization_schema }}{% endif %}
+    {% if website_schema %}{{ website_schema }}{% endif %}
+    {% if product_schema %}{{ product_schema }}{% endif %}
+    {% if breadcrumb_schema %}{{ breadcrumb_schema }}{% endif %}
   </head>
 
-  <body>
+  <body id="top" class="{% block body_class %}{% endblock %}">
     <!-- Skip to main content para accesibilidad -->
-    <a href="#main-content" class="skip-to-main">Saltar al contenido principal</a>
+    <a href="#main-content" class="eo-skip">Saltar al contenido principal</a>
     
     {% block navigation %}
-    <!-- Top Info Bar -->
-    <div class="top-info-bar bg-charcoal text-white py-2 d-none d-lg-block">
-      <div class="container-fluid">
-        <div class="row">
-          <div class="col-6 text-start">
-            <small class="me-4"><i class="fas fa-shipping-fast me-2 text-gold"></i>Envío Gratis +50€ | Devoluciones Fáciles 30 Días</small>
-            <small><i class="fas fa-certificate me-2 text-gold"></i>100% Productos Auténticos Verificados</small>
-          </div>
-          <div class="col-6 text-end">
-            <small class="me-3"><i class="fas fa-tags me-2 text-gold"></i>Precios Competitivos Garantizados</small>
-            <small><i class="fas fa-phone me-2 text-gold"></i>+34 91 123 4567</small>
-          </div>
-        </div>
+      {% include 'includes/design/header.html' %}
+      {% block search_banner %}{% endblock %}
+    {% endblock %}
+    {% if messages %}
+      <div class="eo-wrap eo-messages">
+        {% for message in messages %}
+          <p class="eo-message{% if message.level == 40 %} eo-message--error{% endif %}" role="{% if message.level == 40 %}alert{% else %}status{% endif %}">{{ message }}</p>
+        {% endfor %}
       </div>
-    </div>
-    
-    <nav class="container-fluid fixed-top luxury-nav" id="main-nav">
-      <div class="row pt-lg-3 pb-lg-2 d-none d-lg-flex align-items-center">
-        <div class="col-12 col-lg-3 my-auto py-1 py-lg-0 text-center text-lg-left">
-          <a href="{% url 'home:index' %}" class="nav-link logo-link">
-            <h1 class="logo-text my-0">
-              <strong>PerfumeLuxe</strong>
-            </h1>
-            <p class="logo-tagline mb-0">Luxury Fragrances</p>
-          </a>
-        </div>
-        <div id="search-container-lg" class="col-12 col-lg-5 my-auto py-1 py-lg-0">
-          <form method="GET" action="{% url 'products:products' %}">
-            <div class="search-container">
-              <div class="search-input-wrapper">
-                <input 
-                  id="search-desktop" 
-                  class="search-input" 
-                  name="q" 
-                  type="text" 
-                  placeholder="Buscar por marca, nombre o notas..." 
-                  aria-label="Buscar perfumes por marca, nombre o notas olfativas" 
-                  autocomplete="off">
-                <i class="fas fa-search search-icon"></i>
-              </div>
-              <div id="search-results-desktop" class="search-results"></div>
-            </div>
-          </form>
-        </div>
-        <div class="col-12 col-lg-4 my-auto py-1 py-lg-0">
-          <ul class="list-inline list-unstyled text-center text-lg-end my-0 d-flex align-items-center justify-content-end">
-            <li class="list-inline-item dropdown me-2">
-              <button class="luxury-icon-btn" role="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="cuenta de usuario" id="user-account-button">
-                <i class="fa-solid fa-user"></i>
-                <span class="icon-label">Cuenta</span>
-              </button>
-              <ul class="dropdown-menu luxury-dropdown" id="user-options">
-                <li class="text-center py-2">
-                  {% if request.user.is_authenticated %}
-                    <h5 class="text-dp text-uppercase ">Hola,
-                      {{request.user.username}}</h5>
-                  </li>
-                  <li>
-                    <hr class="text-lv canvas-hr my-0">
-                  </li>
-                  {% if request.user.is_superuser %}
-                    <li class="py-2 text-center fs-6">
-                      <a class="dropdown-item py-3" href="{% url 'add_product' %}">Gestión de Productos</a>
-                    </li>
-                    <li>
-                      <hr class="text-lv canvas-hr my-0">
-                    </li>
-                  {% endif %}
-                  <li class="py-2 text-center fs-6">
-                    <a class="dropdown-item py-3" href="{% url 'profile' %}">Mi Perfil</a>
-                  </li>
-                  <li>
-                    <hr class="text-lv canvas-hr my-0">
-                  </li>
-                  <li class="py-2 text-center fs-6">
-                    <a class="dropdown-item py-3" href="{% url 'account_logout' %}">Cerrar Sesión</a>
-                  </li>
-                  <li>
-                    <hr class="text-lv canvas-hr my-0">
-                  </li>
-                {% else %}
-                  <p class=" text-dp text-uppercase text-center">MI CUENTA</p>
-                </li>
-                <li>
-                  <hr class="text-lv canvas-hr my-0">
-                </li>
-                <li class="py-2 text-center fs-6">
-                  <a class="dropdown-item py-3" href="{% url 'account_signup' %}">Registrarse</a>
-                </li>
-                <li>
-                  <hr class="text-lv canvas-hr my-0">
-                </li>
-                <li class="py-2 text-center fs-6">
-                  <a class="dropdown-item py-3" href="{% url 'account_login' %}">Iniciar Sesión</a>
-                </li>
-                <li>
-                  <hr class="text-lv canvas-hr my-0">
-                </li>
-              {% endif %}
-            </ul>
-          </li>
-          <li class="list-inline-item dropdown">
-            <button class="luxury-icon-btn position-relative" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="enlace a la bolsa de compras" id="shopping-bag-button">
-              <i class="fa-solid fa-bag-shopping"></i>
-              <span class="icon-label">Carrito</span>
-              {% if bag_items %}
-                <span class="luxury-badge-count">{{ product_count }}</span>
-              {% endif %}
-            </button>
-            <div class="dropdown-menu luxury-dropdown px-3" id="bag-md" aria-labelledby="shopping-bag-button">
-              <div>
-                {% include 'includes/bag_dropdown.html' %}
-              </div>
-            </div>
-          </li>
-        </ul>
-      </div>
-    </div>
-    </nav>
-    
-    <div class="row bg-dp mobile-nav-wrapper d-block d-lg-none">\n      <div class="navbar navbar-expand-lg navbar-light w-100 d-flex">
-        <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-label="open menu" aria-controls="offcanvasNavbar">
-          <i class="fa-solid fa-bars icon text-lv"></i>
-        </button>
-        <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
-          {% include 'includes/menu_content.html' %}
-        </div>
-        <a href="{% url 'home:index' %}" class="nav-link">
-          <p class="h1 logo-text my-0 text-lv">
-            <strong>PerfumeLuxe</strong>
-          </p>
-        </a>
-        <ul class="list-inline list-unstyled text-center d-flex justify-content-between my-0">
-          {% include 'includes/mobile_header.html' %}
-        </ul>
-      </div>
-    </div>
-  </nav>
-  <div class="header-displace w-100"></div>
-
-  {% if messages %}
-    <div class="message-container">
-      {% for message in messages %}
-        {% with message.level as level %}
-          {% if level == 40 %}
-            {% include 'includes/toasts/toast_error.html' %}
-          {% elif level == 30 %}
-            {% include 'includes/toasts/toast_warning.html' %}
-          {% elif level == 25 %}
-            {% include 'includes/toasts/toast_success.html' %}
-          {% else %}
-            {% include 'includes/toasts/toast_info.html' %}
-          {% endif %}
-        {% endwith %}
-      {% endfor %}
-    </div>
-  {% endif %}
-    {% block search_banner %}
-      <div id="search-container-md" class="bg-white d-block d-lg-none my-2">
-        <form method="GET" action="{% url 'products:products' %}">
-          <div class="input-group w-100">
-            <div class="input-group">
-              <input class="form-control bg-white text-start border-0" name="q" type="text" placeholder="Search PerfumeLuxe" aria-label="Search PerfumeLuxe">
-              <button class="btn search-btn bg-white" type="submit" aria-label="search">
-                <span class="text-dp">
-                  <i class="fa-solid fa-magnifying-glass fs-4"></i>
-                </span>
-              </button>
-            </div>
-          </div>
-        </form>
-      </div>
-      <div id="offer-banner" class="text-center bg-lv-20 ">
-        <div class="col py-2">
-          <h4 class="text-dp fs-5">{{ discount_percentage }}% OFF orders worth &pound;{{ discount_threshold }}!</h4>
-        </div>
-      </div>
-    {% endblock%}
-  {% endblock %}
-
-  <!-- Main Content Area -->
-  <main id="main-content" role="main">
-    {% block content %}{% endblock %}
-  </main>
-
-  <footer class="py-3 bg-dp container-fluid" id="footer" role="contentinfo">
-    <div class=" flex-column">
-      {% block page_footer %}
-        <!-- Main Footer Content -->
-        <div class="luxury-footer-content">
-          <div class="container py-5">
-            <div class="row g-4">
-              <!-- Brand Column -->
-              <div class="col-lg-3 col-md-6">
-                <h3 class="luxury-footer-heading mb-3">
-                  <span class="gold-gradient-text">PerfumeLuxe</span>
-                </h3>
-                <p class="luxury-tagline mb-3">Fragancias de Lujo Premium</p>
-                <p class="luxury-footer-text mb-3">
-                  <strong>Amplio catálogo de marcas diseñador y nicho.</strong> Productos 100% auténticos verificados. Precios competitivos con transparencia total. Descubre los perfumes más exclusivos con información detallada de notas olfativas y reseñas de usuarios.
-                </p>
-                <div class="trust-badges mb-3">
-                  <small class="d-block mb-1"><i class="fas fa-check-circle text-gold me-2"></i>Stock fresco y actualizado</small>
-                  <small class="d-block mb-1"><i class="fas fa-shield-alt text-gold me-2"></i>Garantía de autenticidad</small>
-                  <small class="d-block"><i class="fas fa-undo text-gold me-2"></i>Política de devolución clara</small>
-                </div>
-                <div class="luxury-contact-info">
-                  <p class="mb-2"><i class="fas fa-phone-alt text-gold me-2"></i> +34 91 123 4567</p>
-                  <p class="mb-2"><i class="fas fa-envelope text-gold me-2"></i> info@perfumeluxe.com</p>
-                  <p class="mb-0"><i class="fas fa-map-marker-alt text-gold me-2"></i> Madrid, España</p>
-                </div>
-              </div>
-
-              <!-- Shop Column -->
-              <div class="col-lg-2 col-md-6">
-                <h4 class="luxury-footer-heading">Tienda</h4>
-                <ul class="luxury-footer-menu">
-                  <li><a href="{% url 'products:products' %}?category=women" class="luxury-footer-link">Perfumes de Mujer</a></li>
-                  <li><a href="{% url 'products:products' %}?category=men" class="luxury-footer-link">Fragancias de Hombre</a></li>
-                  <li><a href="{% url 'products:products' %}?category=unisex" class="luxury-footer-link">Colección Unisex</a></li>
-                  <li><a href="{% url 'products:products' %}?special_offers=true" class="luxury-footer-link">Ofertas Especiales</a></li>
-                  <li><a href="{% url 'products:products' %}?new_arrivals=true" class="luxury-footer-link">Novedades</a></li>
-                  <li><a href="{% url 'products:products' %}?best_sellers=true" class="luxury-footer-link">Los Más Vendidos</a></li>
-                </ul>
-              </div>
-
-              <!-- Customer Care Column -->
-              <div class="col-lg-2 col-md-6">
-                <h4 class="luxury-footer-heading">Atención al Cliente</h4>
-                <ul class="luxury-footer-menu">
-                  <li><a href="#" class="luxury-footer-link">Contacto Rápido</a></li>
-                  <li><a href="#" class="luxury-footer-link">Seguimiento de Pedido</a></li>
-                  <li><a href="#" class="luxury-footer-link">Envío Transparente</a></li>
-                  <li><a href="#" class="luxury-footer-link">Devoluciones 30 Días</a></li>
-                  <li><a href="#" class="luxury-footer-link">Preguntas Frecuentes</a></li>
-                  <li><a href="#" class="luxury-footer-link">Muestras Disponibles</a></li>
-                </ul>
-              </div>
-
-              <!-- About Column -->
-              <div class="col-lg-2 col-md-6">
-                <h4 class="luxury-footer-heading">Confianza</h4>
-                <ul class="luxury-footer-menu">
-                  <li><a href="#" class="luxury-footer-link">Certificado Autenticidad</a></li>
-                  <li><a href="#" class="luxury-footer-link">Origen de Productos</a></li>
-                  <li><a href="#" class="luxury-footer-link">Reseñas Verificadas</a></li>
-                  <li><a href="#" class="luxury-footer-link">Nuestra Reputación</a></li>
-                  <li><a href="#" class="luxury-footer-link">Política de Precios</a></li>
-                  <li><a href="#" class="luxury-footer-link">Comunidad Activa</a></li>
-                </ul>
-              </div>
-
-              <!-- Newsletter Column -->
-              <div class="col-lg-3 col-md-12">
-                <h4 class="luxury-footer-heading">Únete a Nuestra Newsletter</h4>
-                <p class="luxury-footer-text mb-3">Suscríbete para ofertas exclusivas y novedades</p>
-                <form class="luxury-newsletter-form mb-3">
-                  <div class="luxury-newsletter-input-group">
-                    <input type="email" class="luxury-newsletter-input" placeholder="Tu correo electrónico" required>
-                    <button type="submit" class="luxury-newsletter-btn">
-                      <i class="fas fa-paper-plane"></i>
-                    </button>
-                  </div>
-                </form>
-                <p class="luxury-footer-text small">Al suscribirte, aceptas nuestra Política de Privacidad</p>
-              </div>
-            </div>
-
-            <!-- Payment Methods -->
-            <div class="section-divider my-4"></div>
-            <div class="row py-3">
-              <div class="col-12">
-                <h5 class="luxury-footer-heading text-center mb-3">Métodos de Pago</h5>
-                <div class="payment-methods">
-                  <i class="fa-brands fa-cc-visa payment-icon"></i>
-                  <i class="fa-brands fa-cc-mastercard payment-icon"></i>
-                  <i class="fa-brands fa-cc-amex payment-icon"></i>
-                  <i class="fa-brands fa-cc-paypal payment-icon"></i>
-                  <i class="fa-brands fa-cc-apple-pay payment-icon"></i>
-                  <i class="fa-brands fa-google-pay payment-icon"></i>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Footer Bottom -->
-        <div class="luxury-footer-bottom">
-          <div class="container">
-            <div class="section-divider my-4"></div>
-            <div class="row align-items-center py-4">
-              <div class="col-md-4 text-center text-md-start mb-3 mb-md-0">
-                <p class="mb-0 luxury-footer-text">&copy; 2025 PerfumeLuxe. Todos los derechos reservados.</p>
-              </div>
-              <div class="col-md-4 text-center mb-3 mb-md-0">
-                <div class="luxury-footer-legal">
-                  <a href="#" class="luxury-footer-link small me-3">Política de Privacidad</a>
-                  <a href="#" class="luxury-footer-link small me-3">Términos de Servicio</a>
-                  <a href="#" class="luxury-footer-link small">Política de Cookies</a>
-                </div>
-              </div>
-              <div class="col-md-4">
-                <div class="luxury-social-links">
-                  <a href="https://www.facebook.com" class="luxury-social-icon" aria-label="Visit our facebook page" target="_blank" rel="noopener">
-                    <i class="fa-brands fa-facebook-f"></i>
-                  </a>
-                  <a href="https://www.instagram.com" class="luxury-social-icon" aria-label="Visit our instagram page" target="_blank" rel="noopener">
-                    <i class="fa-brands fa-instagram"></i>
-                  </a>
-                  <a href="https://www.twitter.com" class="luxury-social-icon" aria-label="Visit our twitter page" target="_blank" rel="noopener">
-                    <i class="fa-brands fa-twitter"></i>
-                  </a>
-                  <a href="https://www.pinterest.com" class="luxury-social-icon" aria-label="Visit our pinterest page" target="_blank" rel="noopener">
-                    <i class="fa-brands fa-pinterest-p"></i>
-                  </a>
-                  <a href="https://www.youtube.com" class="luxury-social-icon" aria-label="Visit our youtube channel" target="_blank" rel="noopener">
-                    <i class="fa-brands fa-youtube"></i>
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      {% endblock %}
-    </div>
-  </footer>
-  
-  <!-- Back to Top Button -->
-  <button id="back-to-top" aria-label="Back to top">
-    <i class="fas fa-arrow-up"></i>
-  </button>
-  
-  {% block postloadjs %}
-    <script>
-      $(function(){
-        $('.toast').toast('show');
-      });
-    </script>
-  {% endblock %}
+    {% endif %}
+    <main id="main-content" tabindex="-1">
+      {% include 'includes/design/prelaunch.html' %}
+      {% block content %}{% endblock %}
+    </main>
+    <footer class="eo-footer" id="footer">
+      {% block page_footer %}{% include 'includes/design/footer.html' %}{% endblock %}
+    </footer>
+  {% block postloadjs %}{% endblock %}
 </body>
-
 </html>

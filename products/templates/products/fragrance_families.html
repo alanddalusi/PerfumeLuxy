@@ -1,293 +1,34 @@
-{% extends 'base.html' %}
-{% load static %}
-
-{% block title %}Guía de Familias Olfativas | PerfumeLuxy{% endblock %}
-
+{% extends "includes/design/storefront.html" %}
 {% block content %}
-<div class="container-fluid fragrance-families-page">
-  <div class="row py-5">
-    <div class="col-12">
-      <h1 class="display-4 text-center mb-4">Familias Olfativas</h1>
-      <p class="lead text-center text-muted mb-5">
-        Descubre las categorías aromáticas que definen el mundo de la perfumería
-      </p>
-    </div>
-  </div>
-  
-  <div class="row mb-5">
-    {% for family in fragrance_families %}
-    <div class="col-md-6 col-lg-4 mb-4">
-      <div class="family-card">
-        <div class="family-icon">
-          {% if 'Floral' in family.name %}
-            <i class="fas fa-spa"></i>
-          {% elif 'Oriental' in family.name or 'Amaderada' in family.name %}
-            <i class="fas fa-tree"></i>
-          {% elif 'Cítrica' in family.name or 'Fresh' in family.name or 'Fresca' in family.name %}
-            <i class="fas fa-lemon"></i>
-          {% elif 'Chipre' in family.name %}
-            <i class="fas fa-leaf"></i>
-          {% elif 'Fougère' in family.name %}
-            <i class="fas fa-seedling"></i>
-          {% else %}
-            <i class="fas fa-flask"></i>
-          {% endif %}
-        </div>
-        
-        <h3 class="family-name">{{ family.name }}</h3>
-        
-        <p class="family-description">
-          {{ family.description|default:"Descubre los aromas únicos de esta familia olfativa" }}
-        </p>
-        
-        <div class="family-stats">
-          <span class="stat">
-            <i class="fas fa-box"></i>
-            {{ family.products.count }} producto{{ family.products.count|pluralize }}
-          </span>
-        </div>
-        
-        <a href="{% url 'products:products' %}?fragrance_family={{ family.name }}" class="btn btn-family">
-          Explorar {{ family.name }}
-          <i class="fas fa-arrow-right ms-2"></i>
-        </a>
+<div class="sf">
+  <header class="sf-page-intro"><div class="eo-wrap">
+    <p class="sf-kicker">Cuaderno olfativo</p>
+    <h1>Familias olfativas.</h1>
+    <p>Una guía para leer las fichas del escaparate y comparar fragancias con un vocabulario común.</p>
+  </div></header>
+  <section class="eo-wrap sf-section" aria-labelledby="explorar-familias">
+    <div class="sf-section-heading"><h2 id="explorar-familias">Explorar el catálogo.</h2></div>
+    {% if fragrance_families %}
+      <div class="sf-discovery">
+        {% for family in fragrance_families %}
+          <a class="sf-discovery-item" href="{% url 'products:products' %}?fragrance_family={{ family.name|urlencode:'' }}">
+            <h3>{{ family.name }}</h3><span aria-hidden="true">↗</span>
+            <p>{{ family.product_count }} ficha{{ family.product_count|pluralize }} publicada{{ family.product_count|pluralize }}.</p>
+          </a>
+        {% endfor %}
+      </div>
+    {% else %}
+      {% include 'includes/design/empty.html' with text="Aún no hay familias del catálogo para explorar." only %}
+    {% endif %}
+  </section>
+  <section class="sf-editorial" aria-labelledby="leer-ficha">
+    <div class="eo-wrap sf-editorial-grid">
+      <h2 id="leer-ficha">Cómo leer una ficha.</h2>
+      <div>
+        <p>Empieza por la familia olfativa. Úsala para agrupar y comparar fichas, y después revisa sus notas de salida, corazón y fondo. En este escaparate las notas se muestran según la referencia revisada de cada ficha.</p>
+        <p>Si te interesa una presentación concreta, compara la concentración y el volumen indicado en la ficha. Cuando una referencia no aporta el dato, dejamos el campo fuera.</p>
       </div>
     </div>
-    {% endfor %}
-  </div>
-  
-  <!-- Sección Educativa -->
-  <div class="row educational-section py-5">
-    <div class="col-lg-8 mx-auto">
-      <h2 class="text-center mb-4">¿Cómo Elegir tu Familia Olfativa?</h2>
-      
-      <div class="guide-content">
-        <div class="guide-item">
-          <div class="guide-number">1</div>
-          <div class="guide-text">
-            <h5>Identifica tus preferencias</h5>
-            <p>¿Prefieres aromas florales, frescos, dulces o amaderados? Piensa en los olores que te gustan en tu día a día.</p>
-          </div>
-        </div>
-        
-        <div class="guide-item">
-          <div class="guide-number">2</div>
-          <div class="guide-text">
-            <h5>Considera la ocasión</h5>
-            <p>Las fragancias frescas son ideales para el día, mientras que las orientales y amaderadas brillan en la noche.</p>
-          </div>
-        </div>
-        
-        <div class="guide-item">
-          <div class="guide-number">3</div>
-          <div class="guide-text">
-            <h5>Ten en cuenta la temporada</h5>
-            <p>En verano funcionan mejor las cítricas y acuáticas. En invierno, las especiadas y amaderadas son más apropiadas.</p>
-          </div>
-        </div>
-        
-        <div class="guide-item">
-          <div class="guide-number">4</div>
-          <div class="guide-text">
-            <h5>Prueba antes de comprar</h5>
-            <p>Solicita muestras para probar la evolución del perfume en tu piel durante varias horas.</p>
-          </div>
-        </div>
-      </div>
-      
-      <div class="text-center mt-5">
-        <a href="{% url 'products:products' %}" class="btn btn-gold btn-lg">
-          Ver Todos los Perfumes
-        </a>
-      </div>
-    </div>
-  </div>
+  </section>
 </div>
-
-<style>
-.fragrance-families-page {
-  background: linear-gradient(180deg, #FAFAF7 0%, #FFFFFF 100%);
-  min-height: 100vh;
-}
-
-.family-card {
-  background: white;
-  border: 2px solid #E9D8A6;
-  border-radius: 12px;
-  padding: 32px 24px;
-  text-align: center;
-  transition: all 0.3s ease;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-.family-card:hover {
-  border-color: #D4AF37;
-  box-shadow: 0 8px 24px rgba(212, 175, 55, 0.2);
-  transform: translateY(-8px);
-}
-
-.family-icon {
-  width: 80px;
-  height: 80px;
-  background: linear-gradient(135deg, #D4AF37 0%, #E9D8A6 100%);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 20px;
-  transition: all 0.3s ease;
-}
-
-.family-card:hover .family-icon {
-  transform: rotate(15deg) scale(1.1);
-}
-
-.family-icon i {
-  font-size: 36px;
-  color: white;
-}
-
-.family-name {
-  font-family: 'Playfair Display', serif;
-  font-size: 24px;
-  font-weight: 700;
-  color: #333333;
-  margin-bottom: 16px;
-}
-
-.family-description {
-  color: #666666;
-  font-size: 14px;
-  line-height: 1.6;
-  margin-bottom: 20px;
-  flex-grow: 1;
-}
-
-.family-stats {
-  margin-bottom: 20px;
-  padding: 12px;
-  background: #FAFAF7;
-  border-radius: 8px;
-}
-
-.family-stats .stat {
-  font-size: 14px;
-  color: #666666;
-  font-weight: 600;
-}
-
-.family-stats i {
-  color: #D4AF37;
-  margin-right: 6px;
-}
-
-.btn-family {
-  background: linear-gradient(135deg, #D4AF37 0%, #E9D8A6 100%);
-  color: white;
-  border: none;
-  padding: 12px 24px;
-  border-radius: 8px;
-  font-weight: 600;
-  transition: all 0.3s ease;
-}
-
-.btn-family:hover {
-  background: linear-gradient(135deg, #C4A037 0%, #D9C8A6 100%);
-  color: white;
-  transform: translateX(4px);
-}
-
-/* Educational Section */
-.educational-section {
-  background: white;
-  border-top: 2px solid #E9D8A6;
-  margin-top: 40px;
-}
-
-.educational-section h2 {
-  font-family: 'Playfair Display', serif;
-  color: #333333;
-  font-weight: 700;
-}
-
-.guide-content {
-  margin-top: 40px;
-}
-
-.guide-item {
-  display: flex;
-  gap: 24px;
-  margin-bottom: 32px;
-  padding: 24px;
-  background: #FAFAF7;
-  border-radius: 12px;
-  border-left: 4px solid #D4AF37;
-}
-
-.guide-number {
-  width: 50px;
-  height: 50px;
-  background: linear-gradient(135deg, #D4AF37 0%, #E9D8A6 100%);
-  color: white;
-  font-family: 'Cinzel', serif;
-  font-size: 24px;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.guide-text h5 {
-  font-weight: 700;
-  color: #333333;
-  margin-bottom: 8px;
-}
-
-.guide-text p {
-  color: #666666;
-  margin: 0;
-  line-height: 1.6;
-}
-
-.btn-gold {
-  background: linear-gradient(135deg, #D4AF37 0%, #E9D8A6 100%);
-  color: white;
-  border: none;
-  padding: 14px 36px;
-  font-weight: 700;
-  transition: all 0.3s ease;
-}
-
-.btn-gold:hover {
-  background: linear-gradient(135deg, #C4A037 0%, #D9C8A6 100%);
-  color: white;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(212, 175, 55, 0.3);
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .family-card {
-    padding: 24px 16px;
-  }
-  
-  .family-icon {
-    width: 60px;
-    height: 60px;
-  }
-  
-  .family-icon i {
-    font-size: 28px;
-  }
-  
-  .guide-item {
-    flex-direction: column;
-    gap: 16px;
-  }
-}
-</style>
 {% endblock %}

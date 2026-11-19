@@ -36,7 +36,7 @@
   --font-luxury: 'Playfair Display', serif;
   --font-elegant: 'Cinzel', serif;
   --font-body: 'Inter', sans-serif;
-  --font-clean: 'Montserrat', sans-serif;
+  --font-clean: system-ui, sans-serif;
 }
 
 /* ============================================

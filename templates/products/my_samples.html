@@ -29,7 +29,7 @@
                 <tr>
                     <td>
                         <div class="d-flex align-items-center gap-3">
-                            <img src="{{ request.product.image.url }}" alt="{{ request.product.name }}" class="sample-thumb">
+                            <img src="{{ request.product.public_image_url }}" alt="{{ request.product.name }}" class="sample-thumb">
                             <div>
                                 <strong>{{ request.product.name }}</strong>
                                 <br>
@@ -141,7 +141,7 @@
         <i class="fas fa-vial fa-5x text-muted mb-4"></i>
         <h3>No has solicitado muestras todavía</h3>
         <p class="text-muted">Explora nuestros perfumes y solicita muestras gratis</p>
-        <a href="{% url 'products' %}" class="btn btn-gold mt-3">
+        <a href="{% url 'products:products' %}" class="btn btn-gold mt-3">
             <i class="fas fa-shopping-bag"></i> Explorar productos
         </a>
     </div>
