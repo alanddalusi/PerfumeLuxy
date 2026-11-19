@@ -264,6 +264,17 @@ class SmokeTestFilesTests(SimpleTestCase):
             self.assertIn(line, smoke)
         self.assertNotIn("STRIPE_", smoke.split("cat > \"$PERFUMERIA_ENV_FILE\"", 1)[1].split("EOF", 2)[1])
 
+    def test_smoke_run_guards_against_shared_hosts_and_foreign_projects(self):
+        smoke = (self.root / "smoke" / "run.sh").read_text(encoding="utf-8")
+        self.assertIn("label=com.docker.compose.project=perfumeria", smoke)  # refuses a host with production
+        self.assertIn("snap list docker", smoke)
+        self.assertIn('[ "$resolved" = "perfumeria-smoke" ]', smoke)
+        guard, teardown = smoke.index('[ "$resolved" = "perfumeria-smoke" ]'), smoke.index("down -v --remove-orphans")
+        self.assertLess(guard, smoke.index("compose down -v --remove-orphans >/dev/null 2>&1   #"))
+        self.assertGreater(teardown, 0)
+        for forbidden in ("system prune", "volume rm", "volume prune", "network prune", "docker rm "):
+            self.assertNotIn(forbidden, smoke)
+
     def test_backup_scripts_hold_no_credentials_and_offsite_refuses_private_keys(self):
         for name in ("backup.sh", "restore.sh", "offsite.sh"):
             script = (self.root / "backup" / name).read_text(encoding="utf-8")
