@@ -4,7 +4,29 @@ Estado: **preparado, no desplegado.** Nada de lo descrito aquí se ha ejecutado 
 
 VPS OVHcloud con Ubuntu 26.04, 4 vCores, 8 GB de RAM (6,2 GiB libres) y 61 GB de disco libres. Foro IA al Día ya funciona con 7 contenedores; su Caddy (`foroia-production-caddy-1`) ocupa 80/443 en las redes `foroia-production_backend` y `foroia-production_edge`. Dominio nuevo: `perfumeriaelbuenolor.es`.
 
-## Auditoría real del VPS (19/11/2026)
+## Estado del despliegue (19/11/2026, UTC)
+
+**Instalación aislada hecha; web no publicada.** No se ha cambiado ni el Caddy del foro ni el DNS.
+
+- **Código.** `/srv/perfumeria/app` (rama `feature/prelaunch-security`, commit `f02f4a8`). Secretos generados en el VPS en `deploy/shared/.env.production` (600, nunca mostrados).
+- **Contenedores.**
+  - `perfumeria-production-perfumeria-db-1`: sano; solo en `perfumeria-production_backend` (interna, 172.21.0.0/16).
+  - `perfumeria-production-perfumeria-web-1`: sano; en `perfumeria-production_backend` y en `foroia-production_edge` con el nombre `perfumeria-web`. Sin puertos, sistema de archivos de solo lectura, usuario `app`.
+- **Imágenes.** `perfumeria-web:f02f4a8` en uso; `perfumeria-web:ec7d69b` se conserva para volver atrás.
+- **Base de datos.** 58 migraciones aplicadas en `perfumeria`; `verify-db-target.sh` confirmó el destino (172.21.0.2). Hay 0 productos: el catálogo de referencia no se ha cargado.
+- **Pruebas internas superadas.**
+  - Portada 200; `/checkout/` 403; HTTP redirige a HTTPS (301).
+  - HSTS, `X-Frame-Options`, `nosniff`, `Referrer-Policy` y cookie CSRF `Secure; SameSite=Lax`.
+  - Estáticos servidos por WhiteNoise con caché de un día; el sitemap solo lista la portada, el catálogo y la guía de familias.
+  - Sin formularios de correo ni registro; un token inválido devuelve 410 y no aparece en los logs.
+  - Correo `dummy`, sin claves de Stripe, ventas desactivadas.
+  - Desde el Caddy del foro: `perfumeria-web` resuelve a 172.19.0.4 y `web` sigue resolviendo solo a 172.19.0.2 (la web del foro); el Caddy del foro llega a `/healthz/` con 200.
+- **Consumo en reposo.** Web unos 128 MiB de 1 GiB; base de datos unos 36 MiB de 768 MiB. La RAM disponible del VPS pasó de 6,34 a 6,14 GiB.
+- **Foro.** Mismas horas de arranque, sin reinicios, mismo estado de salud y mismo Caddyfile (inodo y SHA-256) antes y después.
+- **Permisos del foro.** 79 archivos `666 root:root` de `/opt/foroia` pasados a 644 (`chmod go-w`). Contenido, propietarios y fechas sin cambios. Copia y `ROLLBACK.sh` en `/srv/perfumeria/foro-permisos-20261119T235315Z/`.
+- **Caddy en el código fuente del foro (preparado, no aplicado).** Rama local `perfumeria-caddy` (commit `13cff12`) en un *worktree* aparte (`Desktop\Mi Blogoroia-codex-perfumeria-caddy`). El parche está en [deploy/shared/foroia/0001-perfumeria-caddy.patch](deploy/shared/foroia/0001-perfumeria-caddy.patch). Validado con Caddy 2.11.7 sobre el fuente del foro y sobre el Caddyfile de producción, sin avisos nuevos.
+  - Ojo: el fuente del foro ya incluye un bloque `http://www.foroiaaldia.com` que todavía no está en producción, así que su próxima release lo desplegará también.
+
 
 Resultado de `audit-readonly.sh` ejecutado por SSH, sin escribir en el VPS: **0 fallos y 2 avisos (DNS)**. Los informes completos están en `auditorias/`, carpeta local ignorada por Git.
 

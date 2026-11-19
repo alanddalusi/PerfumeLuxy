@@ -21,9 +21,8 @@ perfumeriaelbuenolor.es {
 	respond @perfumeria_private 404
 
 	reverse_proxy perfumeria-web:8000 {
-		# Overwrite whatever the client sent; Django trusts only this proxy's address.
-		header_up X-Forwarded-For {remote_host}
-		header_up X-Forwarded-Proto {scheme}
+		# Caddy 2.11 already replaces client-sent X-Forwarded-For/-Proto with values from the
+		# connection (no trusted_proxies configured); Django trusts only this proxy's address.
 		header_up -X-Real-IP
 	}
 
