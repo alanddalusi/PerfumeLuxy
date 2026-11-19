@@ -24,7 +24,7 @@ VPS OVHcloud con Ubuntu 26.04, 4 vCores, 8 GB de RAM (6,2 GiB libres) y 61 GB de
 - **Consumo en reposo.** Web unos 128 MiB de 1 GiB; base de datos unos 36 MiB de 768 MiB. La RAM disponible del VPS pasó de 6,34 a 6,14 GiB.
 - **Foro.** Mismas horas de arranque, sin reinicios, mismo estado de salud y mismo Caddyfile (inodo y SHA-256) antes y después.
 - **Permisos del foro.** 79 archivos `666 root:root` de `/opt/foroia` pasados a 644 (`chmod go-w`). Contenido, propietarios y fechas sin cambios. Copia y `ROLLBACK.sh` en `/srv/perfumeria/foro-permisos-20261119T235315Z/`.
-- **Caddy en el código fuente del foro (preparado, no aplicado).** Rama local `perfumeria-caddy` (commit `13cff12`) en un *worktree* aparte (`Desktop\Mi Blogoroia-codex-perfumeria-caddy`). El parche está en [deploy/shared/foroia/0001-perfumeria-caddy.patch](deploy/shared/foroia/0001-perfumeria-caddy.patch). Validado con Caddy 2.11.7 sobre el fuente del foro y sobre el Caddyfile de producción, sin avisos nuevos.
+- **Caddy en el código fuente del foro (preparado, no aplicado).** Rama local `perfumeria-caddy` (commit `13cff12`) en un *worktree* aparte (`Desktop/Mi Blog/foroia-codex-perfumeria-caddy`). El parche está en [deploy/shared/foroia/0001-perfumeria-caddy.patch](deploy/shared/foroia/0001-perfumeria-caddy.patch). Validado con Caddy 2.11.7 sobre el fuente del foro y sobre el Caddyfile de producción, sin avisos nuevos.
   - Ojo: el fuente del foro ya incluye un bloque `http://www.foroiaaldia.com` que todavía no está en producción, así que su próxima release lo desplegará también.
 
 
