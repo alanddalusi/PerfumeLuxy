@@ -18,6 +18,11 @@ def decide_product(product, status, reviewer):
         if not product.name.strip() or not product.brand or not product.brand.name:
             raise ValidationError("Hace falta un nombre y una marca identificada.")
         required = ["name", "brand"]
+        if product.is_reference:
+            if not product.concentration or not (product.size or product.sizes.exists()):
+                raise ValidationError(
+                    "Las fichas de referencia necesitan concentración y formato comprobados."
+                )
         for key, present in (
             ("concentration", product.concentration),
             ("size", product.size or product.sizes.exists()),

@@ -425,4 +425,4 @@ class PublicationTests(TestCase):
             withdraw = reverse("admin:products_catalogimage_decision", args=[image.pk, "withdraw"])
             self.assertEqual(self.client.post(withdraw).status_code, 302)
             self.assertEqual(self.client.get(url).status_code, 404)
-            self.assertContains(self.client.get(self.product.get_absolute_url()), "Sin fotografía")
+            self.assertContains(self.client.get(self.product.get_absolute_url()), "Fotografía en preparación")

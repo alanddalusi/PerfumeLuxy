@@ -53,7 +53,7 @@ class SEOManager:
             }
         }
         
-        if not sales_enabled() or product.price is None:
+        if not sales_enabled() or product.price is None or product.is_reference:
             schema.pop("offers")
 
         if product.sku:

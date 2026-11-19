@@ -23,7 +23,7 @@ class ReviewImageInline(admin.TabularInline):
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     change_form_template = "admin/products/publication_change.html"
-    readonly_fields = ("publication_status",)
+    readonly_fields = ("publication_status", "catalog_origin")
 
     def get_urls(self):
         return [
@@ -55,6 +55,7 @@ class ProductAdmin(admin.ModelAdmin):
         "sku",
         "name",
         "publication_status",
+        "catalog_origin",
         "brand",
         "category",
         "concentration",
@@ -66,6 +67,7 @@ class ProductAdmin(admin.ModelAdmin):
     )
     list_filter = (
         "publication_status",
+        "catalog_origin",
         "brand",
         "category",
         "gender",
@@ -84,7 +86,7 @@ class ProductAdmin(admin.ModelAdmin):
     ordering = ("sku",)
     inlines = [ProductSizeInline, ProductVideoInline, FragranceEvolutionInline]
     fieldsets = (
-        ("Publicación", {"fields": ("publication_status", "verification_sources")}),
+        ("Publicación", {"fields": ("publication_status", "catalog_origin", "verification_sources")}),
         ("Información Básica", {
             "fields": (
                 "name", "sku", "brand", "category",

@@ -88,6 +88,10 @@ class ProductQuerySet(models.QuerySet):
     def published(self):
         return self.filter(publication_status="approved")
 
+    def sellable(self):
+        """Approved products that may enter a cart once sales are enabled."""
+        return self.published().exclude(catalog_origin="reference")
+
 
 def catalog_asset_storage():
     return storages["catalog_assets"]
@@ -155,7 +159,15 @@ class Product(models.Model):
         APPROVED = "approved", "Publicada"
         WITHDRAWN = "withdrawn", "Retirada"
 
+    class Origin(models.TextChoices):
+        OWN = "own", "Catálogo propio"
+        REFERENCE = "reference", "Referencia heredada"
+
     objects = ProductQuerySet.as_manager()
+    catalog_origin = models.CharField(
+        "origen del catálogo", max_length=10, choices=Origin.choices, default=Origin.OWN, db_index=True,
+        help_text="Las fichas de referencia heredadas son informativas y nunca se pueden vender.",
+    )
     publication_status = models.CharField(
         max_length=10, choices=Publication.choices, default=Publication.DRAFT, db_index=True,
     )
@@ -266,6 +278,10 @@ class Product(models.Model):
     def public_image_url(self):
         from .presentation import public_cover
         return public_cover(self) if self.publication_status == self.Publication.APPROVED else ""
+
+    @property
+    def is_reference(self):
+        return self.catalog_origin == self.Origin.REFERENCE
 
     def get_absolute_url(self):
         return reverse("products:product_detail", kwargs={"slug": self.slug})

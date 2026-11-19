@@ -28,7 +28,7 @@ def bag_contents(request):
         key: int(key) for key in bag
         if key.isascii() and key.isdigit() and len(key) <= 19 and int(key) <= 2**63 - 1
     }
-    catalog = Product.objects.published().select_related("brand").prefetch_related("catalog_images").in_bulk(item_ids.values())
+    catalog = Product.objects.sellable().select_related("brand").prefetch_related("catalog_images").in_bulk(item_ids.values())
     for item_id, item_data in bag.items():
         product = catalog.get(item_ids.get(item_id))
         if product is None or product.price is None:

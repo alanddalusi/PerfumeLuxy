@@ -11,7 +11,7 @@
           {% if gallery %}
             <img src="{{ gallery.0.url }}" alt="{{ gallery.0.alt }}" width="720" height="864" fetchpriority="high" decoding="async" data-gallery-main>
           {% else %}
-            <span class="sf-media-mark" aria-hidden="true">EO</span><span class="sf-media-caption">Sin fotografía</span>
+            {% include 'products/includes/media_placeholder.html' %}
           {% endif %}
         </div>
         {% if gallery|length > 1 %}
@@ -25,6 +25,7 @@
       <div class="sf-detail-info">
         {% if product.brand.name %}<p class="sf-kicker"><a href="{{ brand_url }}">{{ product.brand.name }}</a></p>{% endif %}
         <h1>{{ product.name }}</h1>
+        {% if store_prelaunch %}<p class="sf-badge">Próximamente · catálogo informativo</p>{% endif %}
         {% if product.concentration or product.fragrance_family or sizes or product.size %}
           <dl class="sf-facts">
             {% if product.concentration %}<div><dt>Concentración</dt><dd>{{ product.get_concentration_display }}</dd></div>{% endif %}
@@ -36,7 +37,7 @@
         {% endif %}
         {% if product.description %}<p class="sf-description">{{ product.description|linebreaksbr }}</p>{% endif %}
         {% if product.category %}<a class="sf-text-link" href="{{ category_url }}">{{ product.category.name|default:product.category.db_name }} <span aria-hidden="true">↗</span></a>{% endif %}
-        {% if not store_prelaunch and product.in_stock and product.price is not None %}
+        {% if not store_prelaunch and not product.is_reference and product.in_stock and product.price is not None %}
           {% if not product.has_sizes or cart_sizes %}
             <form class="sf-live-form" method="post" action="{% url 'bag:add_to_bag' product.pk %}">
               {% csrf_token %}<input type="hidden" name="redirect_url" value="{{ request.path }}">
@@ -55,7 +56,7 @@
         <div class="sf-actions">
           {% include 'products/includes/storefront_favorite.html' with is_favorite=in_wishlist %}
         </div>
-        {% if store_prelaunch or not product.in_stock %}
+        {% if store_prelaunch or product.is_reference or not product.in_stock %}
           <section class="sf-stock-alert" aria-labelledby="aviso-disponibilidad">
             <h2 id="aviso-disponibilidad">Aviso de disponibilidad</h2>
             {% if has_stock_alert %}

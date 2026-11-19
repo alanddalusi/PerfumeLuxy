@@ -125,3 +125,13 @@
   .sf-related { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .sf-card-info { padding: 1rem; }
 }
+
+/* Photo stand-in until an image with confirmed usage rights is approved. */
+.sf-placeholder { display: grid; justify-items: center; gap: 0; }
+.sf-placeholder-cap { width: 1.4rem; height: .9rem; border: 1px solid var(--eo-gold); border-bottom: 0; border-radius: .15rem .15rem 0 0; background: linear-gradient(180deg, var(--eo-white), var(--eo-sand)); }
+.sf-placeholder-bottle { display: grid; place-items: center; width: 4.6rem; height: 5.6rem; border: 1px solid var(--eo-gold); border-radius: .5rem .5rem 1rem 1rem; background: linear-gradient(160deg, var(--eo-white) 0%, var(--eo-ivory) 55%, var(--eo-sand) 100%); box-shadow: inset 0 0 0 .3rem var(--eo-white), 0 .9rem 1.6rem -1.2rem var(--eo-deep-gold); }
+.sf-placeholder-mark { font: 1.7rem / 1 var(--sf-display, var(--eo-heading)); color: var(--eo-action-gold); letter-spacing: .04em; }
+.sf-placeholder-family { margin-top: .9rem; font-size: .66rem; letter-spacing: .18em; text-transform: uppercase; color: var(--eo-deep-gold); }
+.sf-detail-media .sf-placeholder-bottle { width: 7rem; height: 8.6rem; }
+.sf-detail-media .sf-placeholder-mark { font-size: 2.6rem; }
+.sf .sf-badge { justify-self: start; display: inline-block; margin: 0 0 var(--eo-2, .5rem); padding: .2rem .6rem; border: 1px solid var(--eo-gold); border-radius: 999px; color: var(--eo-action-gold); background: var(--eo-white); font-size: .66rem; font-weight: 650; letter-spacing: .14em; text-transform: uppercase; }

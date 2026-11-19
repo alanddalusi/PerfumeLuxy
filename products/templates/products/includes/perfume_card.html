@@ -3,11 +3,11 @@
     {% if product.storefront_image %}
       <img src="{{ product.storefront_image }}" alt="" width="480" height="576" {% if eager_image %}fetchpriority="high"{% else %}loading="lazy"{% endif %} decoding="async">
     {% else %}
-      <span class="sf-media-mark" aria-hidden="true">EO</span>
-      <span class="sf-media-caption">Sin fotografía</span>
+      {% include 'products/includes/media_placeholder.html' %}
     {% endif %}
   </a>
   <div class="sf-card-info">
+    {% if store_prelaunch %}<p class="sf-badge">Próximamente</p>{% endif %}
     {% if product.brand.name %}<p class="sf-kicker">{{ product.brand.name }}</p>{% endif %}
     {% if show_compare %}
       <h2 class="sf-card-title"><a href="{{ product.get_absolute_url }}">{{ product.name }}</a></h2>
