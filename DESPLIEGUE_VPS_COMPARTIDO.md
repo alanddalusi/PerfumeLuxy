@@ -48,8 +48,12 @@ Cualquier contenedor del foro conectado a esa red puede alcanzar `perfumeria-web
 | [deploy/shared/compose.yaml](deploy/shared/compose.yaml) | Stack de la perfumería para el VPS compartido | 🟡 / 🔴 (unirse a la red del foro) |
 | [deploy/shared/env.production.example](deploy/shared/env.production.example) | Plantilla de `deploy/shared/.env.production` (600, ignorado por Git) | 🟡 |
 | [deploy/shared/perfumeria.caddy](deploy/shared/perfumeria.caddy) | Bloque delimitado para el Caddyfile del foro | 🔴 al aplicarlo |
+| [deploy/shared/audit-readonly.sh](deploy/shared/audit-readonly.sh) | Auditoría del VPS por SSH sin copiar nada al servidor (`ssh … 'bash -s' < …`); no escribe, no crea contenedores | 🟢 |
 | [deploy/shared/preflight.sh](deploy/shared/preflight.sh) | Validación previa completa | 🟢 |
-| [deploy/shared/caddy-check.sh](deploy/shared/caddy-check.sh) | Valida «Caddyfile actual + bloque» con la imagen del Caddy del foro en un contenedor desechable sin red | 🟢 |
+| [deploy/shared/caddy-backup.sh](deploy/shared/caddy-backup.sh) | Copia verificable de la configuración actual de Caddy (Caddyfile, JSON en ejecución, metadatos, SHA256SUMS, validación); `--verify` la comprueba de nuevo | 🟡 |
+| [deploy/shared/verify-db-target.sh](deploy/shared/verify-db-target.sh) | Demuestra antes de migrar que Django solo llega a `perfumeria-db` | 🔴 (contenedor temporal en la red del foro) |
+| [deploy/shared/rehearsal/](deploy/shared/rehearsal/) | Ensayo completo contra una imitación del foro en una VM desechable | Solo VM |
+| [deploy/shared/caddy-check.sh](deploy/shared/caddy-check.sh) | Valida «Caddyfile actual + bloque» con la imagen del Caddy del foro en un contenedor desechable sin red | 🟡 (no toca el foro, pero crea un contenedor y un directorio temporales que se borran al terminar) |
 | [deploy/shared/caddy-apply.sh](deploy/shared/caddy-apply.sh) | Copia, añade el bloque, valida y recarga sin reiniciar; compara las respuestas del foro antes y después | 🔴 |
 | [deploy/shared/caddy-rollback.sh](deploy/shared/caddy-rollback.sh) | Retira solo el bloque y recarga | 🔴 |
 | [deploy/backup/backup.sh](deploy/backup/backup.sh), [restore.sh](deploy/backup/restore.sh) | Ya admiten el modo compartido (servicios `perfumeria-*`, nunca detienen el Caddy del foro) | 🟡 / 🔴 restaurar |
@@ -63,7 +67,44 @@ pc() { docker compose -p perfumeria-production -f shared/compose.yaml --env-file
 
 ## Procedimiento
 
-### 0. Antes de empezar (en Windows) 🟢
+### 0a. Auditoría remota sin escribir en el VPS 🟢
+
+```bash
+# Desde el equipo con el repositorio; en el VPS no se copia ni se crea nada
+ssh <usuario>@<vps> 'bash -s' < deploy/shared/audit-readonly.sh > audit-vps.txt
+# Si el Caddyfile solo lo lee root:
+ssh -t <usuario>@<vps> 'sudo bash -s' < deploy/shared/audit-readonly.sh > audit-vps.txt
+```
+
+Revisa en `audit-vps.txt`:
+- la memoria, el disco y el estado de los 7 contenedores;
+- cómo está montado el Caddyfile (archivo o directorio, y si el inodo coincide dentro y fuera del contenedor);
+- que el API de administración responde (necesario para recargar sin reiniciar);
+- que la configuración actual valida;
+- los contenedores y nombres DNS de `foroia-production_edge`, avisando si alguna base de datos está en esa red;
+- dónde están las bases del foro;
+- el DNS.
+
+Ejecuta `caddy-check.sh` y `preflight.sh` (paso 2) cuando el código ya esté en el VPS.
+
+### 0b. Ensayo en la VM (recomendado antes de tocar el VPS)
+
+```bash
+cd ~/perfumeria/deploy && ./shared/rehearsal/run.sh; echo "exit=$?"
+```
+
+El ensayo levanta una **imitación** del foro con los mismos nombres: proyecto `foroia-production`, `foroia-production-caddy-1` con el Caddyfile montado como archivo suelto, un servicio `web` y una base `db` con una tabla de control. Después:
+1. Ejecuta los scripts reales.
+2. Comprueba que `caddy-apply.sh` rechaza un bloque inválido.
+3. Aplica el bloque y comprueba la perfumería a través del Caddy del «foro».
+4. Verifica que `web` sigue resolviendo solo al foro y que la base del foro no cambia.
+5. Prueba copia y restauración en modo compartido.
+6. Hace el rollback y comprueba que el Caddyfile vuelve a ser idéntico (mismo inodo y SHA-256).
+7. Comprueba que ningún contenedor del foro se reinicia en ningún momento.
+
+Usa `local_certs`, así que no pide certificados reales. Se niega a funcionar si encuentra un foro o una perfumería reales en la máquina.
+
+### 0c. Antes de empezar (en Windows) 🟢
 
 ```powershell
 git status --short                       # vacío
@@ -92,7 +133,8 @@ nano shared/.env.production       # RELEASE, SECRET_KEY, POSTGRES_PASSWORD (ver 
 
 ```bash
 ./shared/preflight.sh             # fails=0; los avisos de DNS son normales hasta el paso 6
-./shared/caddy-check.sh           # Caddyfile actual válido y válido también con el bloque añadido
+./shared/caddy-check.sh           # 🟡 contenedor temporal sin red: Caddyfile actual válido y válido con el bloque añadido
+sudo -E ./shared/caddy-backup.sh  # 🟡 copia verificable en /srv/perfumeria/caddy-backups/config-<fecha>/
 ```
 
 `preflight.sh` comprueba, entre otras cosas:
@@ -112,6 +154,7 @@ nano shared/.env.production       # RELEASE, SECRET_KEY, POSTGRES_PASSWORD (ver 
 pc build                                  # compila en el VPS; mejor en horas de poco tráfico (no tiene límite de CPU)
 pc up -d perfumeria-db
 pc ps                                      # perfumeria-db healthy
+./shared/verify-db-target.sh              # Django debe conectar a perfumeria-db (base 'perfumeria'); si no, NO migrar
 pc run --rm -T perfumeria-web python manage.py migrate --noinput
 pc run --rm -T perfumeria-web python manage.py migrate --check && echo "migraciones al día"
 pc run --rm perfumeria-web python manage.py createsuperuser
@@ -142,6 +185,8 @@ pc logs --tail 50 perfumeria-web
 ```
 
 ### 6. DNS 🔴 (en el registrador; no se ha modificado nada)
+
+> **Estado al 20/11/2026:** `perfumeriaelbuenolor.es` no existe en el DNS público. Los servidores de `.es` (`a.nic.es`), 1.1.1.1 y 8.8.8.8 responden NXDOMAIN incluso para NS y SOA. Antes de este paso, confirma en el registrador que el dominio está registrado y activo y que el nombre es exactamente ese, y configura sus servidores DNS.
 
 Obtén las IP del VPS con `ip -o addr show scope global` (o en el panel de OVHcloud). Antes de cambiar nada, revisa los registros actuales del dominio (por ejemplo, una página de aparcamiento) y anótalos para poder revertir.
 

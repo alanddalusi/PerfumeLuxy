@@ -13,7 +13,7 @@ grep -qF "$BEGIN_MARK" "$host_file" || { echo "No perfumeria block in $host_file
 [ "$(grep -cF "$BEGIN_MARK" "$host_file")" = 1 ] && [ "$(grep -cF "$END_MARK" "$host_file")" = 1 ] \
     || { echo "Markers are not exactly one BEGIN and one END; fix by hand." >&2; exit 1; }
 
-backups="/srv/perfumeria/caddy-backups"
+backups="$CADDY_BACKUP_DIR"
 mkdir -p "$backups"; chmod 700 "$backups"
 backup="$backups/Caddyfile.before-rollback.$(date -u +%Y%m%dT%H%M%SZ)"
 cp -p -- "$host_file" "$backup"

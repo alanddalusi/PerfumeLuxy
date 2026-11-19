@@ -4,7 +4,8 @@
 SHARED_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DEPLOY_DIR="$(cd "$SHARED_DIR/.." && pwd)"
 ENV_FILE="${PERFUMERIA_ENV_FILE:-$SHARED_DIR/.env.production}"
-BLOCK_FILE="$SHARED_DIR/perfumeria.caddy"
+BLOCK_FILE="${PERFUMERIA_CADDY_BLOCK:-$SHARED_DIR/perfumeria.caddy}"   # override only in the rehearsal
+CADDY_BACKUP_DIR="${CADDY_BACKUP_DIR:-/srv/perfumeria/caddy-backups}"
 BEGIN_MARK="# >>> BEGIN perfumeria-el-buen-olor"
 END_MARK="# <<< END perfumeria-el-buen-olor"
 PROJECT="perfumeria-production"
@@ -45,7 +46,9 @@ validate_candidate() {
     envfile="$(mktemp)"; chmod 600 "$envfile"
     docker inspect -f '{{range .Config.Env}}{{println .}}{{end}}' "$CADDY" | grep -v '^$' > "$envfile"
     while IFS='|' read -r type source destination rw; do
-        [ "$type" = "bind" ] && mounts+=(--mount "type=bind,src=$source,dst=$destination,readonly")
+        # The Caddyfile's own file mount is replaced by the candidate (same destination twice
+        # is rejected by Docker as a duplicate mount point).
+        [ "$type" = "bind" ] && [ "$destination" != "$inside" ] && mounts+=(--mount "type=bind,src=$source,dst=$destination,readonly")
     done < <(docker inspect -f '{{range .Mounts}}{{.Type}}|{{.Source}}|{{.Destination}}|{{.RW}}{{println}}{{end}}' "$CADDY")
     docker run --rm --network none --env-file "$envfile" "${mounts[@]}" \
         --mount "type=bind,src=$candidate,dst=$inside,readonly" \

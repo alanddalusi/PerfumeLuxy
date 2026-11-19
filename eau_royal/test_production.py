@@ -395,3 +395,39 @@ class SharedProxySettingsTests(SimpleTestCase):
 
         with self.settings(TRUSTED_PROXY_HOSTS=["172.18.0.0/16"]), self.assertRaises(ImproperlyConfigured):
             proxy.TrustedProxyMiddleware(lambda request: HttpResponse())
+
+
+class SharedVpsAuditAndRehearsalTests(SimpleTestCase):
+    root = Path(settings.BASE_DIR) / "deploy" / "shared"
+
+    def test_remote_audit_is_read_only(self):
+        text = (self.root / "audit-readonly.sh").read_text(encoding="utf-8")
+        code = "\n".join(line for line in text.splitlines() if not line.lstrip().startswith("#"))
+        for forbidden in ("docker run", "docker create", "docker rm", "docker stop", "docker restart", "docker kill",
+                          "docker cp", "network create", "network connect", "network rm", "volume rm", "volume create", "volume prune", "compose up",
+                          "compose down", "caddy reload", "mkdir", "tee ", "mktemp", "rm -", "sed -i", "chmod", "chown"):
+            self.assertNotIn(forbidden, code)
+        # Output redirections only to /dev/null; results go to stdout.
+        for target in re.findall(r"(?<![<>&0-9-])>{1,2}\s*([^\s;|)]+)", code):
+            self.assertEqual(target, "/dev/null")
+        self.assertNotIn("cat \"$host_file\"", code)  # never prints the forum Caddyfile
+
+    def test_rehearsal_refuses_real_forum_and_real_deployment(self):
+        text = (self.root / "rehearsal" / "run.sh").read_text(encoding="utf-8")
+        self.assertIn('LABEL="perfumeria.rehearsal"', text)
+        self.assertIn("this is not a rehearsal machine", text)
+        self.assertIn("never rehearse next to a real deployment", text)
+        self.assertIn("NOT removing $SIM_PROJECT", text)
+        self.assertIn("local_certs", text)  # no ACME request for the real domain
+        guards = text.index("# ------------------------------------------------------------ guards")
+        self.assertLess(guards, text.index("sim up -d"))
+        self.assertLess(guards, text.index('cat > "$ENV_PATH"'))
+        compose = (self.root / "rehearsal" / "foro-compose.yaml").read_text(encoding="utf-8")
+        self.assertEqual(compose.count('perfumeria.rehearsal: "true"'), 8)  # 3 services, 2 networks, 3 volumes
+        self.assertIn("127.0.0.1:${SIM_HTTPS_PORT", compose)
+
+    def test_validation_container_never_duplicates_the_caddyfile_mount(self):
+        lib = (self.root / "lib.sh").read_text(encoding="utf-8")
+        self.assertIn('[ "$destination" != "$inside" ]', lib)
+        self.assertIn("--network none", lib)
+        self.assertIn("readonly", lib)

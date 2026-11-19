@@ -14,13 +14,15 @@ set -euo pipefail
 source "$(dirname "$0")/lib.sh"
 
 [ -n "${FORO_URLS:-}" ] || { echo "Set FORO_URLS to one or more forum URLs to compare before/after." >&2; exit 1; }
-REQUIRE_DNS=1 "$SHARED_DIR/preflight.sh" >/dev/null || { echo "Preflight failed. Run: REQUIRE_DNS=1 ./shared/preflight.sh" >&2; exit 1; }
+# REQUIRE_DNS=0 is only for the rehearsal VM, where the real domain cannot point to the host.
+REQUIRE_DNS="${REQUIRE_DNS:-1}" "$SHARED_DIR/preflight.sh" >/dev/null \
+    || { echo "Preflight failed. Run: REQUIRE_DNS=${REQUIRE_DNS:-1} ./shared/preflight.sh" >&2; exit 1; }
 
 inside="$(caddy_config_path)"
 host_file="$(caddy_config_host_path "$inside")"
 if grep -qF "$BEGIN_MARK" "$host_file"; then echo "Block already present; nothing to do."; exit 0; fi
 
-backups="/srv/perfumeria/caddy-backups"
+backups="$CADDY_BACKUP_DIR"
 mkdir -p "$backups"; chmod 700 "$backups"
 stamp="$(date -u +%Y%m%dT%H%M%SZ)"
 backup="$backups/Caddyfile.$stamp"
@@ -33,7 +35,8 @@ trap 'rm -rf -- "$work"' EXIT
 { cat -- "$backup"; printf '\n'; cat -- "$BLOCK_FILE"; } > "$work/candidate.Caddyfile"
 validate_candidate "$work/candidate.Caddyfile" >/dev/null
 
-statuses() { for url in $FORO_URLS; do printf '%s %s\n' "$url" "$(curl -s -o /dev/null --max-time 15 -w '%{http_code}' "$url")"; done; }
+# FORO_CURL_OPTS: extra curl options (--resolve/-k in the rehearsal); empty in production.
+statuses() { for url in $FORO_URLS; do printf '%s %s\n' "$url" "$(curl -s ${FORO_CURL_OPTS:-} -o /dev/null --max-time 15 -w '%{http_code}' "$url")"; done; }
 before="$(statuses)"
 echo "Forum before:"; printf '  %s\n' "$before"
 
