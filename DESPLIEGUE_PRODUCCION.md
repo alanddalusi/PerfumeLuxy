@@ -7,7 +7,7 @@ Estado: preparado, **no desplegado**. La tienda arranca siempre con `STORE_MODE=
 | Servicio | Imagen | Red | Puertos publicados | Datos |
 |---|---|---|---|---|
 | `caddy` | `caddy:2.8-alpine` | `edge` (IP fija 172.30.10.2) | 80, 443 TCP/UDP | certificados (`caddy_data`), logs de acceso (`caddy_logs`), estáticos en solo lectura |
-| `web` | `Dockerfile` (Python 3.13, Gunicorn) | `edge` (172.30.10.3) + `backend` | ninguno | `static`, `media` (originales privados), `catalog_assets` (WebP aprobados) |
+| `web` | `Dockerfile` (Python 3.13, Gunicorn) | `edge` (IP dinámica del rango .128/25) + `backend` | ninguno | `static`, `media` (originales privados), `catalog_assets` (WebP aprobados) |
 | `db` | `postgres:17-alpine` | `backend` (`internal: true`) | ninguno | `pgdata` |
 
 - Solo Caddy es accesible desde Internet. PostgreSQL no tiene puerto publicado y la red `backend` no tiene salida.

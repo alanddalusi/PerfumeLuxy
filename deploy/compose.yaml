@@ -37,14 +37,14 @@ services:
       dockerfile: Dockerfile
     image: perfumeria-web:${RELEASE:-local}
     restart: unless-stopped
-    env_file: .env.production
+    env_file: ${PERFUMERIA_ENV_FILE:-.env.production}
     environment:
       DJANGO_ENV: production
       STORE_MODE: prelaunch
       DATABASE_URL: postgresql://${POSTGRES_USER:-perfumeria}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-perfumeria}?sslmode=disable
       DJANGO_DB_PLAINTEXT_HOSTS: db
       DJANGO_TRUST_HTTPS_PROXY: "1"
-      DJANGO_TRUSTED_PROXY_NETWORKS: 172.30.10.2/32
+      DJANGO_TRUSTED_PROXY_NETWORKS: ${EDGE_CADDY_IP:-172.30.10.2}/32
       CATALOG_ASSET_ROOT: /srv/catalog_assets
     volumes:
       - static:/app/staticfiles
@@ -55,8 +55,7 @@ services:
         condition: service_healthy
     networks:
       backend: {}
-      edge:
-        ipv4_address: 172.30.10.3
+      edge: {}
     read_only: true
     tmpfs:
       - /tmp
@@ -74,9 +73,10 @@ services:
     image: caddy:2.8-alpine
     restart: unless-stopped
     ports:
-      - "80:80"
-      - "443:443"
-      - "443:443/udp"
+      # Production binds all interfaces; the isolated smoke test binds 127.0.0.1 only.
+      - "${HTTP_BIND:-80}:80"
+      - "${HTTPS_BIND:-443}:443"
+      - "${HTTPS_BIND:-443}:443/udp"
     environment:
       SITE_DOMAIN: ${SITE_DOMAIN:?Set SITE_DOMAIN in .env.production}
       ACME_EMAIL: ${ACME_EMAIL:?Set ACME_EMAIL in .env.production}
@@ -91,7 +91,7 @@ services:
         condition: service_healthy
     networks:
       edge:
-        ipv4_address: 172.30.10.2
+        ipv4_address: ${EDGE_CADDY_IP:-172.30.10.2}
     security_opt: ["no-new-privileges:true"]
     cap_drop: [ALL]
     cap_add: [NET_BIND_SERVICE]
@@ -109,9 +109,9 @@ networks:
   edge:
     ipam:
       config:
-        - subnet: 172.30.10.0/24
-          # Dynamic addresses come from the upper half; .2 (caddy) and .3 (web) stay reserved.
-          ip_range: 172.30.10.128/25
+        - subnet: ${EDGE_SUBNET:-172.30.10.0/24}
+          # Dynamic addresses (web, one-off runs) come from the upper half, so .2 stays Caddy's.
+          ip_range: ${EDGE_IP_RANGE:-172.30.10.128/25}
 
 volumes:
   pgdata:

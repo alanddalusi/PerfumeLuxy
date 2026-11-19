@@ -7,7 +7,8 @@ set -euo pipefail
 umask 077
 
 cd "$(dirname "$0")/.."
-ENV_FILE=".env.production"
+# Override for the isolated smoke test; production uses deploy/.env.production.
+ENV_FILE="${PERFUMERIA_ENV_FILE:-.env.production}"
 [ -f "$ENV_FILE" ] || { echo "Missing deploy/$ENV_FILE" >&2; exit 1; }
 BACKUP_DIR="$(grep -E '^BACKUP_DIR=' "$ENV_FILE" | cut -d= -f2- || true)"
 BACKUP_DIR="${BACKUP_DIR:-/srv/perfumeria/backups}"

@@ -14,9 +14,12 @@ set -euo pipefail
 mode="${1:-}"
 source_dir="${2:-}"
 [ -n "$mode" ] && [ -d "$source_dir" ] || { sed -n '2,13p' "$0"; exit 2; }
+# Resolve before changing directory so relative backup paths keep working.
+source_dir="$(cd "$source_dir" && pwd)"
 
 cd "$(dirname "$0")/.."
-ENV_FILE=".env.production"
+# Override for the isolated smoke test; production uses deploy/.env.production.
+ENV_FILE="${PERFUMERIA_ENV_FILE:-.env.production}"
 compose() { docker compose --env-file "$ENV_FILE" "$@"; }
 
 (cd "$source_dir" && sha256sum --check --quiet SHA256SUMS)
