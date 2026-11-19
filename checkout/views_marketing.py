@@ -9,10 +9,12 @@ from django.views.decorators.http import require_POST
 from django.http import JsonResponse
 from django.utils import timezone
 
+from .store_mode import require_live_store
 from .marketing_models import Coupon, CouponUsage, Bundle, LoyaltyProgram, LoyaltyTransaction
 from products.models import Product
 
 
+@require_live_store
 @require_POST
 def apply_coupon(request):
     """Aplicar cupón de descuento al carrito"""
@@ -81,6 +83,7 @@ def apply_coupon(request):
     return redirect('checkout:checkout')
 
 
+@require_live_store
 @require_POST
 def remove_coupon(request):
     """Eliminar cupón del carrito"""
@@ -144,6 +147,7 @@ def register_coupon_usage(order, user):
             pass
 
 
+@require_live_store
 @login_required
 def loyalty_dashboard(request):
     """Dashboard del programa de fidelización"""
@@ -178,6 +182,7 @@ def loyalty_dashboard(request):
     return render(request, 'checkout/loyalty_dashboard.html', context)
 
 
+@require_live_store
 @login_required
 @require_POST
 def redeem_points(request):
@@ -225,6 +230,7 @@ def redeem_points(request):
     return redirect('loyalty_dashboard')
 
 
+@require_live_store
 @require_POST
 def remove_loyalty_discount(request):
     """Eliminar descuento de loyalty del carrito"""
@@ -313,6 +319,7 @@ def get_tier_benefits(tier):
 
 
 # API endpoints para AJAX
+@require_live_store
 @require_POST
 def validate_coupon_ajax(request):
     """Validar cupón vía AJAX sin aplicar"""

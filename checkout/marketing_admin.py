@@ -3,6 +3,7 @@ Admin interface para sistema de Marketing
 Cupones, Bundles y Programa de Lealtad
 """
 from django.contrib import admin
+from checkout.store_mode import CommercialAdminMixin
 from django.utils.html import format_html
 from django.utils import timezone
 from .marketing_models import (
@@ -12,7 +13,7 @@ from .marketing_models import (
 
 
 @admin.register(Coupon)
-class CouponAdmin(admin.ModelAdmin):
+class CouponAdmin(CommercialAdminMixin, admin.ModelAdmin):
     list_display = [
         'code', 
         'discount_display', 
@@ -107,7 +108,7 @@ class CouponAdmin(admin.ModelAdmin):
 
 
 @admin.register(CouponUsage)
-class CouponUsageAdmin(admin.ModelAdmin):
+class CouponUsageAdmin(CommercialAdminMixin, admin.ModelAdmin):
     list_display = [
         'coupon',
         'user',
@@ -129,7 +130,7 @@ class CouponUsageAdmin(admin.ModelAdmin):
 
 
 @admin.register(Bundle)
-class BundleAdmin(admin.ModelAdmin):
+class BundleAdmin(CommercialAdminMixin, admin.ModelAdmin):
     list_display = [
         'name',
         'bundle_type',
@@ -173,7 +174,7 @@ class BundleAdmin(admin.ModelAdmin):
 
 
 @admin.register(LoyaltyProgram)
-class LoyaltyProgramAdmin(admin.ModelAdmin):
+class LoyaltyProgramAdmin(CommercialAdminMixin, admin.ModelAdmin):
     list_display = [
         'user',
         'points_display',
@@ -236,7 +237,7 @@ class LoyaltyProgramAdmin(admin.ModelAdmin):
 
 
 @admin.register(LoyaltyTransaction)
-class LoyaltyTransactionAdmin(admin.ModelAdmin):
+class LoyaltyTransactionAdmin(CommercialAdminMixin, admin.ModelAdmin):
     list_display = [
         'loyalty_program',
         'transaction_type',

@@ -5,6 +5,9 @@ from django.contrib.auth.decorators import login_required
 from .models import UserProfile
 from .forms import UserProfileForm
 
+from django.views.decorators.cache import never_cache
+from django.views.decorators.http import require_safe
+
 from checkout.models import Order
 
 
@@ -44,16 +47,13 @@ def profile(request):
     return render(request, template, context)
 
 
+@never_cache
+@login_required
+@require_safe
 def order_history(request, order_number):
     """View order history"""
-    order = get_object_or_404(Order, order_number=order_number)
-
-    messages.info(
-        request,
-        (
-            f"This is a past confirmation for order number {order_number}. "
-            "A confirmation email was sent on the order date."
-        ),
+    order = get_object_or_404(
+        Order, order_number=order_number, user_profile__user=request.user
     )
 
     template = "checkout/checkout_success_luxury.html"

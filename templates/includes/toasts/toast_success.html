@@ -1,3 +1,4 @@
+{% load static %}
 <div class="toast custom-toast rounded-0 border-top-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true">
   <div class="w-100 toast-capper bg-success"></div>
   <div class="toast-header bg-white text-dp d-flex justify-content-between">
@@ -27,14 +28,14 @@
                 <div class="card w-100 border-0">
                   <div class="row row-cols-1">
                     <div class="col-3 col-md-4 pe-0">
-                      {% if item.product.image %}
+                      {% if item.product.public_image_url %}
                         <img
-                          src="{{ item.product.image.url }}"
+                          src="{{ item.product.public_image_url }}"
                           class="card-img-top"
                           alt="{{ item.product.brand.name }} {{ item.product.name }}" />
                       {% else %}
                       <img
-                      src="{{ MEDIA_URL }}noimage.png"
+                      src="{% static 'img/noimage.png' %}"
                       class="card-img-top"
                       alt="{{ item.product.brand.name }} {{ item.product.name }}" />
                       {% endif %}
@@ -72,7 +73,8 @@
         </div>
         <div class="col-12 mx-auto mb-3 d-grid gap-2">
           <div>
-          {% if sub_total >= discount_threshold  %}
+          {% if not store_prelaunch %}
+    {% if sub_total >= discount_threshold  %}
             <div class="text-center bg-lv-40">
               <p class="py-2 mb-0">Get {{ discount_percentage }}% OFF in checkout</p>
             </div>
@@ -83,6 +85,7 @@
               </p>
             </div>
           {% endif %}
+    {% endif %}
           </div>
           <div class="d-grid gap-2 d-flex justify-content-center justify-content-md-around">
             <a
@@ -92,7 +95,7 @@
               <span class="icon">
                 <i class="fa-solid fa-lock"></i>
               </span>
-              <span class="text-capitalize">Checkout</span>
+              <span class="text-capitalize">{% if store_prelaunch %}Ver carrito{% else %}Checkout{% endif %}</span>
             </a>
           </div>
         </div>

@@ -34,7 +34,7 @@ class OrderForm(forms.ModelForm):
             ),
             "email": forms.EmailInput(
                 attrs={
-                    "pattern": "/^[a-zA-Z0-9._-]+@[a-zA-Z]+\.[a-zA-Z]+$/",
+                    "pattern": r"/^[a-zA-Z0-9._-]+@[a-zA-Z]+\.[a-zA-Z]+$/",
                     "title": ("Please enter your email in the format: "
                               "email@example.com"),
                     "autocomplete": "email",
@@ -42,8 +42,8 @@ class OrderForm(forms.ModelForm):
             ),
             "phone_number": PhoneInput(
                 attrs={
-                    "pattern": ("/^\+[1-9]\d{2}\d{10}|\+[1-9][0-9]\d{10}"
-                                "|0?1?8?\d{4,15}$/"),
+                    "pattern": (r"/^\+[1-9]\d{2}\d{10}|\+[1-9][0-9]\d{10}"
+                                r"|0?1?8?\d{4,15}$/"),
                     "title": "Please enter a valid phone number in "
                     "the format: 0123456789 or +12345678912",
                     "autocomplete": "tel",

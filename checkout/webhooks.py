@@ -5,11 +5,14 @@ from django.views.decorators.csrf import csrf_exempt
 
 from checkout.webhook_handler import StripeWH_Handler
 
+from .store_mode import require_live_store
+
 import stripe
 
 
-@require_POST
 @csrf_exempt
+@require_live_store
+@require_POST
 def webhook(request):
     """Listen for webhooks from stripe"""
 
@@ -19,7 +22,7 @@ def webhook(request):
 
     # Get the webhook data and verify its signature
     payload = request.body
-    sig_header = request.META["HTTP_STRIPE_SIGNATURE"]
+    sig_header = request.META.get("HTTP_STRIPE_SIGNATURE", "")
     event = None
 
     try:
@@ -27,7 +30,7 @@ def webhook(request):
     except ValueError as e:
         # Invalid payload
         return HttpResponse(content=e, status=400)
-    except stripe.error.SignatureVerificationError as e:
+    except stripe.SignatureVerificationError as e:
         # Invalid signature
         return HttpResponse(content=e, status=400)
     except Exception as e:

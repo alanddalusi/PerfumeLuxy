@@ -1,22 +1,25 @@
 from django.shortcuts import (
     render, redirect, reverse, get_object_or_404, HttpResponse,)
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_POST, require_safe
+from django.views.decorators.cache import never_cache
+from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from django.contrib import messages
 
 
 from .forms import OrderForm
+from .store_mode import require_live_store
 from .models import Order, CartItem
 
 from bag.contexts import bag_contents
 from products.models import Product
 from profiles.models import UserProfile
-from profiles.forms import UserProfileForm
 
 import stripe
 import json
 
 
+@require_live_store
 @require_POST
 def cache_checkout_data(request):
     try:
@@ -43,6 +46,7 @@ def cache_checkout_data(request):
         return HttpResponse(content=e, status=400)
 
 
+@require_live_store
 def checkout(request):
     """
     View to return user input when filling forms and handle stripe
@@ -52,6 +56,7 @@ def checkout(request):
     stripe_public_key = settings.STRIPE_PUBLIC_KEY
     stripe_secret_key = settings.STRIPE_SECRET_KEY
 
+    intent = None
     if request.method == "POST":
         bag = request.session.get("bag", {})
         form_data = {
@@ -72,6 +77,8 @@ def checkout(request):
             pid = request.POST.get("client_secret").split("_secret")[0]
             order.stripe_pid = pid
             order.original_bag = json.dumps(bag)
+            if request.user.is_authenticated:
+                order.user_profile = UserProfile.objects.filter(user=request.user).first()
             order.save()
             for item_id, item_data in bag.items():
                 try:
@@ -106,9 +113,15 @@ def checkout(request):
                     order.delete()
                     return redirect(reverse("bag:view_bag"))
 
-            request.session["save_info"] = "save-info" in request.POST
-            return redirect(reverse("checkout_success",
-                                    args=[order.order_number]))
+            for key in (
+                "bag", "save_info", "coupon_id", "coupon_code", "discount",
+                "free_shipping", "loyalty_discount", "loyalty_points_used",
+            ):
+                request.session.pop(key, None)
+
+            if order.user_profile_id:
+                return redirect("checkout:checkout_success", order_number=order.order_number)
+            return redirect("home:index")
         else:
             messages.error(request, "There was an error with form")
     else:
@@ -118,7 +131,7 @@ def checkout(request):
                 request,
                 "There's nothing in your bag at the moment"
             )
-            return redirect(reverse("products"))
+            return redirect(reverse("products:products"))
 
         current_bag = bag_contents(request)
         total = current_bag["total"]
@@ -196,83 +209,14 @@ def checkout(request):
     return render(request, template, context)
 
 
+@never_cache
+@login_required
+@require_safe
 def checkout_success(request, order_number):
-    """
-    Handle successful checkouts
-    """
-    from .views_marketing import register_coupon_usage, add_loyalty_points
-    
-    save_info = request.session.get("save_info")
-    order = get_object_or_404(Order, order_number=order_number)
-
-    if request.user.is_authenticated:
-        profile = UserProfile.objects.get(user=request.user)
-        # Attach the user's profile to the order
-        order.user_profile = profile
-        order.save()
-
-        # Save the user's info
-        if save_info:
-            profile_data = {
-                "default_phone_number": order.phone_number,
-                "default_street_address1": order.street_address1,
-                "default_street_address2": order.street_address2,
-                "default_town_or_city": order.town_or_city,
-                "default_county": order.county,
-                "default_postcode": order.postcode,
-                "default_country": order.country,
-            }
-            user_profile_form = UserProfileForm(profile_data, instance=profile)
-            if user_profile_form.is_valid():
-                user_profile_form.save()
-        
-        # Register coupon usage
-        register_coupon_usage(request.session, request.user)
-        
-        # Add loyalty points
-        points_earned = add_loyalty_points(
-            request.user,
-            float(order.grand_total),
-            order.order_number
-        )
-        
-        # Show loyalty points message
-        if points_earned > 0:
-            messages.success(
-                request,
-                f"¡Has ganado {points_earned} puntos de fidelidad!"
-            )
-
-    messages.success(
-        request,
-        (
-            f"Order successfully processed! "
-            f"Your order number is {order_number}. "
-            f"A confirmation email will be sent to {order.email}."
-        )
+    order = get_object_or_404(
+        Order, order_number=order_number, user_profile__user=request.user
     )
-
-    if "bag" in request.session:
-        del request.session["bag"]
-    
-    # Clean coupon and loyalty session data
-    if "coupon_id" in request.session:
-        del request.session["coupon_id"]
-    if "coupon_code" in request.session:
-        del request.session["coupon_code"]
-    if "discount" in request.session:
-        del request.session["discount"]
-    if "free_shipping" in request.session:
-        del request.session["free_shipping"]
-    if "loyalty_discount" in request.session:
-        del request.session["loyalty_discount"]
-    if "loyalty_points_used" in request.session:
-        del request.session["loyalty_points_used"]
-
-    template = "checkout/checkout_success_luxury.html"
-    context = {
+    return render(request, "checkout/checkout_success_luxury.html", {
         "order": order,
         "on_checkout_success": True,
-    }
-
-    return render(request, template, context)
+    })

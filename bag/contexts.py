@@ -1,8 +1,10 @@
 from decimal import Decimal
 from django.conf import settings
-from django.shortcuts import get_object_or_404
 from products.models import Product
 from products.models import Brand
+
+
+BAG_SIZES = ("30ML", "50ML", "100ML", "onesize")
 
 
 def get_price(product, key):
@@ -22,39 +24,35 @@ def bag_contents(request):
     bag = request.session.get("bag", {})
     brands = Brand.objects.all()
 
+    item_ids = {
+        key: int(key) for key in bag
+        if key.isascii() and key.isdigit() and len(key) <= 19 and int(key) <= 2**63 - 1
+    }
+    catalog = Product.objects.published().select_related("brand").prefetch_related("catalog_images").in_bulk(item_ids.values())
     for item_id, item_data in bag.items():
+        product = catalog.get(item_ids.get(item_id))
+        if product is None or product.price is None:
+            continue
         if isinstance(item_data, int):
-            product = get_object_or_404(Product, pk=item_id)
-            size = "onesize"
-            price = get_price(product, size)
-            sub_total += item_data * price
-            product_count += item_data
-            bag_items.append(
-                {
-                    "item_id": item_id,
-                    "quantity": item_data,
-                    "product": product,
-                    "item_price": price,
-                    "item_total": price * item_data,
-                    "size": size,
-                }
-            )
+            lines = {"onesize": item_data}
+        elif isinstance(item_data, dict):
+            lines = item_data.get("items_by_size", {})
         else:
-            product = get_object_or_404(Product, pk=item_id)
-            for size, quantity in item_data["items_by_size"].items():
-                price = get_price(product, size)
-                sub_total += quantity * price
-                product_count += quantity
-                bag_items.append(
-                    {
-                        "item_id": item_id,
-                        "quantity": quantity,
-                        "product": product,
-                        "item_price": price,
-                        "item_total": price * quantity,
-                        "size": size,
-                    }
-                )
+            continue
+        for size, quantity in lines.items():
+            if size not in BAG_SIZES or not isinstance(quantity, int) or quantity <= 0:
+                continue
+            price = get_price(product, size)
+            sub_total += quantity * price
+            product_count += quantity
+            bag_items.append({
+                "item_id": item_id,
+                "quantity": quantity,
+                "product": product,
+                "item_price": price,
+                "item_total": quantity * price,
+                "size": size,
+            })
 
     if sub_total >= settings.DISCOUNT_THRESHOLD:
         discount = sub_total * Decimal(settings.DISCOUNT_PERCENTAGE / 100)

@@ -10,6 +10,20 @@ from profiles.models import UserProfile
 import json
 import time
 
+import stripe
+
+
+def payment_charge(intent):
+    """Resolve the charge in both legacy and current signed event payloads."""
+    legacy_charges = getattr(intent, "charges", None)
+    if legacy_charges and legacy_charges.data:
+        return legacy_charges.data[0]
+
+    latest_charge = getattr(intent, "latest_charge", None)
+    if isinstance(latest_charge, str):
+        return stripe.Charge.retrieve(latest_charge)
+    return latest_charge
+
 
 class StripeWH_Handler:
     """Handle Stripe webhooks"""
@@ -46,12 +60,18 @@ class StripeWH_Handler:
         bag = intent.metadata.bag
         save_info = intent.metadata.save_info
 
-        billing_details = intent.charges.data[0].billing_details
+        charge = payment_charge(intent)
         shipping_details = intent.shipping
-        total = round(intent.charges.data[0].amount / 100, 2)
+        if charge is None or shipping_details is None:
+            return HttpResponse("Incomplete payment intent", status=400)
+        billing_details = charge.billing_details
+        total = round(charge.amount / 100, 2)
+        customer_name = getattr(shipping_details, "name", None) or getattr(
+            shipping_details, "full_name", None
+        )
 
         # Clean data in the shipping details
-        for field, value in shipping_details.address.items():
+        for field, value in shipping_details.address.to_dict().items():
             if value == "":
                 shipping_details.address[field] = None
 
@@ -78,7 +98,7 @@ class StripeWH_Handler:
         while attempt <= 5:
             try:
                 order = Order.objects.get(
-                    full_name__iexact=shipping_details.full_name,
+                    full_name__iexact=customer_name,
                     email__iexact=billing_details.email,
                     phone_number__iexact=shipping_details.phone,
                     street_address1__iexact=shipping_details.address.line1,
@@ -92,6 +112,7 @@ class StripeWH_Handler:
                     stripe_pid=pid,
                 )
                 order_exists = True
+                break
 
             except Order.DoesNotExist:
                 attempt += 1
@@ -107,7 +128,7 @@ class StripeWH_Handler:
             order = None
             try:
                 order = Order.objects.create(
-                    full_name=shipping_details.full_name,
+                    full_name=customer_name,
                     user_profile=profile,
                     email=billing_details.email,
                     phone_number=shipping_details.phone,
@@ -127,7 +148,7 @@ class StripeWH_Handler:
                             order=order,
                             product=product,
                             quantity=item_data,
-                            product_size=size,
+                            product_size="",
                         )
                         order_cart_item.save()
                     else:

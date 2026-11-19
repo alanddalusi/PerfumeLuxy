@@ -14,10 +14,10 @@
             
             <!-- Imagen del tamaño -->
             <div class="size-image">
-                {% if size.image %}
-                    <img src="{{ size.image.url }}" alt="{{ size.size_ml }}ml">
+                {% if product.public_image_url %}
+                    <img src="{{ product.public_image_url }}" alt="{{ size.size_ml }}ml">
                 {% else %}
-                    <img src="{{ product.image.url }}" alt="{{ size.size_ml }}ml">
+                    <img src="{% static 'img/noimage.png' %}" alt="">
                 {% endif %}
             </div>
             

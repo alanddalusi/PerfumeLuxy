@@ -1,4 +1,5 @@
 from django.contrib import admin
+from checkout.store_mode import CommercialAdminMixin
 from .models import Order, CartItem
 
 
@@ -11,7 +12,7 @@ class CartItemAdminInline(admin.TabularInline):
 
 
 @admin.register(Order)
-class OrderAdmin(admin.ModelAdmin):
+class OrderAdmin(CommercialAdminMixin, admin.ModelAdmin):
     inlines = (CartItemAdminInline,)
 
     readonly_fields = (
