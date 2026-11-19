@@ -4,7 +4,27 @@ Estado: **preparado, no desplegado.** Nada de lo descrito aquí se ha ejecutado 
 
 VPS OVHcloud con Ubuntu 26.04, 4 vCores, 8 GB de RAM (6,2 GiB libres) y 61 GB de disco libres. Foro IA al Día ya funciona con 7 contenedores; su Caddy (`foroia-production-caddy-1`) ocupa 80/443 en las redes `foroia-production_backend` y `foroia-production_edge`. Dominio nuevo: `perfumeriaelbuenolor.es`.
 
-## Leyenda de autorización
+## Auditoría real del VPS (19/11/2026)
+
+Resultado de `audit-readonly.sh` ejecutado por SSH, sin escribir en el VPS: **0 fallos y 2 avisos (DNS)**. Los informes completos están en `auditorias/`, carpeta local ignorada por Git.
+
+- **Host.** Ubuntu 26.04 LTS, Docker 29.9.2, Compose 5.6.1. 6,3 GiB de RAM disponibles, sin swap. 61 GB libres.
+- **Contenedores del foro.** Los 7 contenedores de `foroia-production` están en marcha y sanos, sin límites de memoria. El proyecto `foroia-seo-review` está detenido.
+- **Caddy del foro.** Imagen `caddy:2-alpine`, versión 2.11.7. El Caddyfile está montado como archivo suelto desde `/opt/foroia/deploy/Caddyfile` (root, 644); el inodo coincide dentro y fuera del contenedor. La configuración actual es válida. El API de administración responde en `127.0.0.1:2019`, así que se puede recargar sin reiniciar. Publica 80/443 por IPv4 e IPv6.
+- **Validación del bloque.** El bloque de la perfumería, añadido al Caddyfile actual, valida con esa misma versión (`caddy adapt --validate` por entrada estándar dentro del contenedor, sin escribir nada).
+- **`foroia-production_edge`.** Solo están `foroia-production-caddy-1` (alias `caddy`) y `foroia-production-web-1` (alias **`web`**). Confirma que un servicio llamado `web` habría colisionado; `perfumeria-web` no colisiona.
+- **Base de datos del foro.** `foroia-production-db-1` solo está en `foroia-production_backend`: no es alcanzable desde `perfumeria-web`.
+- **Puertos en escucha.** 22, 80 y 443, más la resolución DNS local.
+- **Riesgo: el Caddyfile pertenece a las releases del foro.** `/opt/foroia` no es un repositorio Git: el foro se despliega con releases (`make-release.py`, `receipts/`). Una release futura del foro puede sobrescribir `deploy/Caddyfile` y eliminar el bloque de la perfumería. El foro seguiría funcionando, pero la perfumería quedaría fuera de línea. Ver «Decisión pendiente sobre Caddy».
+- **Hallazgo del foro (no de la perfumería).** Varios archivos de `/opt/foroia/deploy` tienen permisos 666 (escribibles por cualquier usuario): `backup.sh`, `foroia-backup.service`/`.timer`, `foroia-health.service`/`.timer`, `install-docker.sh`, `prepare-docker.sh`, `restore-check.sh` y `production.env.example`. Algunos los ejecutan temporizadores de systemd, previsiblemente como root. Se recomienda corregirlos a 644 dentro del proceso del foro.
+- **IPv6.** El VPS tiene IPv6 (`2001:41d0:601:1100::8fe2`) y Caddy escucha en `[::]`, así que conviene un registro AAAA.
+
+### Decisión pendiente sobre Caddy
+
+1. **Recomendada.** Incorporar el bloque de `deploy/shared/perfumeria.caddy` al Caddyfile **fuente** del foro, para que cada release del foro lo conserve. Para la primera publicación se puede aplicar en caliente con `caddy-apply.sh`, siempre que la siguiente release del foro ya lo incluya.
+2. Solo `caddy-apply.sh`. Funciona, pero se pierde con la próxima release del foro y habría que volver a aplicarlo cada vez.
+3. A largo plazo: que el Compose del foro monte un directorio de sitios con `import`. Requiere recrear una vez el Caddy del foro (breve reinicio en una ventana de mantenimiento).
+
 
 | Marca | Significado |
 |---|---|

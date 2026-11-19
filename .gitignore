@@ -27,3 +27,6 @@ backups/
 staticfiles/
 deploy/shared/.env*
 !deploy/shared/env.production.example
+
+# Local audit reports of the VPS (infrastructure details, never committed)
+auditorias/

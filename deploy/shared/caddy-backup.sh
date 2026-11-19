@@ -36,7 +36,7 @@ mount_source="$(docker inspect -f '{{range .Mounts}}{{if eq .Type "bind"}}{{.Sou
 if [ -n "$mount_source" ]; then
     tar -C "$(dirname "$mount_source")" -czf "$dir/config-dir.tar.gz" "$(basename "$mount_source")"
 fi
-docker exec "$CADDY" wget -q -O - http://localhost:2019/config/ > "$dir/running-config.json" 2>/dev/null \
+docker exec "$CADDY" wget -q -O - http://127.0.0.1:2019/config/ > "$dir/running-config.json" 2>/dev/null \
     || echo "admin API not readable; running-config.json skipped" > "$dir/running-config.unavailable"
 docker inspect -f '{{.Config.Image}}' "$CADDY" > "$dir/image.txt"
 docker inspect -f '{{.Image}}' "$CADDY" > "$dir/image-id.txt"

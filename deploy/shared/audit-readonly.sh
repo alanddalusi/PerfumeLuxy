@@ -95,10 +95,12 @@ else
 fi
 docker exec "$CADDY" caddy validate --config "$config" --adapter caddyfile >/dev/null 2>&1 \
     && pass "current configuration validates inside $CADDY" || fail "current configuration does not validate inside $CADDY"
-admin_addr="$(docker exec "$CADDY" sh -c 'echo ${CADDY_ADMIN:-localhost:2019}' 2>/dev/null)"
-docker exec "$CADDY" wget -q -O /dev/null "http://${admin_addr:-localhost:2019}/config/" 2>/dev/null \
-    && pass "admin API answers at ${admin_addr:-localhost:2019} inside the container: graceful reload without restart is possible" \
-    || fail "admin API not reachable at ${admin_addr:-localhost:2019}: reload would fail (check the admin directive)"
+# Caddy's default admin address localhost:2019 is bound to 127.0.0.1. BusyBox wget may try ::1
+# first for "localhost", so probe the IPv4 loopback explicitly (the caddy CLI tries both).
+admin_addr="$(docker exec "$CADDY" sh -c 'echo ${CADDY_ADMIN:-127.0.0.1:2019}' 2>/dev/null | sed 's/^localhost:/127.0.0.1:/')"
+docker exec "$CADDY" wget -q -O /dev/null "http://${admin_addr:-127.0.0.1:2019}/config/" 2>/dev/null \
+    && pass "admin API answers at ${admin_addr:-127.0.0.1:2019} inside the container: graceful reload without restart is possible" \
+    || fail "admin API not reachable at ${admin_addr:-127.0.0.1:2019}: reload would fail (check the admin directive)"
 
 section "Shared network $EDGE"
 if docker network inspect "$EDGE" >/dev/null 2>&1; then
