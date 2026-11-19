@@ -62,7 +62,7 @@ class Command(BaseCommand):
 
         # Test product URLs with slugs
         self.stdout.write("\nTesting product URLs with slugs...")
-        products_with_slugs = Product.objects.exclude(slug='')[:5]
+        products_with_slugs = Product.objects.published().exclude(slug='')[:5]
         
         for product in products_with_slugs:
             url = f'/products/{product.slug}/'

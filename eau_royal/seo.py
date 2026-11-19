@@ -1,11 +1,21 @@
 """
-Sistema SEO dinámico completo para PerfumeLuxe
+Sistema SEO dinámico completo para Perfumería El Buen Olor
 Gestiona meta tags, OpenGraph, Twitter Cards, Schema.org y canonical URLs
 """
 from django.conf import settings
+from django.core.serializers.json import DjangoJSONEncoder
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
+from checkout.store_mode import sales_enabled
+from products.presentation import public_cover
 import json
+
+
+def json_ld(schema):
+    escaped = json.dumps(schema, cls=DjangoJSONEncoder, ensure_ascii=True, allow_nan=False).translate(
+        {ord("&"): r"\u0026", ord("<"): r"\u003C", ord(">"): r"\u003E"}
+    )
+    return format_html('<script type="application/ld+json">{}</script>', mark_safe(escaped))
 
 
 class SEOManager:
@@ -13,9 +23,9 @@ class SEOManager:
     
     def __init__(self, request):
         self.request = request
-        self.site_name = "PerfumeLuxe"
-        self.default_image = f"{request.scheme}://{request.get_host()}/static/img/og-default.jpg"
-        self.default_description = "Descubre PerfumeLuxe - Fragancias 100% auténticas de las mejores marcas. Envío gratis +50€, devolución 30 días. Compra perfumes de lujo con garantía total."
+        self.site_name = "Perfumería El Buen Olor"
+        self.default_image = ""
+        self.default_description = "Descubre familias olfativas y perfumes en Perfumería El Buen Olor."
     
     def get_canonical_url(self, path=None):
         """Genera la URL canónica"""
@@ -23,46 +33,48 @@ class SEOManager:
             return f"{self.request.scheme}://{self.request.get_host()}{path}"
         return self.request.build_absolute_uri()
     
-    def generate_product_schema(self, product):
+    def generate_product_schema(self, product, avg_rating=0, review_count=0):
         """Genera Schema.org para productos"""
         schema = {
             "@context": "https://schema.org/",
             "@type": "Product",
             "name": product.name,
             "description": product.description[:500] if product.description else "",
-            "sku": product.sku or f"PROD-{product.id}",
-            "brand": {
-                "@type": "Brand",
-                "name": product.brand.name if product.brand else "PerfumeLuxe"
-            },
             "offers": {
                 "@type": "Offer",
-                "url": self.get_canonical_url(f"/products/{product.slug}/"),
+                "url": self.get_canonical_url(product.get_absolute_url()),
                 "priceCurrency": "EUR",
                 "price": str(product.price),
                 "availability": "https://schema.org/InStock" if product.in_stock else "https://schema.org/OutOfStock",
                 "seller": {
                     "@type": "Organization",
-                    "name": "PerfumeLuxe"
+                    "name": "Perfumería El Buen Olor"
                 }
             }
         }
         
-        # Añadir imagen si existe
-        if product.image:
-            schema["image"] = self.request.build_absolute_uri(product.image.url)
-        
+        if not sales_enabled() or product.price is None:
+            schema.pop("offers")
+
+        if product.sku:
+            schema["sku"] = product.sku
+        if product.brand and product.brand.name:
+            schema["brand"] = {"@type": "Brand", "name": product.brand.name}
+        image = public_cover(product)
+        if image:
+            schema["image"] = self.request.build_absolute_uri(image)
+
         # Añadir rating si existe
-        if product.review_count > 0:
+        if review_count > 0:
             schema["aggregateRating"] = {
                 "@type": "AggregateRating",
-                "ratingValue": str(product.average_rating),
-                "reviewCount": str(product.review_count),
+                "ratingValue": str(avg_rating),
+                "reviewCount": str(review_count),
                 "bestRating": "5",
                 "worstRating": "1"
             }
         
-        return mark_safe(f'<script type="application/ld+json">{json.dumps(schema, ensure_ascii=False)}</script>')
+        return json_ld(schema)
     
     def generate_breadcrumb_schema(self, items):
         """
@@ -85,39 +97,26 @@ class SEOManager:
             "itemListElement": list_items
         }
         
-        return mark_safe(f'<script type="application/ld+json">{json.dumps(schema, ensure_ascii=False)}</script>')
+        return json_ld(schema)
     
     def generate_organization_schema(self):
         """Genera Schema.org para la organización (para home/footer)"""
         schema = {
             "@context": "https://schema.org",
             "@type": "Organization",
-            "name": "PerfumeLuxe",
+            "name": "Perfumería El Buen Olor",
             "url": self.get_canonical_url('/'),
-            "logo": f"{self.request.scheme}://{self.request.get_host()}/static/img/logo.png",
             "description": self.default_description,
-            "contactPoint": {
-                "@type": "ContactPoint",
-                "telephone": "+34-91-123-4567",
-                "contactType": "customer service",
-                "email": "info@perfumeluxe.com",
-                "availableLanguage": ["Spanish", "English"]
-            },
-            "sameAs": [
-                "https://www.facebook.com/perfumeluxe",
-                "https://www.instagram.com/perfumeluxe",
-                "https://www.twitter.com/perfumeluxe"
-            ]
         }
         
-        return mark_safe(f'<script type="application/ld+json">{json.dumps(schema, ensure_ascii=False)}</script>')
+        return json_ld(schema)
     
     def generate_website_schema(self):
         """Genera Schema.org para el sitio web"""
         schema = {
             "@context": "https://schema.org",
             "@type": "WebSite",
-            "name": "PerfumeLuxe",
+            "name": "Perfumería El Buen Olor",
             "url": self.get_canonical_url('/'),
             "potentialAction": {
                 "@type": "SearchAction",
@@ -129,7 +128,7 @@ class SEOManager:
             }
         }
         
-        return mark_safe(f'<script type="application/ld+json">{json.dumps(schema, ensure_ascii=False)}</script>')
+        return json_ld(schema)
     
     def get_meta_tags(self, **kwargs):
         """
@@ -143,7 +142,7 @@ class SEOManager:
         - type: tipo de contenido OG (website, product, article)
         - canonical: URL canónica (si es diferente de la actual)
         """
-        title = kwargs.get('title', 'PerfumeLuxe - Perfumes Auténticos de Lujo | Envío Gratis +50€')
+        title = kwargs.get('title', 'Perfumería El Buen Olor')
         description = kwargs.get('description', self.default_description)
         keywords = kwargs.get('keywords', 'perfumes auténticos, fragancias de lujo, perfume mujer, perfume hombre, eau de parfum, comprar perfume online')
         image = kwargs.get('image', self.default_image)
@@ -160,7 +159,7 @@ class SEOManager:
             'og_description': description,
             'og_image': image,
             'og_url': canonical,
-            'twitter_card': 'summary_large_image',
+            'twitter_card': "summary_large_image" if image else "summary",
             'twitter_title': title,
             'twitter_description': description,
             'twitter_image': image,
@@ -170,25 +169,21 @@ class SEOManager:
         """Genera meta tags específicos para productos"""
         # Construir título SEO optimizado
         title = f"{product.name}"
-        if product.brand:
+        if product.brand and product.brand.name:
             title = f"{product.brand.name} {product.name}"
         if product.concentration:
             title += f" - {dict(product.CONCENTRATION_CHOICES).get(product.concentration, '')}"
-        title += " | PerfumeLuxe"
+        title += " | Perfumería El Buen Olor"
         
-        # Descripción optimizada
-        description = f"{product.name}"
-        if product.brand:
-            description = f"Compra {product.brand.name} {product.name}"
+        description = f"{product.brand.name} {product.name}" if product.brand and product.brand.name else product.name
         if product.fragrance_family:
-            description += f" - {product.fragrance_family.name}"
+            description += f" · {product.fragrance_family.name}"
         if product.description:
-            description += f". {product.description[:100]}"
-        description += f". Envío gratis +50€. Precio: {product.price}€"
-        
+            description += f". {product.description}"
+
         # Keywords
         keywords = f"{product.name}, "
-        if product.brand:
+        if product.brand and product.brand.name:
             keywords += f"{product.brand.name}, "
         if product.fragrance_family:
             keywords += f"perfume {product.fragrance_family.name}, "
@@ -197,7 +192,8 @@ class SEOManager:
         keywords += "comprar perfume online, perfume auténtico, fragancia lujo"
         
         # Imagen
-        image = self.request.build_absolute_uri(product.image.url) if product.image else self.default_image
+        image = public_cover(product)
+        image = self.request.build_absolute_uri(image) if image else self.default_image
         
         return self.get_meta_tags(
             title=title,
@@ -205,7 +201,7 @@ class SEOManager:
             keywords=keywords,
             image=image,
             type='product',
-            canonical=self.get_canonical_url(f"/products/{product.slug}/")
+            canonical=self.get_canonical_url(product.get_absolute_url())
         )
     
     def get_category_meta(self, category_name, gender=None):
@@ -213,12 +209,12 @@ class SEOManager:
         title = f"Perfumes {category_name}"
         if gender:
             title = f"Perfumes {category_name} para {gender}"
-        title += " | PerfumeLuxe"
+        title += " | Perfumería El Buen Olor"
         
         description = f"Descubre nuestra colección de {category_name}"
         if gender:
             description += f" para {gender}"
-        description += ". Fragancias auténticas con envío gratis +50€. Los mejores precios en perfumes de lujo."
+        description += ". Explora las familias y notas olfativas del catálogo."
         
         keywords = f"perfumes {category_name}, fragancia {category_name}, comprar perfume {category_name}"
         if gender:
