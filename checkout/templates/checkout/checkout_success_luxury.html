@@ -257,7 +257,7 @@
           <div class="luxury-order-items">
             {% for item in order.cartitems.all %}
             <div class="luxury-item-card d-flex">
-              <img src="{% if item.product.image %}{{ item.product.image.url }}{% else %}{{ MEDIA_URL }}noimage.png{% endif %}" 
+              <img src="{% if item.product.image %}{{ item.product.image.url }}{% else %}{% static 'img/noimage.png' %}{% endif %}" 
                    alt="{{ item.product.name }}" 
                    class="luxury-item-image">
               <div class="luxury-item-details">

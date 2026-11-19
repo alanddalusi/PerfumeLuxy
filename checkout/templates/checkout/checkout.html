@@ -110,7 +110,7 @@
                           alt="{{ item.product.brand.name }} {{ item.product.name }}" />
                       {% else %}
                         <img
-                          src="{{ MEDIA_URL }}noimage.png"
+                          src="{% static 'img/noimage.png' %}"
                           class="card-img-top"
                           alt="{{ item.product.brand.name }} {{ item.product.name }}" />
                       {% endif %}

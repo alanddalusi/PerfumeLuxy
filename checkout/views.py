@@ -82,7 +82,7 @@ def checkout(request):
             order.save()
             for item_id, item_data in bag.items():
                 try:
-                    product = Product.objects.get(id=item_id)
+                    product = Product.objects.sellable().get(id=item_id)
                     if isinstance(item_data, int):
                         order_cart_item = CartItem(
                             order=order,
@@ -140,8 +140,12 @@ def checkout(request):
         # Verificar que las claves de Stripe estén configuradas
         intent = None
         mock_key = "sk_test_51234567890abcdef"
+        if (not stripe_secret_key or stripe_secret_key == mock_key) and not settings.DEBUG:
+            # Fail closed: a deployment without real Stripe keys must never simulate payments.
+            messages.error(request, "Payments are not available at the moment.")
+            return redirect(reverse("bag:view_bag"))
         if not stripe_secret_key or stripe_secret_key == mock_key:
-            # Crear un intent mock para desarrollo sin Stripe válido
+            # Crear un intent mock solo en desarrollo local (DEBUG)
             class MockIntent:
                 client_secret = "pi_mock_secret_for_development"
             intent = MockIntent()
