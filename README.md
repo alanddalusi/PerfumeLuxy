@@ -1,5 +1,9 @@
 # Eau Royal
 
+Para el entorno actual de Perfumería El Buen Olor, consulta la
+[guía de Python 3.13, Django 5.2 y PostgreSQL](MODERNIZACION_DJANGO.md).
+Las instrucciones de despliegue histórico usan versiones anteriores.
+
 - [Eau Royal](#eau-royal)
   - [Overview](#overview)
     - [What is this website for?](#what-is-this-website-for)

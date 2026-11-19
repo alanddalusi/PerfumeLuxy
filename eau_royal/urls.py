@@ -16,10 +16,9 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
-from django.conf.urls.static import static
-from django.contrib.sitemaps.views import sitemap
-from .sitemaps import sitemaps
-from .seo_views import robots_txt
+from django.contrib.admin.views.decorators import staff_member_required
+from django.views.static import serve
+from .seo_views import public_sitemap, robots_txt
 
 urlpatterns = [
     path("", include("home.urls")),
@@ -31,12 +30,15 @@ urlpatterns = [
     path("accounts/", include("allauth.urls")),
     path(
         "sitemap.xml",
-        sitemap,
-        {"sitemaps": sitemaps},
+        public_sitemap,
         name="django.contrib.sitemaps.views.sitemap"
     ),
     path("robots.txt", robots_txt, name="robots_txt"),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+]
+if settings.DEBUG and settings.MEDIA_URL == "/media/":
+    urlpatterns += [
+        path("media/<path:path>", staff_member_required(serve), {"document_root": settings.MEDIA_ROOT}),
+    ]
 
 handler404 = "home.views.error_404"
 handler500 = "home.views.error_500"
