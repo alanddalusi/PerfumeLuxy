@@ -7,6 +7,8 @@ app_name = 'products'
 
 urlpatterns = [
     path("", views.all_products, name="products"),
+    path("image/<int:image_id>/<str:variant>.webp", views.catalog_image, name="catalog_image"),
+    path("api/search/", views.search_suggestions, name="search_suggestions"),
     path("families/", views.fragrance_families_guide, name="fragrance_families"),
     
     # Wishlist (mejorado)

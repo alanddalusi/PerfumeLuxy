@@ -4,12 +4,17 @@ Tamaños, Muestras, Comparador, Quiz, Perfil Olfativo
 """
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from allauth.account.models import EmailAddress
 from django.contrib import messages
 from django.http import JsonResponse
 from django.db.models import Q, Avg, Count, Min, Max
 from django.views.decorators.http import require_POST
 from django.utils import timezone
+from checkout.store_mode import require_live_store, sales_enabled
+from home.notices import AVAILABILITY_CONSENT_VERSION, rate_allowed, request_confirmation
+
 from .models import Product, FragranceFamily, FragranceNote
+from .presentation import public_cover
 from .models_extended import (
     ProductSize, SampleRequest, UserFragranceProfile,
     ProductComparison, FragranceEvolution
@@ -22,19 +27,21 @@ from .models_extended import (
 
 def get_product_sizes(request, product_id):
     """API para obtener tamaños disponibles de un producto"""
-    product = get_object_or_404(Product, id=product_id)
+    product = get_object_or_404(Product.objects.published().prefetch_related("catalog_images"), id=product_id)
     sizes = product.sizes.all()
     
+    cover = public_cover(product)
+    commerce = sales_enabled()
     data = [{
         'id': size.id,
         'size_ml': size.size_ml,
-        'price': str(size.price),
-        'price_per_ml': size.price_per_ml,
-        'stock': size.stock,
-        'in_stock': size.in_stock,
-        'is_popular': size.is_popular,
-        'is_best_value': size.is_best_value,
-        'image_url': size.image.url if size.image else product.image.url
+        'price': str(size.price) if commerce else None,
+        'price_per_ml': size.price_per_ml if commerce else None,
+        'stock': size.stock if commerce else None,
+        'in_stock': size.in_stock if commerce else None,
+        'is_popular': size.is_popular if commerce else False,
+        'is_best_value': size.is_best_value if commerce else False,
+        'image_url': cover
     } for size in sizes]
     
     return JsonResponse({'sizes': data})
@@ -44,10 +51,11 @@ def get_product_sizes(request, product_id):
 # SISTEMA DE MUESTRAS
 # ========================================
 
+@require_live_store
 @login_required
 def request_sample(request, product_id):
     """Solicitar muestra de un producto"""
-    product = get_object_or_404(Product, id=product_id)
+    product = get_object_or_404(Product.objects.published(), id=product_id)
     
     # Verificar si ya solicitó muestra
     existing = SampleRequest.objects.filter(
@@ -91,8 +99,8 @@ def request_sample(request, product_id):
 def my_sample_requests(request):
     """Ver mis solicitudes de muestras"""
     samples = SampleRequest.objects.filter(
-        user=request.user
-    ).select_related('product')
+        user=request.user, product__publication_status=Product.Publication.APPROVED,
+    ).select_related("product").prefetch_related("product__catalog_images")
     
     context = {
         'samples': samples
@@ -106,48 +114,25 @@ def my_sample_requests(request):
 
 def compare_products(request):
     """Comparar hasta 3 productos lado a lado"""
-    product_ids = request.GET.getlist('products')
-    
-    if len(product_ids) < 2:
-        messages.error(request, 'Selecciona al menos 2 productos para comparar')
-        return redirect('products:products')
-    
-    if len(product_ids) > 3:
-        product_ids = product_ids[:3]
-        messages.warning(request, 'Solo puedes comparar hasta 3 productos')
-    
-    products = Product.objects.filter(id__in=product_ids).prefetch_related(
-        'fragrance_notes',
-        'reviews',
-        'sizes'
-    )
-    
-    # Calcular datos comparativos
-    comparison_data = []
-    for product in products:
-        comparison_data.append({
-            'product': product,
-            'avg_rating': product.reviews.aggregate(
-                Avg('rating')
-            )['rating__avg'] or 0,
-            'review_count': product.reviews.count(),
-            'min_price': product.sizes.aggregate(
-                models.Min('price')
-            )['price__min'] if product.sizes.exists() else product.price,
-            'max_price': product.sizes.aggregate(
-                models.Max('price')
-            )['price__max'] if product.sizes.exists() else product.price,
-        })
-    
-    context = {
-        'comparison_data': comparison_data
-    }
-    return render(request, 'products/compare.html', context)
+    product_ids = []
+    for value in request.GET.getlist("products"):
+        for item in value.split(","):
+            if item.isascii() and item.isdigit() and len(item) <= 19 and int(item) <= 2**63 - 1:
+                product_ids.append(int(item))
+    products = list(Product.objects.published().filter(
+        pk__in=list(dict.fromkeys(product_ids))[:3]
+    ).select_related("brand", "fragrance_family").prefetch_related("fragrance_notes", "catalog_images"))
+    if len(products) < 2:
+        messages.error(request, "Selecciona al menos 2 productos para comparar.")
+        return redirect("products:products")
 
+    return render(request, "products/compare.html", {"products": products})
 
 @login_required
+@require_POST
 def add_to_comparison(request, product_id):
     """Añadir producto a lista de comparación (sesión)"""
+    get_object_or_404(Product.objects.published(), pk=product_id)
     comparison_list = request.session.get('comparison_list', [])
     
     if product_id not in comparison_list:
@@ -168,11 +153,8 @@ def add_to_comparison(request, product_id):
 @login_required
 def fragrance_profile(request):
     """Ver y editar perfil olfativo"""
-    profile, created = UserFragranceProfile.objects.get_or_create(
-        user=request.user
-    )
-    
     if request.method == 'POST':
+        profile, _ = UserFragranceProfile.objects.get_or_create(user=request.user)
         # Actualizar preferencias
         profile.preferred_intensity = request.POST.get('intensity')
         profile.preferred_price_range = request.POST.get('price_range')
@@ -196,7 +178,8 @@ def fragrance_profile(request):
         return redirect('products:fragrance_profile')
     
     # Obtener recomendaciones basadas en perfil
-    recommendations = profile.get_recommendations(limit=8)
+    profile = UserFragranceProfile.objects.filter(user=request.user).first()
+    recommendations = profile.get_recommendations(limit=8) if profile else []
     
     context = {
         'profile': profile,
@@ -233,7 +216,7 @@ def fragrance_quiz_results(request):
     family_ids = request.POST.getlist('families')
     
     # Construir query de productos
-    products = Product.objects.all()
+    products = Product.objects.published().all()
     
     if gender:
         products = products.filter(gender__db_name=gender)
@@ -289,12 +272,12 @@ def get_frequently_bought_together(product, limit=3):
     
     if not orders_with_product:
         # Si no hay órdenes, devolver productos relacionados
-        return Product.objects.filter(
+        return Product.objects.published().filter(
             fragrance_family=product.fragrance_family
         ).exclude(id=product.id)[:limit]
     
     # Productos en esas órdenes (excluyendo el actual)
-    related_products = Product.objects.filter(
+    related_products = Product.objects.published().filter(
         cartitem__order_id__in=orders_with_product
     ).exclude(id=product.id).annotate(
         frequency=Count('id')
@@ -308,23 +291,37 @@ def get_frequently_bought_together(product, limit=3):
 # ========================================
 
 @login_required
+@require_POST
 def notify_when_available(request, product_id):
     """Notificar cuando el producto esté disponible"""
     from .models import StockAlert
     
-    product = get_object_or_404(Product, id=product_id)
+    product = get_object_or_404(Product.objects.published(), id=product_id)
     
-    alert, created = StockAlert.objects.get_or_create(
-        user=request.user,
-        product=product,
-        defaults={'email': request.user.email}
+    verified_email = EmailAddress.objects.filter(
+        user=request.user, email__iexact=request.user.email, verified=True
+    ).first()
+    if verified_email is None:
+        message = "Verifica el correo de tu cuenta para solicitar avisos."
+        if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+            return JsonResponse({"success": False, "message": message}, status=400)
+        messages.error(request, message)
+        return redirect("products:product_detail", slug=product.slug)
+
+    if request.POST.get("consent") != "on":
+        messages.error(request, "Confirma que quieres recibir el aviso de disponibilidad.")
+        return redirect("products:product_detail", slug=product.slug)
+    if not rate_allowed(request):
+        return JsonResponse({"success": False, "message": "Inténtalo más tarde."}, status=429)
+    alert, _ = StockAlert.objects.get_or_create(
+        user=request.user, product=product, defaults={"email": verified_email.email},
     )
-    
-    if created:
-        message = f'Te avisaremos cuando {product.name} esté disponible'
-    else:
-        message = f'Ya estás suscrito a las notificaciones de {product.name}'
-    
+    request_confirmation(
+        request, alert, "disponibilidad", email=verified_email.email,
+        version=AVAILABILITY_CONSENT_VERSION, product_name=product.name,
+    )
+    message = "Si el aviso está pendiente, recibirás un correo para confirmarlo."
+
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         return JsonResponse({'success': True, 'message': message})
     
@@ -368,7 +365,7 @@ def save_comparison(request):
         defaults={'name': f'Comparación {timezone.now().strftime("%d/%m/%Y")}'}
     )
     
-    comparison.products.set(comparison_list)
+    comparison.products.set(Product.objects.published().filter(pk__in=comparison_list))
     
     return JsonResponse({'success': True, 'message': 'Comparación guardada'})
 

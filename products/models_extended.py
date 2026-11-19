@@ -190,7 +190,7 @@ class UserFragranceProfile(models.Model):
         from .models import Product
         
         # Filtrar por familias preferidas
-        products = Product.objects.filter(
+        products = Product.objects.published().filter(
             fragrance_family__in=self.preferred_families.all()
         )
         

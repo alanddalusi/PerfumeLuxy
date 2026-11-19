@@ -1,9 +1,15 @@
 from django.contrib import admin
+from django.core.exceptions import PermissionDenied, ValidationError
+from django.shortcuts import get_object_or_404, redirect
+from django.urls import path
+from django.views.decorators.http import require_POST
+from checkout.store_mode import sales_enabled
 from .models import (
     Brand, Category, Product, Gender, FragranceFamily,
     FragranceNote, Review, ReviewImage, Wishlist,
-    PriceAlert, StockAlert
+    PriceAlert, StockAlert, CatalogImage, PublicationDecision
 )
+from .publication import decide_image, decide_product
 from .admin_extended import (
     ProductSizeInline, ProductVideoInline, FragranceEvolutionInline
 )
@@ -16,9 +22,39 @@ class ReviewImageInline(admin.TabularInline):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
+    change_form_template = "admin/products/publication_change.html"
+    readonly_fields = ("publication_status",)
+
+    def get_urls(self):
+        return [
+            path("<int:object_id>/decision/<str:decision>/",
+                 self.admin_site.admin_view(require_POST(self.publication_decision)),
+                 name="products_product_decision"),
+        ] + super().get_urls()
+
+    def publication_decision(self, request, object_id, decision):
+        product = get_object_or_404(Product, pk=object_id)
+        if not self.has_change_permission(request, product) or not request.user.has_perm("products.publish_product"):
+            raise PermissionDenied
+        try:
+            decide_product(product, decision, request.user)
+        except ValidationError as exc:
+            self.message_user(request, " ".join(exc.messages), level="error")
+        else:
+            self.message_user(request, "Decisión de publicación registrada.")
+        return redirect("admin:products_product_change", object_id)
+
+    def has_delete_permission(self, request, obj=None):
+        if obj is not None and (obj.publication_history.exists() or obj.catalog_images.exists()):
+            return False
+        if not sales_enabled() and obj is not None and obj.cartitem_set.exists():
+            return False
+        return super().has_delete_permission(request, obj)
+
     list_display = (
         "sku",
         "name",
+        "publication_status",
         "brand",
         "category",
         "concentration",
@@ -29,6 +65,7 @@ class ProductAdmin(admin.ModelAdmin):
         "gender",
     )
     list_filter = (
+        "publication_status",
         "brand",
         "category",
         "gender",
@@ -47,6 +84,7 @@ class ProductAdmin(admin.ModelAdmin):
     ordering = ("sku",)
     inlines = [ProductSizeInline, ProductVideoInline, FragranceEvolutionInline]
     fieldsets = (
+        ("Publicación", {"fields": ("publication_status", "verification_sources")}),
         ("Información Básica", {
             "fields": (
                 "name", "sku", "brand", "category",
@@ -82,6 +120,59 @@ class ProductAdmin(admin.ModelAdmin):
             )
         }),
     )
+
+
+@admin.register(CatalogImage)
+class CatalogImageAdmin(admin.ModelAdmin):
+    change_form_template = "admin/products/image_change.html"
+    list_display = ("product", "source_file", "approved_at", "approved_by", "withdrawn_at")
+    search_fields = ("product__name", "source_file")
+    autocomplete_fields = ("product",)
+    readonly_fields = ("asset", "thumbnail", "approved_at", "approved_by", "withdrawn_at")
+
+    def get_readonly_fields(self, request, obj=None):
+        if obj and obj.is_public:
+            return (*self.readonly_fields, "product", "source_file", "source_reference", "rights_reference")
+        return self.readonly_fields
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def get_urls(self):
+        return [
+            path("<int:object_id>/decision/<str:decision>/",
+                 self.admin_site.admin_view(require_POST(self.publication_decision)),
+                 name="products_catalogimage_decision"),
+        ] + super().get_urls()
+
+    def publication_decision(self, request, object_id, decision):
+        image = get_object_or_404(CatalogImage, pk=object_id)
+        if not self.has_change_permission(request, image) or not request.user.has_perm("products.approve_catalogimage"):
+            raise PermissionDenied
+        if decision not in {"approve", "withdraw"}:
+            raise PermissionDenied
+        try:
+            decide_image(image, decision == "approve", request.user)
+        except ValidationError as exc:
+            self.message_user(request, " ".join(exc.messages), level="error")
+        else:
+            self.message_user(request, "Decisión sobre la imagen registrada.")
+        return redirect("admin:products_catalogimage_change", object_id)
+
+
+@admin.register(PublicationDecision)
+class PublicationDecisionAdmin(admin.ModelAdmin):
+    list_display = ("product", "status", "reviewer", "decided_at")
+    readonly_fields = ("product", "status", "reviewer", "decided_at", "evidence")
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
 
 
 @admin.register(Review)
@@ -140,6 +231,19 @@ class PriceAlertAdmin(admin.ModelAdmin):
 
 @admin.register(StockAlert)
 class StockAlertAdmin(admin.ModelAdmin):
+    fields = ("user", "product", "email", "consent_version", "consent_requested_at",
+              "confirmed_at", "withdrawn_at", "is_notified", "notified_at", "created_at")
+    readonly_fields = fields
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
     list_display = (
         "user",
         "product",

@@ -1,0 +1,12 @@
+{% extends "admin/change_form.html" %}
+{% block object-tools-items %}
+  {{ block.super }}
+  {% if original and perms.products.publish_product and has_change_permission %}
+    <li><form method="post" action="{% url 'admin:products_product_decision' original.pk 'approved' %}">
+      {% csrf_token %}<button type="submit">Aprobar y publicar</button>
+    </form></li>
+    <li><form method="post" action="{% url 'admin:products_product_decision' original.pk 'withdrawn' %}">
+      {% csrf_token %}<button type="submit">Retirar publicación</button>
+    </form></li>
+  {% endif %}
+{% endblock %}

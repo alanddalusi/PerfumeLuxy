@@ -1,7 +1,12 @@
+from django.conf import settings
+from django.core.files.storage import storages
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils.text import slugify
+from django.urls import reverse
+
+from home.models import NoticeConsent
 
 
 class Category(models.Model):
@@ -79,6 +84,15 @@ class FragranceNote(models.Model):
         return f"{self.name} ({self.get_note_type_display()})"
 
 
+class ProductQuerySet(models.QuerySet):
+    def published(self):
+        return self.filter(publication_status="approved")
+
+
+def catalog_asset_storage():
+    return storages["catalog_assets"]
+
+
 class Product(models.Model):
     CONCENTRATION_CHOICES = [
         ('parfum', 'Parfum (20-30%)'),
@@ -132,6 +146,23 @@ class Product(models.Model):
         ('winter', 'Invierno'),
         ('all', 'Todo el año'),
     ]
+
+    class Meta:
+        permissions = [("publish_product", "Can approve and withdraw products")]
+
+    class Publication(models.TextChoices):
+        DRAFT = "draft", "Pendiente de revisión"
+        APPROVED = "approved", "Publicada"
+        WITHDRAWN = "withdrawn", "Retirada"
+
+    objects = ProductQuerySet.as_manager()
+    publication_status = models.CharField(
+        max_length=10, choices=Publication.choices, default=Publication.DRAFT, db_index=True,
+    )
+    verification_sources = models.JSONField(
+        default=dict, blank=True,
+        help_text="Referencias por campo: name, brand, concentration, size, notes, family, description.",
+    )
 
     # Campos básicos existentes
     name = models.CharField(max_length=254)
@@ -211,17 +242,34 @@ class Product(models.Model):
     meta_description = models.TextField(max_length=160, null=True, blank=True)
 
     def save(self, *args, **kwargs):
+        if self.pk and self.publication_status == self.Publication.APPROVED:
+            self.publication_status = self.Publication.DRAFT
+            if kwargs.get("update_fields") is not None:
+                kwargs["update_fields"] = {*kwargs["update_fields"], "publication_status"}
         if not self.slug:
-            # Generar slug único con marca + nombre
-            base_slug = slugify(f"{self.brand.name if self.brand else ''} {self.name}")
-            slug = base_slug
+            brand_name = self.brand.name if self.brand and self.brand.name else ""
+            base_slug = slugify(f"{brand_name} {self.name}") or "producto"
+            max_length = self._meta.get_field("slug").max_length
+            slug = base_slug[:max_length].rstrip("-_") or "producto"
+            existing = Product.objects.using(kwargs.get("using") or self._state.db)
             counter = 1
-            while Product.objects.filter(slug=slug).exists():
-                slug = f"{base_slug}-{counter}"
+            while existing.filter(slug=slug).exclude(pk=self.pk).exists():
+                suffix = f"-{counter}"
+                slug = base_slug[:max_length - len(suffix)].rstrip("-_") + suffix
                 counter += 1
             self.slug = slug
+            if kwargs.get("update_fields") is not None:
+                kwargs["update_fields"] = {*kwargs["update_fields"], "slug"}
         super().save(*args, **kwargs)
-    
+
+    @property
+    def public_image_url(self):
+        from .presentation import public_cover
+        return public_cover(self) if self.publication_status == self.Publication.APPROVED else ""
+
+    def get_absolute_url(self):
+        return reverse("products:product_detail", kwargs={"slug": self.slug})
+
     def __str__(self):
         return self.name
     
@@ -254,6 +302,39 @@ class Product(models.Model):
         if self.created_at:
             return (timezone.now() - self.created_at).days <= 30
         return False
+
+
+class PublicationDecision(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="publication_history")
+    reviewer = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
+    status = models.CharField(max_length=10, choices=Product.Publication.choices)
+    evidence = models.JSONField(default=dict, blank=True)
+    decided_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-decided_at", "-pk"]
+
+
+class CatalogImage(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="catalog_images")
+    source_file = models.CharField(max_length=300, help_text="Nombre exacto del archivo de portada o de una variante.")
+    source_reference = models.CharField(max_length=500, help_text="Referencia verificable al origen de la fotografía.")
+    rights_reference = models.CharField(max_length=500, help_text="Referencia al permiso o licencia de publicación.")
+    alt_text = models.CharField(max_length=200, blank=True)
+    display_order = models.PositiveIntegerField(default=0)
+    asset = models.FileField(storage=catalog_asset_storage, upload_to="web/", blank=True, max_length=300)
+    thumbnail = models.FileField(storage=catalog_asset_storage, upload_to="thumb/", blank=True, max_length=300)
+    approved_at = models.DateTimeField(null=True, blank=True)
+    approved_by = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL)
+    withdrawn_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ["display_order", "pk"]
+        permissions = [("approve_catalogimage", "Can approve catalog images")]
+
+    @property
+    def is_public(self):
+        return bool(self.approved_at and not self.withdrawn_at and self.asset)
 
 
 class Review(models.Model):
@@ -341,7 +422,7 @@ class PriceAlert(models.Model):
         return f"Alerta de {self.user.username} para {self.product.name}"
 
 
-class StockAlert(models.Model):
+class StockAlert(NoticeConsent):
     """Alertas de stock disponible"""
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)

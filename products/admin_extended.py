@@ -3,6 +3,7 @@ Admin para modelos extendidos de perfumería
 ProductSize, ProductVideo, SampleRequest, UserFragranceProfile, etc.
 """
 from django.contrib import admin
+from checkout.store_mode import CommercialAdminMixin
 from django.utils.html import format_html
 from .models_extended import (
     ProductSize,
@@ -135,7 +136,7 @@ class ProductVideoAdmin(admin.ModelAdmin):
 
 
 @admin.register(SampleRequest)
-class SampleRequestAdmin(admin.ModelAdmin):
+class SampleRequestAdmin(CommercialAdminMixin, admin.ModelAdmin):
     list_display = [
         'id', 'product', 'user_email', 'status_badge',
         'created_at', 'city', 'country'
