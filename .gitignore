@@ -15,3 +15,6 @@ planning
 *.venv
 *.sqlite3
 *.pyc
+.venv-django52/
+catalog_assets/
+media/
