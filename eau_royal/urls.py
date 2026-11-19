@@ -18,6 +18,7 @@ from django.urls import path, include
 from django.conf import settings
 from django.contrib.admin.views.decorators import staff_member_required
 from django.views.static import serve
+from .health import healthz
 from .seo_views import public_sitemap, robots_txt
 
 urlpatterns = [
@@ -34,6 +35,7 @@ urlpatterns = [
         name="django.contrib.sitemaps.views.sitemap"
     ),
     path("robots.txt", robots_txt, name="robots_txt"),
+    path("healthz/", healthz, name="healthz"),
 ]
 if settings.DEBUG and settings.MEDIA_URL == "/media/":
     urlpatterns += [

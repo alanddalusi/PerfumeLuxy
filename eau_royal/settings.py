@@ -63,6 +63,11 @@ SECURE_HSTS_INCLUDE_SUBDOMAINS = PRODUCTION and env_flag("DJANGO_HSTS_INCLUDE_SU
 SECURE_HSTS_PRELOAD = SECURE_HSTS_INCLUDE_SUBDOMAINS and env_flag("DJANGO_HSTS_PRELOAD")
 if PRODUCTION and env_flag("DJANGO_TRUST_HTTPS_PROXY"):
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+# Container health checks reach Gunicorn directly over HTTP on the private network.
+SECURE_REDIRECT_EXEMPT = [r"^healthz/$"]
+# Peers allowed to report the visitor address in X-Forwarded-For (the bundled Caddy).
+# Empty by default: REMOTE_ADDR is then always the TCP peer.
+TRUSTED_PROXY_NETWORKS = env_list("DJANGO_TRUSTED_PROXY_NETWORKS")
 
 
 INSTALLED_APPS = [
@@ -88,6 +93,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "eau_royal.proxy.TrustedProxyMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -162,7 +168,11 @@ if DATABASE_URL:
             raise ImproperlyConfigured("Production requires PostgreSQL.")
         options = database.setdefault("OPTIONS", {})
         sslmode = options.setdefault("sslmode", "require")
-        if sslmode not in {"require", "verify-ca", "verify-full"}:
+        # Plain connections are accepted only for explicitly listed single-label service
+        # names (e.g. "db" on an internal Docker network without published ports).
+        plaintext_hosts = {host for host in env_list("DJANGO_DB_PLAINTEXT_HOSTS") if "." not in host and ":" not in host}
+        private_service = sslmode == "disable" and database.get("HOST") in plaintext_hosts
+        if sslmode not in {"require", "verify-ca", "verify-full"} and not private_service:
             raise ImproperlyConfigured("Production PostgreSQL requires TLS.")
         database["CONN_MAX_AGE"] = 60
     DATABASES = {"default": database}
@@ -248,7 +258,12 @@ STORAGES["catalog_assets"] = {
     "BACKEND": "django.core.files.storage.FileSystemStorage",
     "OPTIONS": {"location": CATALOG_ASSET_ROOT},
 }
-INTEREST_EMAIL_DELIVERY = PRODUCTION and env_flag("INTEREST_EMAIL_DELIVERY")
+# Outgoing mail is off unless EMAIL_DELIVERY=smtp is set explicitly in production.
+EMAIL_DELIVERY = os.environ.get("EMAIL_DELIVERY", "disabled").strip().lower()
+if EMAIL_DELIVERY not in {"disabled", "smtp"}:
+    raise ImproperlyConfigured("EMAIL_DELIVERY must be disabled or smtp.")
+SMTP_ENABLED = PRODUCTION and EMAIL_DELIVERY == "smtp"
+INTEREST_EMAIL_DELIVERY = SMTP_ENABLED and env_flag("INTEREST_EMAIL_DELIVERY")
 INTEREST_PREVIEW_BACKEND = (
     "django.core.mail.backends.dummy.EmailBackend" if PRODUCTION
     else "django.core.mail.backends.console.EmailBackend"
@@ -269,14 +284,43 @@ DISCOUNT_PERCENTAGE = 15
 DISCOUNT_THRESHOLD = 60
 FREE_DELIVERY_THRESHOLD = 100
 
-if PRODUCTION:
+if SMTP_ENABLED:
     EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-    EMAIL_USE_TLS = True
+    EMAIL_HOST = os.environ.get("EMAIL_HOST", "").strip()
     EMAIL_PORT = int(os.environ.get("EMAIL_PORT", "587"))
-    EMAIL_HOST = os.environ.get("EMAIL_HOST", "smtp.gmail.com")
+    EMAIL_USE_SSL = env_flag("EMAIL_USE_SSL")
+    EMAIL_USE_TLS = not EMAIL_USE_SSL
+    EMAIL_TIMEOUT = 10
     EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "")
     EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD") or os.environ.get("EMAIL_HOST_PASS", "")
-    DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL") or EMAIL_HOST_USER or "webmaster@localhost"
+    DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "").strip()
+    if not EMAIL_HOST or not DEFAULT_FROM_EMAIL:
+        raise ImproperlyConfigured("EMAIL_DELIVERY=smtp requires EMAIL_HOST and DEFAULT_FROM_EMAIL.")
+    SERVER_EMAIL = DEFAULT_FROM_EMAIL
+elif PRODUCTION:
+    # Production without approved SMTP: every message is discarded, nothing leaves the server.
+    EMAIL_BACKEND = "django.core.mail.backends.dummy.EmailBackend"
+    DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "").strip() or "no-reply@localhost"
 else:
     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
     DEFAULT_FROM_EMAIL = "eau-royal@royal.com"
+
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "filters": {
+        "redact_tokens": {"()": "eau_royal.logging_filters.RedactTokensFilter"},
+        # Outside production, behave like Django's default: log only while DEBUG is on.
+        "environment": {"()": "django.utils.log.RequireDebugTrue" if not PRODUCTION else "logging.Filter"},
+    },
+    "formatters": {"plain": {"format": "%(asctime)s %(levelname)s %(name)s %(message)s"}},
+    "handlers": {
+        # Container stdout; Docker rotates it (see deploy/docker-compose.yml).
+        "console": {"class": "logging.StreamHandler", "filters": ["environment", "redact_tokens"], "formatter": "plain"},
+    },
+    "root": {"handlers": ["console"], "level": "WARNING"},
+    "loggers": {
+        "django": {"handlers": ["console"], "level": os.environ.get("DJANGO_LOG_LEVEL", "INFO"), "propagate": False},
+    },
+}
