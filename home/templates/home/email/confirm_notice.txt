@@ -1,0 +1,11 @@
+Perfumería El Buen Olor
+
+{% autoescape off %}{% if kind == "disponibilidad" %}Has solicitado un aviso de disponibilidad para {{ product_name }}.{% else %}Has solicitado un aviso sobre el lanzamiento de la perfumería.{% endif %}
+
+Confirma tu solicitud en las próximas 24 horas:
+{{ confirm_url }}
+
+Para cancelar esta solicitud o darte de baja:
+{{ withdrawal_url }}
+{% endautoescape %}
+Si no solicitaste este aviso, puedes ignorar el mensaje.

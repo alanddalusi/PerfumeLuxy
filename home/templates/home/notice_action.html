@@ -1,0 +1,36 @@
+{% extends "includes/design/storefront.html" %}
+{% block title %}Gestión de avisos | Perfumería El Buen Olor{% endblock %}
+{% block navigation %}{% endblock %}
+{% block page_footer %}{% endblock %}
+{% block content %}
+<section class="sf eo-wrap sf-section">
+  {% if state == 'confirm' or state == 'unsubscribe' %}
+    {% if state == 'confirm' %}
+      <h1>Confirma tu aviso.</h1>
+      <p>Una vez confirmado, podrás darte de baja desde el enlace del correo.</p>
+    {% else %}
+      <h1>Dar de baja el aviso.</h1>
+      <p>Esta acción solo afecta al aviso al que pertenece el enlace.</p>
+    {% endif %}
+    <form method="post" class="sf-actions">
+      {% csrf_token %}
+      {% if state == 'confirm' %}
+        {% include 'includes/design/button.html' with type="submit" label="Confirmar aviso" primary=True only %}
+      {% else %}
+        {% include 'includes/design/button.html' with type="submit" label="Dar de baja" primary=True only %}
+      {% endif %}
+    </form>
+  {% elif state == 'confirmed' %}
+    <h1>Aviso confirmado.</h1>
+  {% elif state == 'withdrawn' %}
+    <h1>Aviso dado de baja.</h1>
+  {% elif state == 'limited' %}
+    <h1>Inténtalo más tarde.</h1>
+    <p>Se ha alcanzado el límite temporal de solicitudes.</p>
+  {% else %}
+    <h1>Este enlace ya no está disponible.</h1>
+    <p>Si quieres un aviso, puedes solicitarlo de nuevo desde el escaparate.</p>
+  {% endif %}
+  <a class="sf-text-link" href="{% url 'home:index' %}">Volver a la portada</a>
+</section>
+{% endblock %}
