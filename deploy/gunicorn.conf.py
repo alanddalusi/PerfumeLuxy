@@ -11,6 +11,9 @@ keepalive = 5
 max_requests = 1000
 max_requests_jitter = 100
 worker_tmp_dir = "/dev/shm"
+# Gunicorn 27 opens a control socket under $HOME/.gunicorn by default; the root filesystem
+# is read-only and gunicornc is not used, so the control interface stays off.
+control_socket_disable = True
 
 # Access lines contain full paths, including one-time confirmation and withdrawal
 # tokens. Caddy writes the access log with those segments redacted instead.

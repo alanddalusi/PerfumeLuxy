@@ -88,7 +88,7 @@ echo "== Perfumería project"
 if [ -f "$ENV_FILE" ]; then
     pass "env file $ENV_FILE"
     [ "$(stat -c %a "$ENV_FILE")" = "600" ] && pass "env file mode 600" || fail "env file mode $(stat -c %a "$ENV_FILE"), expected 600"
-    grep -q '<' "$ENV_FILE" && fail "env file still has <placeholders>"
+    grep -vE '^[[:space:]]*#' "$ENV_FILE" | grep -q '<' && fail "env file still has <placeholders>"
     for key in RELEASE SECRET_KEY POSTGRES_PASSWORD DJANGO_ALLOWED_HOSTS DJANGO_CSRF_TRUSTED_ORIGINS; do
         [ -n "$(env_value "$key")" ] || fail "env file: $key is empty"
     done

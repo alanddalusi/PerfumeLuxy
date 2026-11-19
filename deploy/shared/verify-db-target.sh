@@ -20,7 +20,7 @@ seen="$(pcompose run --rm --no-deps -T perfumeria-web python manage.py shell --n
 c.ensure_connection()
 cur = c.cursor()
 cur.execute("select current_database(), host(inet_server_addr()), current_user")
-print("|".join(str(v) for v in cur.fetchone()))' 2>/dev/null | tail -n1 | tr -d '\r')"
+print("|".join(str(v) for v in cur.fetchone()))' < /dev/null 2>/dev/null | tail -n1 | tr -d '\r')"
 IFS='|' read -r database server user <<< "$seen"
 expected_db="$(env_value POSTGRES_DB)"; expected_db="${expected_db:-perfumeria}"
 echo "Django connects to: database=$database server=$server user=$user"
