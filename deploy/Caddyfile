@@ -1,0 +1,72 @@
+# Public entry point. Caddy obtains and renews certificates automatically.
+{
+	email {$ACME_EMAIL}
+	# Admin API only on loopback inside the container (used by the health check).
+	admin 127.0.0.1:2019
+}
+
+(access_log) {
+	log {
+		output file /var/log/caddy/access.log {
+			roll_size 20MiB
+			roll_keep 10
+			roll_keep_for 720h
+		}
+		format filter {
+			wrap json
+			fields {
+				# One-time confirmation, withdrawal, e-mail verification and password-reset tokens.
+				request>uri regexp "(/(?:confirmar|baja)/|/confirm-email/|/password/reset/key/)[^/?]+" "$1[redacted]"
+				request>headers>Cookie delete
+				request>headers>Authorization delete
+				request>headers>Referer delete
+				resp_headers>Set-Cookie delete
+				request>remote_ip ip_mask {
+					ipv4 24
+					ipv6 48
+				}
+				request>client_ip ip_mask {
+					ipv4 24
+					ipv6 48
+				}
+			}
+		}
+	}
+}
+
+www.{$SITE_DOMAIN} {
+	import access_log
+	redir https://{$SITE_DOMAIN}{uri} permanent
+}
+
+{$SITE_DOMAIN} {
+	import access_log
+	encode zstd gzip
+
+	header {
+		?Strict-Transport-Security "max-age=31536000"
+		?X-Content-Type-Options "nosniff"
+		?Referrer-Policy "strict-origin-when-cross-origin"
+		?X-Frame-Options "DENY"
+		-Server
+		-Via
+	}
+
+	# Collected static assets (CSS, JS, icons). Nothing else is served from disk.
+	handle_path /static/* {
+		root * /srv/static
+		header Cache-Control "public, max-age=86400"
+		file_server
+	}
+
+	# Originals stay private; approved images are served by Django from catalog_assets.
+	@private path /media/* /healthz* /.env* /.git*
+	respond @private 404
+
+	reverse_proxy web:8000 {
+		# Overwrite whatever the client sent; Django trusts only this proxy's address.
+		header_up X-Forwarded-For {remote_host}
+		header_up X-Forwarded-Proto {scheme}
+		header_up -X-Real-IP
+	}
+}

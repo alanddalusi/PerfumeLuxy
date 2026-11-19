@@ -1,0 +1,123 @@
+# Production stack for the prelaunch storefront. Run from the deploy/ directory:
+#   docker compose --env-file .env.production up -d
+# PostgreSQL and Gunicorn publish no ports; only Caddy listens on 80/443.
+
+name: perfumeria
+
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "5"
+
+services:
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-perfumeria}
+      POSTGRES_USER: ${POSTGRES_USER:-perfumeria}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env.production}
+      POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks: [backend]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\""]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 20s
+    shm_size: 128mb
+    logging: *logging
+
+  web:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    image: perfumeria-web:${RELEASE:-local}
+    restart: unless-stopped
+    env_file: .env.production
+    environment:
+      DJANGO_ENV: production
+      STORE_MODE: prelaunch
+      DATABASE_URL: postgresql://${POSTGRES_USER:-perfumeria}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-perfumeria}?sslmode=disable
+      DJANGO_DB_PLAINTEXT_HOSTS: db
+      DJANGO_TRUST_HTTPS_PROXY: "1"
+      DJANGO_TRUSTED_PROXY_NETWORKS: 172.30.10.2/32
+      CATALOG_ASSET_ROOT: /srv/catalog_assets
+    volumes:
+      - static:/app/staticfiles
+      - media:/app/media
+      - catalog_assets:/srv/catalog_assets
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      backend: {}
+      edge:
+        ipv4_address: 172.30.10.3
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt: ["no-new-privileges:true"]
+    cap_drop: [ALL]
+    healthcheck:
+      test: ["CMD", "python", "deploy/healthcheck.py"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
+    logging: *logging
+
+  caddy:
+    image: caddy:2.8-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    environment:
+      SITE_DOMAIN: ${SITE_DOMAIN:?Set SITE_DOMAIN in .env.production}
+      ACME_EMAIL: ${ACME_EMAIL:?Set ACME_EMAIL in .env.production}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - static:/srv/static:ro
+      - caddy_data:/data
+      - caddy_config:/config
+      - caddy_logs:/var/log/caddy
+    depends_on:
+      web:
+        condition: service_healthy
+    networks:
+      edge:
+        ipv4_address: 172.30.10.2
+    security_opt: ["no-new-privileges:true"]
+    cap_drop: [ALL]
+    cap_add: [NET_BIND_SERVICE]
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:2019/config/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    logging: *logging
+
+networks:
+  # No route to the outside world: only web can reach PostgreSQL.
+  backend:
+    internal: true
+  edge:
+    ipam:
+      config:
+        - subnet: 172.30.10.0/24
+          # Dynamic addresses come from the upper half; .2 (caddy) and .3 (web) stay reserved.
+          ip_range: 172.30.10.128/25
+
+volumes:
+  pgdata:
+  static:
+  media:            # Legacy originals and uploads. Private: never mounted into Caddy.
+  catalog_assets:   # Approved WebP derivatives, served only through Django.
+  caddy_data:
+  caddy_config:
+  caddy_logs:

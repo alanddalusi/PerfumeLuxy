@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+# Restore a backup directory produced by backup.sh.
+#
+#   ./backup/restore.sh --verify <backup-dir>
+#       Checks the checksums and restores the dump into a throwaway database
+#       (perfumeria_restore_check) inside the db container, then drops it.
+#       Production data is not touched. Run it after every new backup policy and monthly.
+#
+#   ./backup/restore.sh --replace-production <backup-dir>
+#       Stops web, replaces the production database and media volumes with the backup,
+#       and starts web again. Take a fresh backup first; this cannot be undone.
+set -euo pipefail
+
+mode="${1:-}"
+source_dir="${2:-}"
+[ -n "$mode" ] && [ -d "$source_dir" ] || { sed -n '2,13p' "$0"; exit 2; }
+
+cd "$(dirname "$0")/.."
+ENV_FILE=".env.production"
+compose() { docker compose --env-file "$ENV_FILE" "$@"; }
+
+(cd "$source_dir" && sha256sum --check --quiet SHA256SUMS)
+echo "Checksums verified."
+
+case "$mode" in
+  --verify)
+    compose exec -T db sh -c 'dropdb --if-exists -U "$POSTGRES_USER" perfumeria_restore_check && createdb -U "$POSTGRES_USER" perfumeria_restore_check'
+    compose exec -T db sh -c 'pg_restore --no-owner --no-privileges --exit-on-error -U "$POSTGRES_USER" -d perfumeria_restore_check' < "$source_dir/db.dump"
+    compose exec -T db sh -c 'psql -U "$POSTGRES_USER" -d perfumeria_restore_check -tAc "select '"'"'products'"'"', count(*) from products_product union all select '"'"'migrations'"'"', count(*) from django_migrations"'
+    compose exec -T db sh -c 'dropdb -U "$POSTGRES_USER" perfumeria_restore_check'
+    tar -tzf "$source_dir/media.tar.gz" > /dev/null
+    tar -tzf "$source_dir/catalog_assets.tar.gz" > /dev/null
+    echo "Restore check passed. Production was not modified."
+    ;;
+  --replace-production)
+    read -r -p "Type the site domain to replace PRODUCTION data from $source_dir: " answer
+    expected="$(grep -E '^SITE_DOMAIN=' "$ENV_FILE" | cut -d= -f2-)"
+    [ "$answer" = "$expected" ] || { echo "Aborted." >&2; exit 1; }
+    compose stop web caddy
+    compose exec -T db sh -c 'pg_restore --clean --if-exists --no-owner --no-privileges --single-transaction --exit-on-error -U "$POSTGRES_USER" -d "$POSTGRES_DB"' < "$source_dir/db.dump"
+    compose run --rm --no-deps -T --entrypoint sh web -c 'find /app/media -mindepth 1 -delete && tar -C /app -xzf -' < "$source_dir/media.tar.gz"
+    compose run --rm --no-deps -T --entrypoint sh web -c 'find /srv/catalog_assets -mindepth 1 -delete && tar -C /srv -xzf -' < "$source_dir/catalog_assets.tar.gz"
+    compose up -d web caddy
+    echo "Production restored from $source_dir. Check /healthz/ through Caddy and the admin."
+    ;;
+  *)
+    sed -n '2,13p' "$0"; exit 2 ;;
+esac

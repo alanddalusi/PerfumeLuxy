@@ -18,3 +18,10 @@ planning
 .venv-django52/
 catalog_assets/
 media/
+
+# Deployment secrets and local backups
+deploy/.env*
+!deploy/env.production.example
+deploy/secrets/
+backups/
+staticfiles/

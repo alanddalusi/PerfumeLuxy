@@ -1,0 +1,26 @@
+# Keep secrets, data and local tooling out of the image.
+.git
+.github
+.vscode
+.venv
+.venv-django52
+*.venv
+**/__pycache__
+**/*.py[cod]
+env.py
+*env.py
+.env
+.env.*
+!.env.example
+deploy/.env*
+!deploy/env.production.example
+deploy/secrets
+*.sqlite3
+*.log
+media
+catalog_assets
+staticfiles
+backups
+README
+tests/img
+node_modules
