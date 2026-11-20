@@ -29,6 +29,16 @@ VPS OVHcloud con Ubuntu 26.04, 4 vCores, 8 GB de RAM (6,2 GiB libres) y 61 GB de
 
 ## Plan: dominio y HTTPS conservando el correo de OVHcloud (preparado, no aplicado)
 
+### Estado actualizado: delegación activa
+
+- Red.es ya delega el dominio en `dns103`/`ns103.ovh.net`. 1.1.1.1, 8.8.8.8 y el resolvedor del VPS lo resuelven.
+- `@` y `www` → `213.186.33.5` = **`redirect.ovh.net`**, el servicio de redirección web de OVH:
+  - `http://perfumeriaelbuenolor.es/` → 302 a `http://www.perfumeriaelbuenolor.es`;
+  - `www` → 200 «Site en construction».
+- **No hay HTTPS:** `redirect.ovh.net` rechaza el puerto 443. El dominio no tiene ningún alojamiento web de OVH, solo la redirección y el correo (MX y SPF intactos).
+- **Certificado:** el «SSL gratuito Let's Encrypt» del panel de OVH es para sus alojamientos web y aquí no aplica. La tienda corre en el VPS y el certificado lo emitirá el Caddy del foro, que ya obtiene certificados de Let's Encrypt (`foroiaaldia.com`, válido hasta el 20/01/2027).
+- Desde el PC de desarrollo, el antivirus Avast intercepta TLS y muestra su propio certificado. Comprueba los certificados desde el VPS (`openssl s_client`) o desde otro equipo.
+
 ### Diagnóstico del dominio (20/11/2026, 00:58 CET)
 
 - **En OVHcloud el dominio está bien.** `dns103.ovh.net` sirve la zona: SOA, NS `dns103`/`ns103.ovh.net`, A `@` y `www` = `213.186.33.5`, MX `mx1`/`mx2`/`mx3.mail.ovh.net`, SPF `v=spf1 include:mx.ovh.com -all`, TXT `1|www.perfumeriaelbuenolor.es`, y `ftp` como CNAME de `@`. No hay AAAA ni DMARC.
