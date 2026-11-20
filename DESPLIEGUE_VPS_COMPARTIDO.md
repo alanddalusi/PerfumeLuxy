@@ -104,6 +104,8 @@ Resultado de `audit-readonly.sh` ejecutado por SSH, sin escribir en el VPS: **0 
 
 ### Decisión pendiente sobre Caddy
 
+> **Actualización 20/11/2026: descartado integrar la perfumería en el repositorio o las releases del foro.** Los dos proyectos deben gestionarse por separado. Ver [ARQUITECTURA_CADDY_COMPARTIDO.md](ARQUITECTURA_CADDY_COMPARTIDO.md): un directorio neutro `/srv/caddy/sites` con un archivo por dominio, cargado por el Caddy compartido mediante `import`. Las opciones y recomendaciones de esta sección quedan solo como historial.
+
 > **Análisis del proceso de releases del foro (20/11/2026).**
 > - `deploy/make-release.py` empaqueta el **directorio de trabajo** de `foroia-codex`, no un commit, e incluye los cambios sin commit.
 > - Comparado con `/opt/foroia`: 196 archivos idénticos, incluido todo `api/`, `web/` y `scripts/`. Solo difieren `deploy/Caddyfile` (el fuente tiene además `http://www.foroiaaldia.com`), `deploy/production.env.example`, `DEPLOYMENT.md`, 2 documentos de `docs/` y 51 documentos nuevos.
