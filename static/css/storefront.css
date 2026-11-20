@@ -79,8 +79,12 @@
 .sf-card-actions, .sf-card-admin { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .25rem .55rem; margin-block-start: .55rem; border-block-start: 1px solid var(--eo-sand); }
 .sf-card-actions .sf-text-link { font-size: .85rem; }
 .sf-card-actions .sf-check { font-size: .85rem; }
-.sf-media { aspect-ratio: 5 / 6; display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--eo-ivory); color: var(--eo-action-gold); text-decoration: none; overflow: hidden; }
-.sf-media img { width: 100%; height: 100%; display: block; object-fit: contain; }
+.sf-media { aspect-ratio: 1 / 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: clamp(.75rem, 7%, 2rem); background: var(--eo-ivory); color: var(--eo-action-gold); text-decoration: none; overflow: hidden; }
+/* Uniform square frame for photos of any proportion: centred, never cropped or distorted,
+   never enlarged beyond their real pixels (--img-max-w/-h), white backgrounds blended
+   into the ivory frame. */
+.sf-picture { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; min-height: 0; }
+.sf-media img { display: block; width: auto; height: auto; max-width: min(100%, var(--img-max-w, 100%)); max-height: min(100%, var(--img-max-h, 100%)); object-fit: contain; mix-blend-mode: multiply; }
 .sf-media-mark { display: grid; place-items: center; width: 3.2rem; aspect-ratio: 1; border: 1px solid var(--eo-gold); font: 1.3rem / 1 var(--sf-display); color: var(--eo-action-gold); }
 .sf-media-caption { font-size: .75rem; margin-top: .55rem; color: var(--eo-muted); }
 
@@ -91,12 +95,12 @@
 .sf-detail-info .sf-kicker { margin-block-end: 0; }
 .sf-detail-info .sf-description { max-width: 36rem; line-height: 1.75; overflow-wrap: anywhere; }
 .sf-gallery { min-width: 0; }
-.sf-detail-media { max-height: 32rem; }
-.sf-detail-media--empty { max-height: 14rem; }
+.sf-detail-media { width: min(100%, 36rem); margin-inline: auto; }
 .sf-thumbnails { display: flex; flex-wrap: wrap; gap: .65rem; list-style: none; padding: .1rem; margin: .75rem 0 0; }
 .sf-thumbnails a { display: block; border: 1px solid var(--eo-sand); background: var(--eo-ivory); }
 .sf-thumbnails a[aria-current] { border-color: var(--eo-action-gold); }
-.sf-thumbnails img { display: block; width: 4rem; height: 4.75rem; object-fit: contain; }
+.sf-thumbnails a { width: 4rem; aspect-ratio: 1 / 1; display: grid; place-items: center; padding: .3rem; }
+.sf-thumbnails img { display: block; max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; mix-blend-mode: multiply; }
 .sf-facts { display: grid; gap: .7rem; border-block: 1px solid var(--eo-sand); padding-block: .75rem; margin: 0; }
 .sf-facts div { display: grid; grid-template-columns: minmax(6.5rem, 1fr) minmax(0, 1.6fr); gap: .5rem; }
 .sf-facts dt { color: var(--eo-muted); }
@@ -117,7 +121,6 @@
   .sf-discovery, .sf-note-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .sf-editorial-grid, .sf-launch, .sf-detail { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .sf-product-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .sf-detail-media--empty { max-height: 25rem; }
 }
 @media (min-width: 64rem) {
   .sf-hero-grid { gap: clamp(2rem, 7vw, 7rem); }
@@ -135,3 +138,4 @@
 .sf-detail-media .sf-placeholder-bottle { width: 7rem; height: 8.6rem; }
 .sf-detail-media .sf-placeholder-mark { font-size: 2.6rem; }
 .sf .sf-badge { justify-self: start; display: inline-block; margin: 0 0 var(--eo-2, .5rem); padding: .2rem .6rem; border: 1px solid var(--eo-gold); border-radius: 999px; color: var(--eo-action-gold); background: var(--eo-white); font-size: .66rem; font-weight: 650; letter-spacing: .14em; text-transform: uppercase; }
+.sf-media--compact { width: min(100%, 12rem); margin-inline: auto; padding: .6rem; }

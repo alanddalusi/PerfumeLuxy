@@ -1,0 +1,17 @@
+{% comment %}
+Responsive product image inside a square .sf-media frame (see storefront.css).
+  picture   dict from products.presentation.picture_data (approved images only)
+  sizes     rendered width hint for srcset (default: card grid)
+  priority  True for the main above-the-fold image (eager + fetchpriority=high)
+  decorative True when a surrounding link already names the product (alt="")
+The real pixel size is passed as --img-max-w/-h so CSS never enlarges small photos.
+{% endcomment %}
+{% with sizes=sizes|default:"(min-width: 72rem) 18rem, (min-width: 48rem) 30vw, 46vw" %}
+<picture class="sf-picture">
+  {% for source in picture.sources %}<source type="{{ source.type }}" srcset="{{ source.srcset }}" sizes="{{ sizes }}">{% endfor %}
+  <img src="{{ picture.src }}"{% if picture.srcset %} srcset="{{ picture.srcset }}" sizes="{{ sizes }}"{% endif %}
+       alt="{% if not decorative %}{{ picture.alt }}{% endif %}"{% if picture.width %}
+       width="{{ picture.width }}" height="{{ picture.height }}" style="--img-max-w: {{ picture.width }}px; --img-max-h: {{ picture.height }}px"{% endif %}
+       {% if priority %}loading="eager" fetchpriority="high"{% else %}loading="lazy"{% endif %} decoding="async"{% if gallery_main %} data-gallery-main{% endif %}>
+</picture>
+{% endwith %}

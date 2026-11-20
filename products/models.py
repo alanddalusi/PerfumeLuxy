@@ -280,6 +280,14 @@ class Product(models.Model):
         return public_cover(self) if self.publication_status == self.Publication.APPROVED else ""
 
     @property
+    def storefront_picture(self):
+        """Picture data of the main approved image (None without one or when not published)."""
+        if self.publication_status != self.Publication.APPROVED:
+            return None
+        from .presentation import public_picture
+        return public_picture(self)
+
+    @property
     def is_reference(self):
         return self.catalog_origin == self.Origin.REFERENCE
 
@@ -340,6 +348,9 @@ class CatalogImage(models.Model):
     display_order = models.PositiveIntegerField(default=0)
     asset = models.FileField(storage=catalog_asset_storage, upload_to="web/", blank=True, max_length=300)
     thumbnail = models.FileField(storage=catalog_asset_storage, upload_to="thumb/", blank=True, max_length=300)
+    # Responsive derivatives, each fitted inside a square box without upscaling:
+    # [{"box": 640, "w": 427, "h": 640, "fmt": "avif", "name": "r/<uuid>-640.avif"}, ...]
+    renditions = models.JSONField(default=list, blank=True, editable=False)
     approved_at = models.DateTimeField(null=True, blank=True)
     approved_by = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL)
     withdrawn_at = models.DateTimeField(null=True, blank=True)

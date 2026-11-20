@@ -18,7 +18,7 @@ from .models import (
 )
 from .catalog import catalog_filter_url, catalog_listing, normalize_search, search_products
 from .forms import ProductForm
-from .presentation import public_cover, public_gallery
+from .presentation import public_gallery, public_picture
 
 
 def all_products(request):
@@ -33,7 +33,7 @@ def all_products(request):
     paginator = Paginator(products, 60)
     page = paginator.get_page(params.get("page"))
     for product in page:
-        product.storefront_image = public_cover(product)
+        product.storefront_image = public_picture(product)
 
     seo = SEOManager(request)
     canonical_params = {"page": page.number} if page.number > 1 else {}
@@ -83,17 +83,50 @@ def catalog_image(request, image_id, variant):
     return response
 
 
+RENDITION_TYPES = {"avif": "image/avif", "webp": "image/webp"}
+
+
+@require_safe
+def catalog_rendition(request, image_id, box, fmt):
+    """Serve one responsive derivative; same gating as catalog_image (approved image of a
+    published product, not withdrawn). Short cache: a withdrawal takes effect within minutes."""
+    if fmt not in RENDITION_TYPES:
+        raise Http404
+    image = get_object_or_404(
+        CatalogImage, pk=image_id, approved_at__isnull=False, withdrawn_at__isnull=True,
+        product__publication_status=Product.Publication.APPROVED,
+    )
+    entry = next((r for r in image.renditions if r.get("box") == box and r.get("fmt") == fmt), None)
+    if entry is None:
+        raise Http404
+    try:
+        response = FileResponse(image.asset.storage.open(entry["name"], "rb"), content_type=RENDITION_TYPES[fmt])
+    except OSError:
+        raise Http404 from None
+    response["Cache-Control"] = "public, max-age=600"
+    response["X-Content-Type-Options"] = "nosniff"
+    return response
+
+
+def suggestion_image(product):
+    picture = public_picture(product)
+    if picture is None:
+        return None
+    return {"src": picture["thumb"], "width": picture["thumb_width"], "height": picture["thumb_height"]}
+
+
 @require_safe
 def search_suggestions(request):
     query = normalize_search(request.GET.get("q", ""))
     if len(query) < 2:
         return JsonResponse({"results": []})
-    products = search_products(Product.objects.published().select_related("brand"), query)
+    products = search_products(Product.objects.published().select_related("brand").prefetch_related("catalog_images"), query)
     return JsonResponse({"results": [
         {
             "name": product.name,
             "brand": product.brand.name if product.brand else "",
             "url": product.get_absolute_url(),
+            "image": suggestion_image(product),
         }
         for product in products.order_by(Lower("name"), "pk")[:8]
     ]})
@@ -152,7 +185,7 @@ def product_detail(request, slug):
         id=product.id
     ).select_related("brand").prefetch_related("catalog_images").order_by("name", "pk")[:6])
     for related in similar_products:
-        related.storefront_image = public_cover(related)
+        related.storefront_image = public_picture(related)
 
 
     # Verificar si está en la wishlist del usuario

@@ -83,6 +83,7 @@ class PublicCatalogTests(TestCase):
             "name": self.product.name,
             "brand": self.brand.name,
             "url": self.product.get_absolute_url(),
+            "image": None,  # no approved photo
         }])
         self.assertEqual(self.client.get(self.suggest_url, {"q": "  "}).json(), {"results": []})
         self.assertEqual(self.client.post(self.suggest_url).status_code, 405)
@@ -409,6 +410,13 @@ class PublicationTests(TestCase):
                 product=self.product, source_file=self.product.image.name,
                 source_reference="Origen de prueba", rights_reference="Licencia de prueba",
             )
+            # The catalog_assets storage is bound at model load: remove what this test generates.
+            self.addCleanup(lambda: [
+                image.asset.storage.delete(name)
+                for record in CatalogImage.objects.filter(pk=image.pk)
+                for name in [record.asset.name, record.thumbnail.name, *(r["name"] for r in record.renditions)]
+                if name and image.asset.storage.exists(name)
+            ])
             url = reverse("products:catalog_image", args=[image.pk, "thumb"])
             self.assertEqual(self.client.get(url).status_code, 404)
             self.client.force_login(self.reviewer)

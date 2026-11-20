@@ -7,9 +7,9 @@
     {% include 'includes/design/breadcrumb.html' %}
     <div class="sf-detail">
       <div class="sf-gallery" data-gallery>
-        <div class="sf-media sf-detail-media{% if not gallery %} sf-detail-media--empty{% endif %}">
+        <div class="sf-media sf-detail-media">
           {% if gallery %}
-            <img src="{{ gallery.0.url }}" alt="{{ gallery.0.alt }}" width="720" height="864" fetchpriority="high" decoding="async" data-gallery-main>
+            {% include 'products/includes/product_picture.html' with picture=gallery.0 sizes="(min-width: 64rem) 36rem, 92vw" priority=True gallery_main=True only %}
           {% else %}
             {% include 'products/includes/media_placeholder.html' %}
           {% endif %}
@@ -17,7 +17,7 @@
         {% if gallery|length > 1 %}
           <ul class="sf-thumbnails" aria-label="Más imágenes de {{ product.name }}">
             {% for photo in gallery %}
-              <li><a href="{{ photo.url }}" data-gallery-image data-image-alt="{{ photo.alt }}" aria-label="Ver imagen {{ forloop.counter }} de {{ product.name }}"{% if forloop.first %} aria-current="true"{% endif %}><img src="{{ photo.thumbnail }}" alt="" width="64" height="76" loading="lazy" decoding="async"></a></li>
+              <li><a href="{{ photo.url }}" data-gallery-image data-image-alt="{{ photo.alt }}"{% for source in photo.sources %} data-srcset{{ forloop.counter0 }}="{{ source.srcset }}"{% endfor %} data-srcset="{{ photo.srcset }}" data-width="{{ photo.width|default:'' }}" data-height="{{ photo.height|default:'' }}" aria-label="Ver imagen {{ forloop.counter }} de {{ product.name }}"{% if forloop.first %} aria-current="true"{% endif %}><img src="{{ photo.thumb }}" alt=""{% if photo.thumb_width %} width="{{ photo.thumb_width }}" height="{{ photo.thumb_height }}"{% endif %} loading="lazy" decoding="async"></a></li>
             {% endfor %}
           </ul>
         {% endif %}

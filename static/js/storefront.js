@@ -27,8 +27,21 @@ for (const gallery of document.querySelectorAll("[data-gallery]")) {
         thumbnail.addEventListener("click", event => {
             if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
             event.preventDefault();
+            // <picture>: every <source> must change too, otherwise it keeps winning over img.src.
+            const sources = image.closest("picture")?.querySelectorAll("source") || [];
+            sources.forEach((source, index) => {
+                const srcset = thumbnail.dataset["srcset" + index];
+                if (srcset) source.srcset = srcset; else source.remove();
+            });
+            if (thumbnail.dataset.srcset) image.srcset = thumbnail.dataset.srcset; else image.removeAttribute("srcset");
             image.src = thumbnail.href;
             image.alt = thumbnail.dataset.imageAlt;
+            if (thumbnail.dataset.width) {
+                image.width = Number(thumbnail.dataset.width);
+                image.height = Number(thumbnail.dataset.height);
+                image.style.setProperty("--img-max-w", thumbnail.dataset.width + "px");
+                image.style.setProperty("--img-max-h", thumbnail.dataset.height + "px");
+            }
             for (const item of thumbnails) item.removeAttribute("aria-current");
             thumbnail.setAttribute("aria-current", "true");
         });

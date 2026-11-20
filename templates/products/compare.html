@@ -21,11 +21,12 @@
                     {% for product in products %}
                     <th class="product-column">
                         <div class="product-header">
-                            {% if product.public_image_url %}
-                              <img src="{{ product.public_image_url }}" alt="{{ product.name }}" class="product-image">
-                            {% else %}
-                              <img src="{% static 'img/noimage.png' %}" alt="" class="product-image">
-                            {% endif %}
+                            <div class="sf-media sf-media--compact">
+                            {% with picture=product.storefront_picture %}
+                              {% if picture %}{% include 'products/includes/product_picture.html' with picture=picture sizes="(min-width: 48rem) 12rem, 40vw" only %}
+                              {% else %}{% include 'products/includes/media_placeholder.html' %}{% endif %}
+                            {% endwith %}
+                            </div>
                             <h5 class="product-name">{{ product.name }}</h5>
                             <p class="product-brand">{{ product.brand.name }}</p>
                             <div class="product-rating">
