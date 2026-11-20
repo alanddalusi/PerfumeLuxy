@@ -104,6 +104,14 @@ Resultado de `audit-readonly.sh` ejecutado por SSH, sin escribir en el VPS: **0 
 
 ### Decisión pendiente sobre Caddy
 
+> **Análisis del proceso de releases del foro (20/11/2026).**
+> - `deploy/make-release.py` empaqueta el **directorio de trabajo** de `foroia-codex`, no un commit, e incluye los cambios sin commit.
+> - Comparado con `/opt/foroia`: 196 archivos idénticos, incluido todo `api/`, `web/` y `scripts/`. Solo difieren `deploy/Caddyfile` (el fuente tiene además `http://www.foroiaaldia.com`), `deploy/production.env.example`, `DEPLOYMENT.md`, 2 documentos de `docs/` y 51 documentos nuevos.
+> - Al extraer una release, `deploy/Caddyfile` pasa a ser un archivo nuevo (otro inodo). El procedimiento del foro lo resuelve con `up -d --force-recreate caddy`, que corta brevemente el foro y la perfumería.
+>
+> **Recomendación:** integrar el bloque en el fuente del foro (rama `perfumeria-caddy` fusionada en su línea principal) para que todas las releases futuras lo conserven, y desplegarlo ahora con `caddy-apply.sh`: añade el bloque en el mismo inodo, sin reiniciar, y recarga en caliente. Así no se publican a la vez la redirección `http://www` ni los documentos pendientes del foro.
+
+
 1. **Recomendada.** Incorporar el bloque de `deploy/shared/perfumeria.caddy` al Caddyfile **fuente** del foro, para que cada release del foro lo conserve. Para la primera publicación se puede aplicar en caliente con `caddy-apply.sh`, siempre que la siguiente release del foro ya lo incluya.
 2. Solo `caddy-apply.sh`. Funciona, pero se pierde con la próxima release del foro y habría que volver a aplicarlo cada vez.
 3. A largo plazo: que el Compose del foro monte un directorio de sitios con `import`. Requiere recrear una vez el Caddy del foro (breve reinicio en una ventana de mantenimiento).
