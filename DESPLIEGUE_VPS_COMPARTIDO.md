@@ -4,6 +4,9 @@ Estado: **preparado, no desplegado.** Nada de lo descrito aquí se ha ejecutado 
 
 VPS OVHcloud con Ubuntu 26.04, 4 vCores, 8 GB de RAM (6,2 GiB libres) y 61 GB de disco libres. Foro IA al Día ya funciona con 7 contenedores; su Caddy (`foroia-production-caddy-1`) ocupa 80/443 en las redes `foroia-production_backend` y `foroia-production_edge`. Dominio nuevo: `perfumeriaelbuenolor.es`.
 
+
+> **Publicación en Caddy (vigente desde el 20/11/2026):** modelo modular de [ARQUITECTURA_CADDY_COMPARTIDO.md](ARQUITECTURA_CADDY_COMPARTIDO.md). Usa `shared/site-deploy.sh`, `shared/site-rollback.sh` y `shared/site-status.sh`; la preparación única del Caddy compartido está en [INFRA_CADDY_COMPARTIDO.md](INFRA_CADDY_COMPARTIDO.md). Las menciones de este documento a `caddy-apply.sh`, `caddy-rollback.sh`, `caddy-check.sh`, `perfumeria.caddy` o `rehearsal/` corresponden al enfoque anterior, ya retirado.
+
 ## Estado del despliegue (19/11/2026, UTC)
 
 **Instalación aislada hecha; web no publicada.** No se ha cambiado ni el Caddy del foro ni el DNS.

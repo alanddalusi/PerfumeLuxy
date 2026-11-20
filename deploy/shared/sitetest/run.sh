@@ -40,9 +40,9 @@ ko() { failed=$((failed + 1)); log "FAIL  $*"; }
 expect() { local want="$1" name="$2"; shift 2; "$@" >>"$WORK/commands.log" 2>&1; local rc=$?
     if { [ "$want" = 0 ] && [ $rc = 0 ]; } || { [ "$want" = fail ] && [ $rc != 0 ]; }; then ok "$name"; else ko "$name (rc=$rc)"; fi; }
 finish() {
+    log "RESULT: passed=$passed failed=$failed"
     if [ "${KEEP:-0}" = 1 ]; then log "Sandbox kept: $WORK (remove with --cleanup, then rm -r the directory)"
     else cleanup_sandbox; rm -rf -- "$WORK"; fi
-    log "RESULT: passed=$passed failed=$failed"
 }
 trap finish EXIT
 

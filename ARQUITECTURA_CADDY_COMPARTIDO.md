@@ -1,6 +1,8 @@
 # Propuesta: Caddy compartido con configuración modular por proyecto
 
-Estado: **propuesta para decidir; no aplicada.** No se ha modificado el DNS, el Caddy de producción ni el repositorio de Foro IA al Día.
+Estado (20/11/2026): **arquitectura aprobada; automatización de la perfumería implementada y probada (50/50 en un ensayo aislado); preparación del Caddy compartido pendiente del proyecto del foro** ([INFRA_CADDY_COMPARTIDO.md](INFRA_CADDY_COMPARTIDO.md)). No se ha modificado el DNS, el Caddy de producción ni el repositorio de Foro IA al Día.
+
+Limpieza hecha: rama `perfumeria-caddy` y su *worktree* eliminados del repositorio del foro (no contenían nada único); parche y scripts antiguos (`caddy-apply/rollback/check.sh`, `perfumeria.caddy`, `rehearsal/`) retirados de este repositorio.
 
 ## Requisitos
 
