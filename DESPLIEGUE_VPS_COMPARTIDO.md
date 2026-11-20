@@ -7,6 +7,23 @@ VPS OVHcloud con Ubuntu 26.04, 4 vCores, 8 GB de RAM (6,2 GiB libres) y 61 GB de
 
 > **Publicación en Caddy (vigente desde el 20/11/2026):** modelo modular de [ARQUITECTURA_CADDY_COMPARTIDO.md](ARQUITECTURA_CADDY_COMPARTIDO.md). Usa `shared/site-deploy.sh`, `shared/site-rollback.sh` y `shared/site-status.sh`; la preparación única del Caddy compartido está en [INFRA_CADDY_COMPARTIDO.md](INFRA_CADDY_COMPARTIDO.md). Las menciones de este documento a `caddy-apply.sh`, `caddy-rollback.sh`, `caddy-check.sh`, `perfumeria.caddy` o `rehearsal/` corresponden al enfoque anterior, ya retirado.
 
+## Publicación (20/11/2026, 15:38 UTC)
+
+**`perfumeriaelbuenolor.es` publicado en prelanzamiento** con `shared/site-deploy.sh`, mediante el modelo modular: `/srv/caddy/sites/perfumeriaelbuenolor.es.caddy`, recarga en caliente y sin recrear el Caddy compartido.
+
+- **DNS:** A de `@` y `www` → `146.59.35.127` (TTL 3600) según el autoritativo, 1.1.1.1, 8.8.8.8, 8.8.4.4, Quad9 y OpenDNS. MX, SPF y NS sin cambios; redirección de OVH eliminada. 8.8.8.8 tuvo `www` en caché unos minutos; se esperó a que caducara antes de desplegar.
+- **Certificados de Let's Encrypt** (`CN=YE2`) para el dominio y `www`, válidos hasta el 18/02/2027, obtenidos en segundos tras la recarga.
+- **`site-status.sh`: 0 fallos.**
+  - Portada 200; `/checkout/` 403; `/healthz/` y `/media/` 404.
+  - `www` → 301 al dominio principal; HTTP → 308 a HTTPS.
+  - HSTS, `X-Frame-Options`, `nosniff` y `Referrer-Policy`, sin cabecera `Server`.
+  - Mismos resultados desde fuera del VPS.
+- **Contrato del Caddy compartido (`--live`): 0 fallos**, con el sitio cargado.
+- **Log de acceso** en `/srv/caddy/logs/perfumeriaelbuenolor.es/` (600): un token de prueba no aparece y las IP salen enmascaradas (/24).
+- **Tienda:** `STORE_MODE=prelaunch`, sin ventas, 0 productos publicados, correo `dummy`, sin Stripe. Sin formularios de correo ni enlace de registro.
+- **Foro:** idéntico a la foto previa: contenedores, horas de arranque, reinicios, salud, Caddyfile, Compose y respuestas (200/301/308). Su certificado sigue siendo el mismo.
+- **Reversión:** `sudo -E FORO_URLS="https://foroiaaldia.com/ https://www.foroiaaldia.com/" ./shared/site-rollback.sh --remove`.
+
 ## Estado del despliegue (19/11/2026, UTC)
 
 **Instalación aislada hecha; web no publicada.** No se ha cambiado ni el Caddy del foro ni el DNS.
