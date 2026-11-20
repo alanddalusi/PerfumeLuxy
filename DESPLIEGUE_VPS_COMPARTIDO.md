@@ -27,6 +27,57 @@ VPS OVHcloud con Ubuntu 26.04, 4 vCores, 8 GB de RAM (6,2 GiB libres) y 61 GB de
 - **Caddy en el código fuente del foro (preparado, no aplicado).** Rama local `perfumeria-caddy` (commit `13cff12`) en un *worktree* aparte (`Desktop/Mi Blog/foroia-codex-perfumeria-caddy`). El parche está en [deploy/shared/foroia/0001-perfumeria-caddy.patch](deploy/shared/foroia/0001-perfumeria-caddy.patch). Validado con Caddy 2.11.7 sobre el fuente del foro y sobre el Caddyfile de producción, sin avisos nuevos.
   - Ojo: el fuente del foro ya incluye un bloque `http://www.foroiaaldia.com` que todavía no está en producción, así que su próxima release lo desplegará también.
 
+## Plan: dominio y HTTPS conservando el correo de OVHcloud (preparado, no aplicado)
+
+### Diagnóstico del dominio (20/11/2026, 00:58 CET)
+
+- **En OVHcloud el dominio está bien.** `dns103.ovh.net` sirve la zona: SOA, NS `dns103`/`ns103.ovh.net`, A `@` y `www` = `213.186.33.5`, MX `mx1`/`mx2`/`mx3.mail.ovh.net`, SPF `v=spf1 include:mx.ovh.com -all`, TXT `1|www.perfumeriaelbuenolor.es`, y `ftp` como CNAME de `@`. No hay AAAA ni DMARC.
+- **El registro `.es` aún no publica la delegación.** `a`/`c`/`g`/`h.nic.es` responden NXDOMAIN para el dominio, con la zona `.es` en el serial `2026112001` (versión 01 del 20/11). La delegación hacia `dns103`/`ns103.ovh.net` no está todavía en la zona publicada de Red.es.
+- **Por qué devolvía NXDOMAIN.** No era un error de nombre: no existe ninguna variante con tilde, con guiones ni `.com.es`. Tampoco un fallo de la zona de OVH, que ya responde correctamente. Que el panel diga «activo» y que el dominio esté publicado en la zona `.es` son dos pasos distintos: el segundo depende de Red.es y se refleja en una versión posterior de su zona.
+- **Caché negativa.** La zona `.es` tiene un TTL negativo de 86 400 s. Los resolvedores que ya respondieron NXDOMAIN (1.1.1.1, 8.8.8.8, el del VPS) pueden repetirlo hasta 24 h después de la publicación. La comprobación fiable es preguntar directamente a `a.nic.es`. Si en 24–48 h sigue sin aparecer allí, conviene abrir una incidencia con OVHcloud para revisar el estado en Red.es.
+
+### Requisitos antes de tocar nada público
+
+1. `a.nic.es` devuelve los NS `dns103`/`ns103.ovh.net` para `perfumeriaelbuenolor.es`.
+2. La instalación aislada sigue sana (`preflight.sh` y las pruebas internas del paso 5).
+3. Hay una decisión tomada sobre Caddy: una release del foro con la rama `perfumeria-caddy`, o `caddy-apply.sh` en caliente.
+4. Copia de la zona: en el panel, *Zona DNS → Cambiar en modo texto*; copia todo el texto y guárdalo en `auditorias/zona-perfumeriaelbuenolor.es-<fecha>.txt`.
+
+### Cambios DNS propuestos 🔴 (zona en `dns103.ovh.net`)
+
+| Registro | Ahora | Propuesto | Motivo |
+|---|---|---|---|
+| Redirección web de OVH (`@` y `www`) | activa: A `213.186.33.5` + TXT `1\|www…` | **eliminar en el panel** (pestaña *Redirección*) | Gestiona por sí sola el A y el TXT; si se edita el A con ella activa, el panel lo revierte o entra en conflicto |
+| A `@` | `213.186.33.5` | `146.59.35.127`, TTL 300 | Apuntar al VPS (al Caddy del foro) |
+| A `www` | `213.186.33.5` | `146.59.35.127`, TTL 300 (o CNAME a `perfumeriaelbuenolor.es.`) | Caddy redirige `www` al dominio principal |
+| AAAA `@`/`www` | ninguno | **ninguno por ahora** | El foro no publica AAAA; el camino IPv6 del VPS no está probado. Se añade más adelante, tras probar IPv6 |
+| MX `mx1`–`mx3.mail.ovh.net` | — | **sin cambios** | El correo de OVHcloud no depende del A |
+| SPF `v=spf1 include:mx.ovh.com -all` | — | **sin cambios** | También cubre el SMTP de OVH (`ssl0.ovh.net`) si Django lo usa más adelante |
+| Otros TXT y NS | — | **sin cambios** | |
+| `ftp` CNAME → `@` | apunta a `213.186.33.5` | quedará apuntando al VPS | Revisa si se usa; si no, se puede borrar más adelante |
+| CAA | ninguno | opcional: `0 issue "letsencrypt.org"` y `0 issue "sectigo.com"` | Limita la emisión a las CA que usa Caddy (Let's Encrypt y ZeroSSL) |
+| DMARC `_dmarc` | ninguno | recomendado más adelante: `v=DMARC1; p=none; rua=mailto:<buzón>` | Protección del correo; decisión del titular |
+
+### Orden de ejecución (cada paso con autorización)
+
+1. Exportar la zona (requisito 4).
+2. En el panel, eliminar la redirección web y crear los A de `@` y `www` hacia `146.59.35.127` con TTL 300.
+3. Verificar en el servidor autoritativo y en el público:
+   ```powershell
+   Resolve-DnsName perfumeriaelbuenolor.es -Type A -Server dns103.ovh.net -DnsOnly
+   Resolve-DnsName perfumeriaelbuenolor.es -Type MX -Server dns103.ovh.net -DnsOnly   # MX intactos
+   Resolve-DnsName perfumeriaelbuenolor.es -Type A -Server 1.1.1.1 -DnsOnly           # puede tardar por la caché negativa
+   ```
+4. Esperar a que los resolvedores públicos (y los de Let's Encrypt) respondan el A nuevo, hasta 1 h tras la publicación, para no desperdiciar intentos de validación. En el VPS, `REQUIRE_DNS=1 ./shared/preflight.sh` debe dar el DNS en PASS. Si el resolvedor del VPS conserva el NXDOMAIN en caché, `sudo resolvectl flush-caches` lo limpia (operación local, con autorización).
+5. Publicar en Caddy: release del foro con la rama `perfumeria-caddy` (recomendado), o `sudo -E FORO_URLS="https://foroiaaldia.com/ https://www.foroiaaldia.com/" ./shared/caddy-apply.sh`. El Caddy del foro obtiene el certificado por HTTP-01/TLS-ALPN en los puertos 80/443, que ya están publicados.
+6. Verificación pública (paso 8 de esta guía), comprobando que el foro responde igual y que el correo sigue funcionando: MX intactos, envío y recepción de prueba en la cuenta de OVH y webmail.
+7. Pasadas 24–48 h estables, subir el TTL de A y `www` a 3600.
+
+### Reversión DNS
+
+Restaurar el texto de zona exportado, o en el panel volver a poner A `@`/`www` = `213.186.33.5` y recrear la redirección web (eso recrea el TXT `1|…`). Combinar con `caddy-rollback.sh` o con retirar el bloque de la release del foro. Los MX y el SPF nunca se tocan, así que el correo no se ve afectado en ningún paso.
+
+## Auditoría real del VPS (19/11/2026)
 
 Resultado de `audit-readonly.sh` ejecutado por SSH, sin escribir en el VPS: **0 fallos y 2 avisos (DNS)**. Los informes completos están en `auditorias/`, carpeta local ignorada por Git.
 
@@ -228,7 +279,7 @@ pc logs --tail 50 perfumeria-web
 
 ### 6. DNS 🔴 (en el registrador; no se ha modificado nada)
 
-> **Estado al 20/11/2026:** `perfumeriaelbuenolor.es` no existe en el DNS público. Los servidores de `.es` (`a.nic.es`), 1.1.1.1 y 8.8.8.8 responden NXDOMAIN incluso para NS y SOA. Antes de este paso, confirma en el registrador que el dominio está registrado y activo y que el nombre es exactamente ese, y configura sus servidores DNS.
+> Estado y plan detallado en «Plan: dominio y HTTPS conservando el correo de OVHcloud». No uses aquí el MX nulo ni `v=spf1 -all`: el dominio tiene correo de OVHcloud y sus MX y SPF se conservan.
 
 Obtén las IP del VPS con `ip -o addr show scope global` (o en el panel de OVHcloud). Antes de cambiar nada, revisa los registros actuales del dominio (por ejemplo, una página de aparcamiento) y anótalos para poder revertir.
 
