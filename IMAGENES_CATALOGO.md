@@ -1,6 +1,8 @@
 # Imágenes del catálogo
 
-Estado (20/11/2026): **implementado y probado en local; no desplegado.** No se ha descargado ninguna imagen nueva.
+Estado (20/11/2026, 16:50 UTC): **desplegado en producción** (`perfumeria-web:bfe1268`, migración `products.0012` aplicada) tras una copia verificada (`/srv/perfumeria/backups/20261120T164907Z`). No se ha descargado ninguna imagen nueva.
+
+- **Reversión:** `RELEASE=f02f4a8` en `deploy/shared/.env.production` y `pc up -d perfumeria-web`. La migración `0012` solo añade un campo, así que el código anterior funciona con ella.
 
 ## Regla de derechos (sin cambios)
 
