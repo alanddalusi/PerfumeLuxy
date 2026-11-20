@@ -54,16 +54,23 @@ if host_file="$(caddy_config_host_path "$inside")"; then
     pass "config comes from bind mount: $host_file"
     if [ -r "$host_file" ]; then
         pass "config readable on host"
-        grep -qF "$BEGIN_MARK" "$host_file" && warn "perfumeria block already present in $host_file" || pass "perfumeria block not present yet"
+        # Separation rule: the forum's own Caddyfile never contains anything of this project.
+        grep -qiE 'perfumeria' "$host_file" && fail "the shared Caddyfile mentions the perfumeria; it must only import $SITES_MOUNT/*.caddy" \
+                                         || pass "shared Caddyfile contains nothing of the perfumeria"
         grep -qE '^\s*admin\s+off' "$host_file" && fail "admin API disabled ('admin off'): reload impossible without restarting Caddy" || pass "admin API not disabled"
-        grep -qE "(^|[[:space:]])(www\.)?perfumeriaelbuenolor\.es([[:space:],{]|$)" "$host_file" && ! grep -qF "$BEGIN_MARK" "$host_file" \
-            && fail "the forum Caddyfile already mentions perfumeriaelbuenolor.es outside the managed block"
-        [ -w "$host_file" ] && info "config writable by $(id -un)" || info "config not writable by $(id -un): the Caddy step will need sudo"
     else
         fail "cannot read $host_file (try with sudo)"
     fi
 else
-    fail "Caddyfile is not on a bind mount; adding a site would require changing the forum's compose (stop and decide)"
+    fail "Caddyfile is not on a bind mount"
+fi
+echo "== Shared proxy prepared for per-project site files"
+if ready_report="$(shared_proxy_ready)"; then
+    printf '%s\n' "$ready_report" | sed 's/^/  /'
+    pass "shared proxy ready: site-deploy.sh can publish $SITE_FILE"
+else
+    printf '%s\n' "$ready_report" | sed 's/^/  /'
+    warn "one-time shared-proxy setup still pending (owned by the forum project); site-deploy.sh will refuse until then"
 fi
 
 echo "== Shared edge network $EDGE"

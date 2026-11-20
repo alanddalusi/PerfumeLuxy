@@ -327,32 +327,50 @@ class SharedVpsTests(SimpleTestCase):
         self.assertIn("PROXY_SERVICE=", example)
         self.assertNotRegex("\n".join(example), r"(?m)^(STRIPE_|STORE_MODE|EMAIL_DELIVERY)")
 
-    def test_caddy_block_is_delimited_and_targets_the_unique_alias(self):
-        block = (self.root / "perfumeria.caddy").read_text(encoding="utf-8")
-        lines = block.strip().splitlines()
-        self.assertTrue(lines[0].startswith("# >>> BEGIN perfumeria-el-buen-olor"))
-        self.assertEqual(lines[-1], "# <<< END perfumeria-el-buen-olor")
-        self.assertIn("reverse_proxy perfumeria-web:8000", block)
-        self.assertIn("www.perfumeriaelbuenolor.es", block)
-        self.assertIn("@perfumeria_private path /media/* /healthz*", block)
-        self.assertIn("[redacted]", block)
-        # Global options or snippets would leak into the forum's configuration.
-        self.assertNotRegex(block, r"(?m)^\{")
-        self.assertNotRegex(block, r"(?m)^\(")
+    def test_site_file_only_declares_this_project_and_no_global_options(self):
+        site = (self.root / "site" / "perfumeriaelbuenolor.es.caddy").read_text(encoding="utf-8")
+        self.assertIn("reverse_proxy perfumeria-web:8000", site)
+        self.assertIn("@perfumeria_private path /media/* /healthz*", site)
+        self.assertIn("[redacted]", site)
+        self.assertIn("output file /var/log/caddy-sites/perfumeriaelbuenolor.es/access.log", site)
+        # Global options or unprefixed snippets would leak into the other project's configuration.
+        self.assertNotRegex(site, r"(?m)^\{")
+        self.assertNotRegex(site, r"(?m)^\(")
+        addresses = re.findall(r"(?m)^([^#\s{}][^{]*?)\s*\{\s*$", site)
+        self.assertEqual(sorted(addresses), ["perfumeriaelbuenolor.es", "www.perfumeriaelbuenolor.es"])
 
-    def test_scripts_never_stop_or_remove_forum_resources(self):
+    def test_deploy_scripts_only_touch_this_projects_site_file(self):
         for path in self.root.glob("*.sh"):
             text = path.read_text(encoding="utf-8")
+            code = "\n".join(line for line in text.splitlines() if not line.lstrip().startswith("#"))
             with self.subTest(script=path.name):
-                for forbidden in ("docker stop", "docker restart", "docker rm", "network rm", "volume rm",
-                                  "prune", "down -v", "compose down", "caddy stop", "caddy run", 'rm -- "$host_file'):
-                    self.assertNotIn(forbidden, text)
-                # The forum's Caddyfile only ever receives an append, the saved copy or the
-                # same file without our block; never generated content.
-                for line in re.findall(r'^.*>\s*"\$host_file".*$', text, flags=re.M):
-                    self.assertRegex(line, r'(>> "\$host_file"|cat -- "\$(backup|work/stripped\.Caddyfile)" > "\$host_file")')
+                for forbidden in ("docker stop", "docker restart", "docker rm", "docker kill", "network rm", "volume rm",
+                                  "prune", "down -v", "compose down", "force-recreate", "caddy stop", "caddy run",
+                                  "/opt/foroia", "network connect", "network disconnect"):
+                    self.assertNotIn(forbidden, code)
+                self.assertNotRegex(code, r'>\s*"\$host_file"')  # the shared Caddyfile is never written
+        lib = (self.root / "lib.sh").read_text(encoding="utf-8")
+        self.assertIn('SITE_FILE="$SITES_DIR/$DOMAIN.caddy"', lib)
+        self.assertIn('SITE_STAGED="$SITE_FILE.new"', lib)
+        for script in ("site-deploy.sh", "site-rollback.sh"):
+            text = (self.root / script).read_text(encoding="utf-8")
+            with self.subTest(script=script):
+                self.assertIn("guard_target", text)
+                self.assertIn('flock -w 60 9', text)
+                writes = re.findall(r'(?:mv -f -- \S+|rm -f -- \S+|cp(?: -p)? -- \S+) ("\$[A-Z_]+[^"]*")', text)
+                for target in writes:
+                    self.assertRegex(target, r'^"\$(SITE_FILE|SITE_STAGED|SITE_FILE\.restore|backup|saved|CADDY_BACKUP_DIR)')
         restore = (self.root.parent / "backup" / "restore.sh").read_text(encoding="utf-8")
         self.assertIn('compose stop "$WEB" $PROXY', restore)
+
+    def test_test_mode_cannot_reach_a_real_proxy(self):
+        lib = (self.root / "lib.sh").read_text(encoding="utf-8")
+        self.assertIn('case "$CADDY" in perfumeria-sitetest-*)', lib)
+        self.assertIn("/opt/*|/etc/*|/var/lib/docker/*", lib)
+        deploy = (self.root / "site-deploy.sh").read_text(encoding="utf-8")
+        # Fault injection only exists in test mode.
+        self.assertIn('fail_at() { [ "${SITE_TEST_MODE:-0}" = 1 ]', deploy)
+        self.assertLess(deploy.index("guard_target"), deploy.index("shared_proxy_ready"))
 
 
 class SharedProxySettingsTests(SimpleTestCase):
@@ -412,22 +430,29 @@ class SharedVpsAuditAndRehearsalTests(SimpleTestCase):
             self.assertEqual(target, "/dev/null")
         self.assertNotIn("cat \"$host_file\"", code)  # never prints the forum Caddyfile
 
-    def test_rehearsal_refuses_real_forum_and_real_deployment(self):
-        text = (self.root / "rehearsal" / "run.sh").read_text(encoding="utf-8")
-        self.assertIn('LABEL="perfumeria.rehearsal"', text)
-        self.assertIn("this is not a rehearsal machine", text)
-        self.assertIn("never rehearse next to a real deployment", text)
-        self.assertIn("NOT removing $SIM_PROJECT", text)
-        self.assertIn("local_certs", text)  # no ACME request for the real domain
-        guards = text.index("# ------------------------------------------------------------ guards")
-        self.assertLess(guards, text.index("sim up -d"))
-        self.assertLess(guards, text.index('cat > "$ENV_PATH"'))
-        compose = (self.root / "rehearsal" / "foro-compose.yaml").read_text(encoding="utf-8")
-        self.assertEqual(compose.count('perfumeria.rehearsal: "true"'), 8)  # 3 services, 2 networks, 3 volumes
-        self.assertIn("127.0.0.1:${SIM_HTTPS_PORT", compose)
+    def test_sandbox_test_only_manages_its_own_labelled_resources(self):
+        text = (self.root / "sitetest" / "run.sh").read_text(encoding="utf-8")
+        self.assertIn('LABEL="perfumeria.sitetest=true"', text)
+        self.assertIn("export SITE_TEST_MODE=1", text)
+        self.assertIn("never pulls", text)
+        self.assertIn('docker ps -aq --filter "label=$LABEL"', text)
+        self.assertIn("exists without the sandbox label; refusing", text)
+        self.assertNotIn("-p ", text.split("start_proxy()")[1].split("}")[0])  # no published ports
+        self.assertNotRegex(text, r"docker (compose|stop|restart) ")
+        self.assertIn("F1 test mode refuses the real shared proxy", text)
+
+    def test_contract_check_is_read_only_and_standalone(self):
+        text = (self.root / "shared-proxy-contract.sh").read_text(encoding="utf-8")
+        self.assertNotIn("source ", text)  # copyable into another project as is
+        self.assertIn("/srv/caddy/sites:/etc/caddy/sites:ro", text)
+        self.assertIn("/srv/caddy/logs:/var/log/caddy-sites", text)
+        code = "\n".join(line for line in text.splitlines() if not line.lstrip().startswith("#"))
+        for forbidden in ("docker run", "docker rm", "docker stop", "caddy reload", "mkdir", "rm -", "chmod", "tee "):
+            self.assertNotIn(forbidden, code)
 
     def test_validation_container_never_duplicates_the_caddyfile_mount(self):
         lib = (self.root / "lib.sh").read_text(encoding="utf-8")
         self.assertIn('[ "$destination" != "$inside" ]', lib)
+        self.assertIn('"$SITES_MOUNT"|"$LOGS_MOUNT") continue', lib)
         self.assertIn("--network none", lib)
         self.assertIn("readonly", lib)

@@ -1,5 +1,7 @@
-# >>> BEGIN perfumeria-el-buen-olor (managed block: added and removed only by deploy/shared/caddy-*.sh)
-# Perfumería El Buen Olor. Proxies to the perfumeria-web container on the shared edge network.
+# Perfumería El Buen Olor: site file for the shared Caddy (imported from /etc/caddy/sites).
+# Owned and deployed only by the perfumeria repository (deploy/shared/site-deploy.sh).
+# Rules for shared sites: site blocks only, no global options block, no unprefixed snippets.
+
 www.perfumeriaelbuenolor.es {
 	redir https://perfumeriaelbuenolor.es{uri} permanent
 }
@@ -21,13 +23,13 @@ perfumeriaelbuenolor.es {
 	respond @perfumeria_private 404
 
 	reverse_proxy perfumeria-web:8000 {
-		# Caddy 2.11 already replaces client-sent X-Forwarded-For/-Proto with values from the
-		# connection (no trusted_proxies configured); Django trusts only this proxy's address.
+		# Caddy replaces client-sent X-Forwarded-For/-Proto with values from the connection
+		# (no trusted_proxies configured); Django trusts only this proxy's address.
 		header_up -X-Real-IP
 	}
 
 	log {
-		output file /data/perfumeria/access.log {
+		output file /var/log/caddy-sites/perfumeriaelbuenolor.es/access.log {
 			roll_size 20MiB
 			roll_keep 10
 			roll_keep_for 720h
@@ -53,4 +55,3 @@ perfumeriaelbuenolor.es {
 		}
 	}
 }
-# <<< END perfumeria-el-buen-olor
