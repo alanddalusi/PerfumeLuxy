@@ -1,0 +1,266 @@
+sku,status,brand,official_name,concentration,size,gender,source_url,sizes_seen,notes,checked_on
+ER1173710781,pending,Adidas,,,,,,,legacy: Victory League,
+ER1173710782,pending,Burberry,,,,,,,legacy: Brit Rhythm Intense,
+ER1173710783,ambiguous,Burberry,,,,,,,mismo nombre en EDT y EDP (o Parfum/Elixir): elegir versión (legacy: Mr. Burberry),2026-11-21
+ER1173710784,pending,Burberry,,,,,,,legacy: Mrs. Burberry,
+ER1173710785,pending,Burberry,,,,,,,legacy: Brit Splash,
+ER1173710786,ambiguous,Burberry,,,,,,,existe una versión masculina y otra femenina distintas: elegir cuál (legacy: Weekend),2026-11-21
+ER1173710787,pending,Burberry,,,,,,,legacy: My Burberry Blush Intense,
+ER1173710788,pending,Burberry,,,,,,,legacy: My Burberry Blush,
+ER1173710789,pending,Burberry,,,,,,,legacy: Brit Sheer,
+ER1173710790,pending,Burberry,,,,,,,legacy: The Beat,
+ER1173710791,pending,Burberry,,,,,,,legacy: My Burberry,
+ER1173710792,pending,Burberry,,,,,,,legacy: Burberry Body,
+ER1173710793,ambiguous,Burberry,,,,,,,existe una versión masculina y otra femenina distintas: elegir cuál (legacy: London),2026-11-21
+ER1173710794,pending,Burberry,,,,,,,legacy: Brit Rhythm,
+ER1173710795,pending,Burberry,,,,,,,legacy: Touch,
+ER1173710796,pending,Burberry,,,,,,,legacy: Body,
+ER1173710797,pending,Burberry,,,,,,,legacy: Body Tender,
+ER1173710798,pending,Burberry,,,,,,,legacy: Burberry Body Intense,
+ER1173710800,pending,Bvlgari,,,,,,,legacy: Goldea The Roman Night,
+ER1173710801,verified,Bvlgari,Man in Black,edp,100ml,M,https://www.bulgari.com/en-us/product/MAN-IN-BLACK-EDP,60/100/150 ml,versión original EDP; 'Man in Black Parfum' es otro producto,2026-11-21
+ER1173710802,verified,Bvlgari,Goldea,edp,90ml,F,https://www.bulgari.com/en-sg/products/50250-e.html,90 ml,,2026-11-21
+ER1173710803,pending,Bvlgari,,,,,,,legacy: Aqva Marine Pour Homme,
+ER1173710804,pending,Bvlgari,,,,,,,legacy: Omnia Crystalline,
+ER1173710805,pending,Bvlgari,,,,,,,legacy: Extreme,
+ER1173710806,pending,Bvlgari,,,,,,,legacy: Rose Essentielle,
+ER1173710807,pending,Bvlgari,,,,,,,legacy: Goldea The Roman Night Absolute,
+ER1173710808,pending,Bvlgari,,,,,,,legacy: Petits Et Mamans,
+ER1173710809,pending,Bvlgari,,,,,,,legacy: Man In Black Essence,
+ER1173710810,ambiguous,Calvin Klein,,,,,,,existe una versión masculina y otra femenina distintas: elegir cuál (legacy: Euphoria),2026-11-21
+ER1173710811,pending,Calvin Klein,,,,,,,legacy: Intense Euphoria,
+ER1173710812,ambiguous,Calvin Klein,,,,,,,existe una versión masculina y otra femenina distintas: elegir cuál (legacy: Obsession),2026-11-21
+ER1173710813,pending,Calvin Klein,,,,,,,legacy: Euphoria Amber Gold,
+ER1173710814,verified,Calvin Klein,CK One,edt,100ml,U,https://www.calvinklein.co.uk/ck-one-unisex-eau-de-toilette-100ml-9350070989mul,100/200 ml,,2026-11-21
+ER1173710815,pending,Calvin Klein,,,,,,,legacy: Escape,
+ER1173710816,pending,Calvin Klein,,,,,,,legacy: CK IN2U,
+ER1173710817,pending,Calvin Klein,,,,,,,legacy: Euphoria Intense for her,
+ER1173710818,pending,Calvin Klein,,,,,,,legacy: Reveal,
+ER1173710819,pending,Calvin Klein,,,,,,,legacy: CK Be,
+ER1173710820,pending,Calvin Klein,,,,,,,legacy: Secret Obsession,
+ER1173710821,pending,Calvin Klein,,,,,,,legacy: Beauty,
+ER1173710822,pending,Calvin Klein,,,,,,,legacy: Sheer Beauty Essence,
+ER1173710823,pending,Calvin Klein,,,,,,,legacy: One Shock,
+ER1173710824,pending,Calvin Klein,,,,,,,legacy: Sheer Beauty,
+ER1173710825,pending,Carolina Herrera,,,,,,,legacy: Ch Men Sports,
+ER1173710826,pending,Carolina Herrera,,,,,,,legacy: Prive,
+ER1173710827,pending,Carolina Herrera,,,,,,,legacy: 212 Men Nyc,
+ER1173710828,verified,Carolina Herrera,Bad Boy,edt,100ml,M,https://www.carolinaherrera.com/sa/en/p-fragrance/bad-boy,50/100/150 ml,,2026-11-21
+ER1173710829,ambiguous,Carolina Herrera,,,,,,,existe una versión masculina y otra femenina distintas: elegir cuál (legacy: 212 VIP),2026-11-21
+ER1173710830,duplicate,Carolina Herrera,,,,,,,repite el SKU ...0829 (212 VIP) (legacy: 212 Vip),2026-11-21
+ER1173710831,ambiguous,Carolina Herrera,,,,,,,existe una versión masculina y otra femenina distintas: elegir cuál (legacy: 212 Sexy),2026-11-21
+ER1173710832,verified,Carolina Herrera,Good Girl,edp,80ml,F,https://www.carolinaherrera.com/cl/en/p-fragrance/good-girl-eau-de-parfum?sku=000000000065176159,30/50/80/100/150 ml,,2026-11-21
+ER1173710833,pending,Carolina Herrera,,,,,,,legacy: 212 Wild Party,
+ER1173710834,pending,Carolina Herrera,,,,,,,legacy: 212 VIP Rose,
+ER1173710835,duplicate,Carolina Herrera,,,,,,,repite el SKU ...0831 (212 Sexy) (legacy: 212 Sexy),2026-11-21
+ER1173710836,pending,Cartier,,,,,,,legacy: Declaration D'Un Soir,
+ER1173710837,pending,Cartier,,,,,,,web oficial encontrada (La Panthère EDP 100 ml); falta confirmar el género (legacy: La Panthere),2026-11-21
+ER1173710838,pending,Cartier,,,,,,,legacy: Declaration Essence,
+ER1173710839,pending,Cartier,,,,,,,legacy: Santos D Concentree,
+ER1173710840,pending,Cartier,,,,,,,legacy: Baiser Vole,
+ER1173710841,pending,Chanel,,,,,,,legacy: Allure Sensuelle,
+ER1173710842,verified,Chanel,Allure Homme Sport,edt,100ml,M,https://www.chanel.com/al/fragrance/p/123630/allure-homme-sport-eau-de-toilette-spray/,100 ml,versión EDT; Cologne y Eau Extrême son otros productos,2026-11-21
+ER1173710843,verified,Chanel,Gabrielle,edp,100ml,F,https://www.chanel.com/sa-en/fragrance/p/120525/gabrielle-chanel-eau-de-parfum-spray/,50/100 ml,Gabrielle Chanel EDP; Essence y L'Eau son otros productos,2026-11-21
+ER1173710844,ambiguous,Chanel,,,,,,,mismo nombre en EDT y EDP (o Parfum/Elixir): elegir versión (legacy: Bleu De Chanel),2026-11-21
+ER1173710845,ambiguous,Chanel,,,,,,,mismo nombre en EDT y EDP (o Parfum/Elixir): elegir versión (legacy: Chance Eau Tendre),2026-11-21
+ER1173710846,ambiguous,Chanel,,,,,,,mismo nombre en EDT y EDP (o Parfum/Elixir): elegir versión (legacy: Coco Mademoiselle),2026-11-21
+ER1173710847,pending,Diesel,,,,,,,legacy: Plus Plus Feminine,
+ER1173710848,pending,Diesel,,,,,,,legacy: Only The Brave Tattoo,
+ER1173710849,pending,Diesel,,,,,,,legacy: Plus Plus Masculine,
+ER1173710850,pending,Dior,,,,,,,legacy: Addict,
+ER1173710851,pending,Dior,,,,,,,web oficial encontrada (JOY by Dior EDP 90 ml); falta confirmar el género (legacy: Joy),2026-11-21
+ER1173710852,ambiguous,Dior,,,,,,,mismo nombre en EDT y EDP (o Parfum/Elixir): elegir versión (legacy: Sauvage),2026-11-21
+ER1173710853,ambiguous,Dior,,,,,,,mismo nombre en EDT y EDP (o Parfum/Elixir): elegir versión (legacy: Sauvage Perf),2026-11-21
+ER1173710854,pending,Dkny,,,,,,,legacy: Be Delicious,
+ER1173710855,not_found,Dkny,,,,,,,DKNY no lista Fresh Blossom en su web oficial (legacy: Be Delicious Fresh Blossom),2026-11-21
+ER1173710856,pending,Dolce & Gabbana,,,,,,,web oficial encontrada; falta confirmar el tamaño (legacy: The Only One),2026-11-21
+ER1173710857,ambiguous,Dolce & Gabbana,,,,,,,mismo nombre en EDT y EDP (o Parfum/Elixir): elegir versión (legacy: The One),2026-11-21
+ER1173710858,pending,Dolce & Gabbana,,,,,,,legacy: L' Imperatrice 3,
+ER1173710859,pending,Dolce & Gabbana,,,,,,,legacy: The One Desire,
+ER1173710860,pending,Dolce & Gabbana,,,,,,,legacy: Incenso,
+ER1173710861,pending,Dolce & Gabbana,,,,,,,legacy: The One Royal Night,
+ER1173710862,pending,Dolce & Gabbana,,,,,,,legacy: Light Blue,
+ER1173710863,pending,Dolce & Gabbana,,,,,,,legacy: Pour Femme,
+ER1173710864,pending,Dolce & Gabbana,,,,,,,legacy: Dolce Vita,
+ER1173710865,pending,Dolce & Gabbana,,,,,,,legacy: K,
+ER1173710866,pending,Dolce & Gabbana,,,,,,,legacy: The Only One 2,
+ER1173710867,verified,Emporio Armani,Stronger With You,edt,50ml,M,https://www.armanibeauty.fr/parfums/parfums-pour-homme/stronger-with-you/emporio-armani-stronger-with-you-eau-de-toilette/ww-00086-arm.html,50 ml (100 ml en estuche),"EDT; Intensely, Absolutely, Amber y Powerfully son otros productos",2026-11-21
+ER1173710868,pending,Emporio Armani,,,,,,,legacy: Stronger With You Intensely,
+ER1173710869,verified,Emporio Armani,Because It's You,edp,100ml,F,https://www.armanibeauty.co.uk/perfume/womens-perfumes/emporio-armani-for-her/emporio-armani-because-its-you/ww-00085-arm.html,30/50/100/150 ml,,2026-11-21
+ER1173710870,pending,Emporio Armani,,,,,,,legacy: Stronger With You Absolutely,
+ER1173710871,pending,Emporio Armani,,,,,,,legacy: Stronger With You Leather,
+ER1173710872,pending,Estee Lauder,,,,,,,legacy: Modern Muse Nuit,
+ER1173710873,pending,Estee Lauder,,,,,,,legacy: Private Collection,
+ER1173710874,verified,Estee Lauder,Beautiful,edp,100ml,F,https://www.esteelauder.com/product/9780/2116/Product-Catalog/Fragrance/For-Women/Beautiful/Beautiful/Eau-de-Parfum-Spray,30/50/100 ml,,2026-11-21
+ER1173710875,pending,Estee Lauder,,,,,,,legacy: Pleasures Intense,
+ER1173710876,pending,Estee Lauder,,,,,,,legacy: Modern Muse Chic,
+ER1173710877,pending,Estee Lauder,,,,,,,legacy: Pleasures bloom,
+ER1173710878,pending,Estee Lauder,,,,,,,legacy: Wood Mystique,
+ER1173710879,pending,Giorgio Armani,,,,,,,legacy: Eau Pour Homme Reno,
+ER1173710880,ambiguous,Giorgio Armani,,,,,,,mismo nombre en EDT y EDP (o Parfum/Elixir): elegir versión (legacy: Code),2026-11-21
+ER1173710881,duplicate,Giorgio Armani,,,,,,,repite el SKU ...0880 (Code) (legacy: Code),2026-11-21
+ER1173710882,ambiguous,Giorgio Armani,,,,,,,mismo nombre en EDT y EDP (o Parfum/Elixir): elegir versión (legacy: Acqua Di Gio),2026-11-21
+ER1173710883,pending,Giorgio Armani,,,,,,,legacy: Si Possione Intense,
+ER1173710884,verified,Giorgio Armani,Sì Passione,edp,100ml,F,https://www.armanibeauty.co.uk/perfume/womens-perfumes/si/si-passione-eau-de-parfum---refillable/ww-00895-arm.html,100 ml,,2026-11-21
+ER1173710885,ambiguous,Giorgio Armani,,,,,,,mismo nombre en EDT y EDP (o Parfum/Elixir): elegir versión (legacy: Armani Code),2026-11-21
+ER1173710886,ambiguous,Givenchy,,,,,,,mismo nombre en EDT y EDP (o Parfum/Elixir): elegir versión (legacy: L'Interdit),2026-11-21
+ER1173710887,pending,Givenchy,,,,,,,legacy: Play Intense,
+ER1173710888,verified,Givenchy,Dahlia Divin,edp,100ml,F,https://www.givenchybeauty.com/us/p/dahlia-divin-F10100197.html,30/50/75/100 ml,,2026-11-21
+ER1173710889,pending,Givenchy,,,,,,,legacy: Xeryus Rouge,
+ER1173710890,pending,Givenchy,,,,,,,legacy: Organza,
+ER1173710891,pending,Givenchy,,,,,,,legacy: L’ange,
+ER1173710892,pending,Givenchy,,,,,,,legacy: L’ange Intense,
+ER1173710893,not_found,Gucci,,,,,,,Gucci bloquea la verificación automática en su web: revisar a mano (legacy: Guilty Intense),2026-11-21
+ER1173710894,not_found,Gucci,,,,,,,Gucci bloquea la verificación automática en su web: revisar a mano (legacy: Premiere),2026-11-21
+ER1173710895,not_found,Gucci,,,,,,,Gucci bloquea la verificación automática en su web: revisar a mano (legacy: Bloom Nettare Di Fiori),2026-11-21
+ER1173710896,not_found,Gucci,,,,,,,Gucci bloquea la verificación automática en su web: revisar a mano (legacy: Guilty Pour Homme),2026-11-21
+ER1173710897,not_found,Gucci,,,,,,,Gucci bloquea la verificación automática en su web: revisar a mano (legacy: Memoire D’une Odeur),2026-11-21
+ER1173710898,not_found,Gucci,,,,,,,Gucci bloquea la verificación automática en su web: revisar a mano (legacy: Flora),2026-11-21
+ER1173710899,not_found,Gucci,,,,,,,Gucci bloquea la verificación automática en su web: revisar a mano (legacy: Rush),2026-11-21
+ER1173710900,not_found,Gucci,,,,,,,Gucci bloquea la verificación automática en su web: revisar a mano (legacy: Flora Gardenia),2026-11-21
+ER1173710901,not_found,Gucci,,,,,,,Gucci bloquea la verificación automática en su web: revisar a mano (legacy: Flora Gorgeous Gardenia),2026-11-21
+ER1173710902,not_found,Gucci,,,,,,,Gucci bloquea la verificación automática en su web: revisar a mano (legacy: Guilty Black),2026-11-21
+ER1173710903,not_found,Gucci,,,,,,,Gucci bloquea la verificación automática en su web: revisar a mano (legacy: Rush 2),2026-11-21
+ER1173710904,not_found,Gucci,,,,,,,Gucci bloquea la verificación automática en su web: revisar a mano (legacy: Guilty),2026-11-21
+ER1173710905,not_found,Gucci,,,,,,,Gucci bloquea la verificación automática en su web: revisar a mano (legacy: Bloom),2026-11-21
+ER1173710906,duplicate,Gucci,,,,,,,repite el SKU ...0893 (Guilty Intense) (legacy: Guilty Intense),2026-11-21
+ER1173710907,pending,Guerlain,,,,,,,legacy: Idylle,
+ER1173710908,ambiguous,Guerlain,,,,,,,mismo nombre en EDT y EDP (o Parfum/Elixir): elegir versión (legacy: Samsara),2026-11-21
+ER1173710909,pending,Guerlain,,,,,,,legacy: Mon Florale,
+ER1173710910,ambiguous,Guerlain,,,,,,,mismo nombre en EDT y EDP (o Parfum/Elixir): elegir versión (legacy: Habit Rouge),2026-11-21
+ER1173710911,pending,Guerlain,,,,,,,legacy: Mon Bloom Of Rose,
+ER1173710912,pending,Guerlain,,,,,,,legacy: Ideal,
+ER1173710913,verified,Guerlain,Vétiver,edt,100ml,M,https://www.guerlain.com/us/en-us/p/vetiver-de-guerlain-paris-eau-de-toilette-P030486.html,100 ml,versión original EDT; 'Vétiver Parfum' y 'Vétiver Extrême' son otros productos,2026-11-21
+ER1173710914,pending,Guerlain,,,,,,,legacy: Santal Royal,
+ER1173710915,pending,Guerlain,,,,,,,legacy: L'instant,
+ER1173710916,ambiguous,Guerlain,,,,,,,mismo nombre en EDT y EDP (o Parfum/Elixir): elegir versión (legacy: L'Homme Ideal),2026-11-21
+ER1173710917,pending,Guerlain,,,,,,,legacy: L'Instant Magic,
+ER1173710918,pending,Guess,,,,,,,legacy: Seductive Blue,
+ER1173710919,pending,Guess,,,,,,,legacy: Seductive Homme,
+ER1173710920,pending,Guess,,,,,,,legacy: Guess Pink,
+ER1173710921,ambiguous,Guess,,,,,,,nombre genérico: no identifica un perfume concreto (legacy: Guess),2026-11-21
+ER1173710922,pending,Guess,,,,,,,legacy: Dare,
+ER1173710923,pending,Guess,,,,,,,legacy: By Marciano,
+ER1173710924,pending,Guess,,,,,,,legacy: Marciano,
+ER1173710925,pending,Guess,,,,,,,legacy: Seductive,
+ER1173710926,ambiguous,Guess,,,,,,,nombre genérico: no identifica un perfume concreto (legacy: Homme),2026-11-21
+ER1173710927,ambiguous,Hugo Boss,,,,,,,nombre genérico: no identifica un perfume concreto (legacy: Hugo Boss),2026-11-21
+ER1173710928,pending,Hugo Boss,,,,,,,legacy: Hugo,
+ER1173710929,pending,Hugo Boss,,,,,,,legacy: Deep Red,
+ER1173710930,pending,Hugo Boss,,,,,,,legacy: Ma Vie,
+ER1173710931,pending,Hugo Boss,,,,,,,legacy: Hugo Man,
+ER1173710932,pending,Hugo Boss,,,,,,,legacy: Bottled Intense,
+ER1173710933,verified,Hugo Boss,Boss Bottled Tonic,edt,100ml,M,https://www.hugoboss.com/boss-bottled-tonic-eau-de-toilette-100ml/hbeu58058068_999.html,100 ml,,2026-11-21
+ER1173710934,pending,Hugo Boss,,,,,,,legacy: Femme,
+ER1173710935,pending,Hugo Boss,,,,,,,legacy: Bottled Unlimited,
+ER1173710936,pending,Hugo Boss,,,,,,,legacy: Just Different,
+ER1173710937,ambiguous,Hugo Boss,,,,,,,nombre genérico: no identifica un perfume concreto (legacy: Boss),2026-11-21
+ER1173710938,verified,Hugo Boss,Boss Bottled Night,edt,100ml,M,https://www.hugoboss.com/es/eau-de-toilette-boss-bottled-night-de-100-ml/hbeu58004750_999.html,100 ml,,2026-11-21
+ER1173710939,pending,Hugo Boss,,,,,,,legacy: Boss Bottled Man Of Today,
+ER1173710940,pending,Hugo Boss,,,,,,,legacy: Boss Orange,
+ER1173710941,ambiguous,Hugo Boss,,,,,,,nombre genérico: no identifica un perfume concreto (legacy: Natural Spray),2026-11-21
+ER1173710942,pending,Hugo Boss,,,,,,,legacy: Orange EDT Sp,
+ER1173710943,pending,Hugo Boss,,,,,,,legacy: Boss The Scent,
+ER1173710944,pending,Hugo Boss,,,,,,,legacy: Nuit,
+ER1173710945,pending,Jaguar,,,,,,,legacy: Classic Red,
+ER1173710946,ambiguous,Jaguar,,,,,,,nombre genérico: no identifica un perfume concreto (legacy: Jaguar),2026-11-21
+ER1173710947,pending,Jaguar,,,,,,,legacy: Classic,
+ER1173710948,pending,Jaguar,,,,,,,legacy: Classic Blue,
+ER1173710949,pending,Jaguar,,,,,,,legacy: Vision III,
+ER1173710950,verified,Jean Paul Gaultier,Scandal,edp,80ml,F,https://www.jeanpaulgaultier.com/ww/en/p/range-scandal/scandal-eau-de-parfum-000000000065176518,30/50/80 ml,,2026-11-21
+ER1173710951,pending,Lacoste,,,,,,,legacy: Eau de Lacoste L. 12.12 Noir,
+ER1173710952,pending,Lacoste,,,,,,,legacy: Touch Of Pink,
+ER1173710953,ambiguous,Lacoste,,,,,,,nombre genérico: no identifica un perfume concreto (legacy: Lacoste),2026-11-21
+ER1173710954,pending,Lacoste,,,,,,,legacy: Blanc Pour Homme,
+ER1173710955,pending,Lacoste,,,,,,,legacy: L.12.12 Rouge,
+ER1173710956,pending,Lacoste,,,,,,,legacy: Joy Of Pink,
+ER1173710957,pending,Lacoste,,,,,,,legacy: L.12.12 Blanc,
+ER1173710958,ambiguous,Lacoste,,,,,,,nombre genérico: no identifica un perfume concreto (legacy: Eau De Lacoste),2026-11-21
+ER1173710959,pending,Lacoste,,,,,,,legacy: Challenge,
+ER1173710960,duplicate,Lacoste,,,,,,,repite el SKU ...0952 (Touch of Pink) (legacy: EDTTouch Of Pink For Wom),2026-11-21
+ER1173710961,duplicate,Lacoste,,,,,,,repite el SKU ...0958 (Eau de Lacoste) (legacy: Eau De lacoste),2026-11-21
+ER1173710962,pending,Lacoste,,,,,,,legacy: L.12.12 Blanc-Pure,
+ER1173710963,verified,Lancome,Idôle,edp,100ml,F,https://www.lancome.es/perfume/mujer/idole/idole-eau-de-parfum/A01707-LAC.html,100 ml,,2026-11-21
+ER1173710964,pending,Lancome,,,,,,,legacy: La Vie Est Belle,
+ER1173710965,duplicate,Lancome,,,,,,,repite el SKU ...0963 (Idôle) (legacy: Idôle ED),2026-11-21
+ER1173710966,pending,Lancome,,,,,,,legacy: Magie Noire L'eau,
+ER1173710967,verified,Lancome,Miracle,edp,100ml,F,https://www.lancome.co.uk/perfume/women-s-perfume/miracle/miracle/022055-LAC.html,50/100 ml,,2026-11-21
+ER1173710968,verified,Montblanc,Explorer,edp,100ml,M,https://www.montblanc.com/en-us/explorer-eau-de-parfum-100-ml-MB124069.html,30/60/100 ml,,2026-11-21
+ER1173710969,verified,Montblanc,Legend Spirit,edt,100ml,M,https://www.montblanc.com/en-gb/montblanc-legend-spirit-eau-de-toilette-100-ml-MB115364.html,30/50/100 ml,,2026-11-21
+ER1173710970,ambiguous,Montblanc,,,,,,,mismo nombre en EDT y EDP (o Parfum/Elixir): elegir versión (legacy: Legend),2026-11-21
+ER1173710971,duplicate,Montblanc,,,,,,,repite el SKU ...0970 (Legend) (legacy: Mont Blanc Legend),2026-11-21
+ER1173710972,pending,Montblanc,,,,,,,legacy: Emblem ED,
+ER1173710973,pending,Montblanc,,,,,,,legacy: Lady Emblem Elixir,
+ER1173710974,pending,Montblanc,,,,,,,legacy: Emblem,
+ER1173710975,pending,Montblanc,,,,,,,legacy: Emblem Intense,
+ER1173710976,verified,Paco Rabanne,Invictus,edt,100ml,M,https://www.rabanne.com/ww/en/fragrance/p/invictus--000000000065055742,50/100/200 ml,,2026-11-21
+ER1173710977,verified,Paco Rabanne,1 Million,edt,100ml,M,https://www.rabanne.com/ww/en/fragrance/p/1-million--000000000065187136,50/100/200 ml,,2026-11-21
+ER1173710978,duplicate,Paco Rabanne,,,,,,,repite el SKU ...0979 (Olympéa) (legacy: Olympêa),2026-11-21
+ER1173710979,verified,Paco Rabanne,Olympéa,edp,80ml,F,https://www.rabanne.com/us/en_US/fragrance/p/olympea--000000000065187140,30/50/80 ml,"versión original EDP; Parfum, Absolu, Flora e Intense son otros productos",2026-11-21
+ER1173710980,ambiguous,Paco Rabanne,,,,,,,nombre genérico: no identifica un perfume concreto (legacy: Paco Rabanne),2026-11-21
+ER1173710981,pending,Paco Rabanne,,,,,,,legacy: One Million Lucky,
+ER1173710982,duplicate,Paco Rabanne,,,,,,,repite el SKU ...0977 (1 Million) (legacy: Million),2026-11-21
+ER1173710983,pending,Paco Rabanne,,,,,,,legacy: Black XS,
+ER1173710984,pending,Paco Rabanne,,,,,,,legacy: Ultraviolet,
+ER1173710985,verified,Paco Rabanne,Lady Million,edp,80ml,F,https://www.rabanne.com/us/en_US/fragrance/p/lady-million--000000000065051774_BASE,30/80 ml,,2026-11-21
+ER1173710986,duplicate,Paco Rabanne,,,,,,,repite el SKU ...0977 (1 Million) (legacy: One Million),2026-11-21
+ER1173710987,pending,Paco Rabanne,,,,,,,legacy: Invictus Intense,
+ER1173710988,pending,Paco Rabanne,,,,,,,legacy: Black Xs Potion,
+ER1173710989,pending,Paco Rabanne,,,,,,,legacy: Olympéa Intense,
+ER1173710990,pending,Roberto Cavalli,,,,,,,legacy: Paradiso Assoluto,
+ER1173710991,pending,Roberto Cavalli,,,,,,,legacy: Uomo,
+ER1173710992,pending,Roberto Cavalli,,,,,,,legacy: Nero Assoluto,
+ER1173710993,pending,Roberto Cavalli,,,,,,,legacy: Florence,
+ER1173710994,pending,Roberto Cavalli,,,,,,,legacy: Serpentine,
+ER1173710995,ambiguous,Roberto Cavalli,,,,,,,nombre genérico: no identifica un perfume concreto (legacy: cavalli),2026-11-21
+ER1173710996,pending,Roberto Cavalli,,,,,,,legacy: Paradisio Azzuro,
+ER1173710997,duplicate,Roberto Cavalli,,,,,,,repite el SKU ...0995 (Cavalli) (legacy: cavali),2026-11-21
+ER1173710998,pending,Roberto Cavalli,,,,,,,legacy: Florence Amber,
+ER1173710999,pending,Roberto Cavalli,,,,,,,legacy: Paradiso,
+ER1173711000,ambiguous,Roberto Cavalli,,,,,,,nombre genérico: no identifica un perfume concreto (legacy: Dupont),2026-11-21
+ER1173711001,pending,Roberto Cavalli,,,,,,,legacy: Just Cavalli,
+ER1173711002,ambiguous,Roberto Cavalli,,,,,,,nombre genérico: no identifica un perfume concreto (legacy: Women),2026-11-21
+ER1173711003,duplicate,Roberto Cavalli,,,,,,,repite el SKU ...0996 (Paradiso Azzurro) (legacy: Paradiso Azzuro),2026-11-21
+ER1173711004,duplicate,Roberto Cavalli,,,,,,,repite el SKU ...0996 (Paradiso Azzurro) (legacy: Paradiso Azzurro),2026-11-21
+ER1173711005,pending,Tom Ford,,,,,,,existe EDP y Parfum con el mismo nombre y la fuente no indica género (legacy: Black Orchid),2026-11-21
+ER1173711006,pending,Tommy Hilfiger,,,,,,,legacy: Tommy,
+ER1173711007,ambiguous,Tommy Hilfiger,,,,,,,nombre genérico: no identifica un perfume concreto (legacy: Tommy Hilfiger),2026-11-21
+ER1173711008,pending,Tommy Hilfiger,,,,,,,legacy: Tommy Girl,
+ER1173711009,pending,Versace,,,,,,,legacy: Oud Noir,
+ER1173711010,ambiguous,Versace,,,,,,,existe una versión masculina y otra femenina distintas: elegir cuál (legacy: Dylan Blue),2026-11-21
+ER1173711011,pending,Versace,,,,,,,legacy: Blue Jeans,
+ER1173711012,ambiguous,Versace,,,,,,,nombre genérico: no identifica un perfume concreto (legacy: Versace),2026-11-21
+ER1173711013,verified,Versace,Pour Homme,edt,100ml,M,https://www.versace.com/gb/en/men/accessories/fragrances-body-care/pour-homme/pour-homme-edt-100-ml-blue/R720010-R100MLS_RNUL.html,100 ml,,2026-11-21
+ER1173711014,pending,Versace,,,,,,,legacy: The Dreamer,
+ER1173711015,verified,Versace,Eau Fraîche,edt,100ml,M,https://versace.com/us/en-us/men/accessories/perfumes/eau-fra%C3%AEche-100-ml-rnul/R500010-R100MLS_RNUL.html,100 ml,,2026-11-21
+ER1173711016,verified,Versace,Yellow Diamond,edt,90ml,F,https://www.versace.com/gb/en/women/accessories/fragrances-body-care/yellow-diamond/yellow-diamond-edt-90-ml-yellow/R520032-R090MLS_RNUL.html,90/200 ml,,2026-11-21
+ER1173711017,ambiguous,Versace,,,,,,,mismo nombre en EDT y EDP (o Parfum/Elixir): elegir versión (legacy: Eros),2026-11-21
+ER1173711018,verified,Versace,Bright Crystal,edt,90ml,F,https://www.versace.com/gb/en/women/accessories/fragrances-body-care/bright-crystal/bright-crystal-edt-90-ml-pink/R510032-R090MLS_RNUL.html,50/90 ml,,2026-11-21
+ER1173711019,ambiguous,Versace,,,,,,,mismo nombre en EDT y EDP (o Parfum/Elixir): elegir versión (legacy: Crystal Noir),2026-11-21
+ER1173711020,pending,Yves Saint Laurent,,,,,,,legacy: M7 Oud Absolu,
+ER1173711021,pending,Yves Saint Laurent,,,,,,,legacy: Body Kouros,
+ER1173711022,pending,Yves Saint Laurent,,,,,,,legacy: La Nuit De L'Homme L'Intense,
+ER1173711023,ambiguous,Yves Saint Laurent,,,,,,,mismo nombre en EDT y EDP (o Parfum/Elixir): elegir versión (legacy: Libre),2026-11-21
+ER1173711024,pending,Yves Saint Laurent,,,,,,,legacy: Supreme Bouquet,
+ER1173711025,pending,Yves Saint Laurent,,,,,,,legacy: Black Opium Nuit Blanche,
+ER1173711026,pending,Yves Saint Laurent,,,,,,,legacy: Cinema,
+ER1173711027,verified,Yves Saint Laurent,La Nuit de L'Homme,edt,100ml,M,https://www.yslbeauty.co.uk/fragrances/fragrances-for-him/la-nuit-de-l-homme/la-nuit-de-l-homme-eau-de-toilette-spray/426YSL.html,100 ml,versión EDT; 'Le Parfum' y 'L'Intense' son otros productos,2026-11-21
+ER1173711028,pending,Yves Saint Laurent,,,,,,,legacy: Rive Gauche Homme,
+ER1173711029,verified,Yves Saint Laurent,Black Opium,edp,90ml,F,https://yslbeautyus.com/fragrance/womens-fragrances/black-opium/black-opium-eau-de-parfum-spray/3365440787858.html,90/150 ml,versión original EDP; 'Le Parfum' y las ediciones Glitter/Over Red son otros productos,2026-11-21
+ER1173711030,pending,Yves Saint Laurent,,,,,,,legacy: Manifesto,
+ER1173711031,pending,Yves Saint Laurent,,,,,,,legacy: Kouros Silver,
+ER3163427231,not_applicable,Eau Royal Candle,,,,,,,legacy: Vanilla,
+ER3163427232,not_applicable,Eau Royal Candle,,,,,,,legacy: Cinnamon,
+ER3163427233,not_applicable,Eau Royal Candle,,,,,,,legacy: Lavender,
+ER3163427234,not_applicable,Eau Royal Candle,,,,,,,legacy: Lemon,
+ER3163427235,not_applicable,Eau Royal Candle,,,,,,,legacy: Lemon grass,
+ER3163427236,not_applicable,Eau Royal Candle,,,,,,,legacy: Mint,
+ER3163427237,not_applicable,Eau Royal Candle,,,,,,,legacy: Apple,
+ER3163427238,not_applicable,Eau Royal Candle,,,,,,,legacy: Jasmine,
+ER3163427239,not_applicable,Eau Royal Candle,,,,,,,legacy: Caramel,
+ER3163427240,not_applicable,Eau Royal Candle,,,,,,,legacy: Watermelon,
+ER3163427241,not_applicable,Eau Royal Candle,,,,,,,legacy: Peach Blossom,
+ER3163427242,not_applicable,Eau Royal Candle,,,,,,,legacy: Fresh Breeze,
+ER3163427243,not_applicable,Eau Royal Candle,,,,,,,legacy: Eucalyptus,
+ER3163427244,not_applicable,Eau Royal Candle,,,,,,,legacy: Strawberry,
+ER3163427245,not_applicable,Eau Royal Candle,,,,,,,legacy: Wild flowers,

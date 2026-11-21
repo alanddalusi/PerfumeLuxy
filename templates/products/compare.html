@@ -33,6 +33,7 @@
                                 {% include 'includes/stars.html' with rating=product.avg_rating %}
                                 <small>({{ product.review_count }} reviews)</small>
                             </div>
+                            {% if not store_prelaunch and not product.is_reference and product.price is not None %}
                             <p class="product-price">
                                 {% if product.min_price == product.max_price %}
                                     €{{ product.price }}
@@ -40,6 +41,7 @@
                                     €{{ product.min_price }} - €{{ product.max_price }}
                                 {% endif %}
                             </p>
+                            {% endif %}
                             <a href="{{ product.get_absolute_url }}" class="btn btn-gold btn-sm mt-2">
                                 Ver detalles
                             </a>

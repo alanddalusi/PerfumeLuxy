@@ -39,7 +39,7 @@ class SEOManager:
             "@context": "https://schema.org/",
             "@type": "Product",
             "name": product.name,
-            "description": product.description[:500] if product.description else "",
+            "description": (product.description or product.meta_description or "")[:500],
             "offers": {
                 "@type": "Offer",
                 "url": self.get_canonical_url(product.get_absolute_url()),
@@ -55,6 +55,8 @@ class SEOManager:
         
         if not sales_enabled() or product.price is None or product.is_reference:
             schema.pop("offers")
+        if not schema["description"]:
+            schema.pop("description")
 
         if product.sku:
             schema["sku"] = product.sku
@@ -176,14 +178,19 @@ class SEOManager:
         if product.brand and product.brand.name:
             title = f"{product.brand.name} {product.name}"
         if product.concentration:
-            title += f" - {dict(product.CONCENTRATION_CHOICES).get(product.concentration, '')}"
+            title += f" {dict(product.CONCENTRATION_CHOICES).get(product.concentration, '').split(' (')[0]}"
+        if product.size:
+            title += f" {product.size.replace('ml', ' ml')}"
         title += " | Perfumería El Buen Olor"
         
-        description = f"{product.brand.name} {product.name}" if product.brand and product.brand.name else product.name
-        if product.fragrance_family:
-            description += f" · {product.fragrance_family.name}"
-        if product.description:
-            description += f". {product.description}"
+        if product.meta_description:   # unique text written when the data was verified
+            description = product.meta_description
+        else:
+            description = f"{product.brand.name} {product.name}" if product.brand and product.brand.name else product.name
+            if product.fragrance_family:
+                description += f" · {product.fragrance_family.name}"
+            if product.description:
+                description += f". {product.description}"
 
         # Keywords
         keywords = f"{product.name}, "

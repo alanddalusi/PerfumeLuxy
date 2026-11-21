@@ -107,7 +107,7 @@
                     </div>
                     
                     <!-- Precio -->
-                    <p class="product-price">€{{ product.price }}</p>
+                    {% if not store_prelaunch and not product.is_reference and product.price is not None %}<p class="product-price">€{{ product.price }}</p>{% endif %}
                     
                     <!-- Botones -->
                     <div class="product-actions">
