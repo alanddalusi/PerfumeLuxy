@@ -19,7 +19,7 @@ from .models import Gender, Product, PublicationDecision
 
 EVIDENCE_FILE = Path(__file__).resolve().parent / "verification" / "reference_evidence.csv"
 COLUMNS = ["sku", "status", "brand", "official_name", "concentration", "size", "gender",
-           "source_url", "sizes_seen", "notes", "checked_on"]
+           "source_url", "sizes_seen", "notes", "checked_on", "description_es", "description_source"]
 STATUSES = {
     "verified": "datos comprobados en la web oficial",
     "ambiguous": "existe en varias concentraciones o versiones: hace falta elegir cuál es",
@@ -83,6 +83,8 @@ def row_problems(row, product):
         problems.append("gender must be M, F or U")
     if not is_official(row["source_url"], brand):
         problems.append("source_url must be https on the brand's official site")
+    if row.get("description_es") and not is_official(row.get("description_source", ""), brand):
+        problems.append("description_source must be https on the brand's official site")
     return problems
 
 
@@ -108,13 +110,19 @@ def apply_row(row, product, apply):
     """Returns the list of changed fields (empty when the product already matches)."""
     url = row["source_url"]
     gender = Gender.objects.filter(db_name=row["gender"]).first()
+    description = row.get("description_es", "")
+    sources = {"name": url, "brand": url, "concentration": url, "size": url, "gender": url}
+    if description:
+        sources["description"] = row["description_source"]
     values = {
         "name": row["official_name"][:254],
         "concentration": row["concentration"],
         "size": row["size"],
         "gender": gender,
-        "description": "",   # legacy text has no verifiable source; it would also block approval
-        "verification_sources": {"name": url, "brand": url, "concentration": url, "size": url, "gender": url},
+        # Our own Spanish text written from the notes on the official page (sourced), or nothing:
+        # the legacy English text has no verifiable source.
+        "description": description,
+        "verification_sources": sources,
         "meta_description": meta_description(row["brand"], row["official_name"], row["concentration"],
                                              row["size"], row["gender"]),
     }

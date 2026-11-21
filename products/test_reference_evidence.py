@@ -37,6 +37,7 @@ class EvidenceFileTests(TestCase):
         for row in verified:
             product = SimpleNamespace(brand=SimpleNamespace(name=fixture[row["sku"]]))
             self.assertEqual(row_problems(row, product), [], row["sku"])
+            self.assertGreaterEqual(len(row["description_es"]), 120, row["sku"])   # original sourced content
         # one page per perfume: no two verified rows describe the same product
         keys = [(r["brand"], r["official_name"].lower(), r["concentration"], r["size"]) for r in verified]
         self.assertEqual(len(keys), len(set(keys)))
@@ -103,6 +104,16 @@ class ApplyAndPublishTests(TestCase):
         self.assertLessEqual(len(self.product.meta_description), 160)
         self.assertEqual(self.product.publication_status, Product.Publication.DRAFT)
         self.assertIn("0 updated, 1 unchanged", self.run_apply(path, "--apply"))   # resumable / repeatable
+
+    def test_sourced_description_is_applied_with_its_evidence(self):
+        text = "Good Girl es un floral ambarado: almendra, jazmín sambac, nardo, haba tonka y cacao."
+        path = self.evidence([self.good_row(description_es=text, description_source=URL + "?notes")])
+        self.run_apply(path, "--apply")
+        self.product.refresh_from_db()
+        self.assertEqual(self.product.description, text)
+        self.assertEqual(self.product.verification_sources["description"], URL + "?notes")
+        bad = self.evidence([self.good_row(description_es=text, description_source="https://www.fragrantica.com/x")])
+        self.assertIn("description_source must be https", self.run_apply(bad, "--apply"))
 
     def test_rows_that_are_not_official_or_valid_are_rejected(self):
         path = self.evidence([self.good_row(source_url="https://www.notino.es/carolina-herrera/good-girl/"),
