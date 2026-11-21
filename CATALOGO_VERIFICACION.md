@@ -83,6 +83,23 @@ Publicados los **17 perfumes nuevos** (revisor `app`, misma versión `9beff7a`, 
 
 **Después de publicar** se han verificado 4 más gracias a la foto heredada, que identifica la versión, y a la web oficial: Bleu de Chanel EDP, Obsession for Men EDT, 212 Men Sexy EDT y 212 VIP Men EDT. No están publicados y su evidencia solo está en el repositorio local.
 
+## Tercera publicación y SEO de la portada (21/11/2026, 21:10 UTC), versión `f63d5c8`
+
+- **Publicadas 4 fichas más**, en total 51: Bleu de Chanel EDP, Obsession for Men EDT, 212 VIP Men EDT y 212 Men Sexy EDT.
+  - Copia previa verificada: `20261121T210550Z`.
+  - Los 214 borradores restantes tienen la misma huella antes y después (`b859b746e81d741e`).
+- **Portada** (informe de Seobility):
+  - Unas 550 palabras de texto propio (antes 227), que repiten las palabras del título y del H1.
+  - Escaparate de perfumes recientes y enlaces limpios a géneros y marcas indexables.
+  - Ningún enlace interno con parámetros sin `nofollow`.
+  - Eliminados las secciones vacías (Velas, Más valorados) y los enlaces sociales de relleno.
+  - Anclas más variadas y tarjetas cuyo enlace lleva el nombre del perfume.
+- **Comprobación en el sitio real:** 51/51 fichas correctas, 65 URL del sitemap con respuesta 200, `site-status` sin fallos y el foro sin cambios.
+- **Rendimiento móvil:** LCP de 0,5 a 1,1 s y CLS 0.
+- **Fuera del alcance del código:**
+  - La redirección HTTP→HTTPS es un 308 del Caddy compartido, que no se modifica. Es una redirección permanente válida.
+  - La longitud del dominio y los backlinks dependen de acciones externas.
+
 ## Estado de la verificación (21/11/2026)
 
 | Estado | Fichas |
