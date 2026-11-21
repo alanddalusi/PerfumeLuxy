@@ -54,7 +54,7 @@ Publicadas las **30 fichas verificadas** en producción (`perfumeria-web:910bdcd
   - En el sitemap y permitidas por `robots.txt`.
 - **Sitemap:** las 33 URL que declara responden 200.
 - **Tienda:** el catálogo muestra 30 productos, `/checkout/` responde 403, hay 0 imágenes aprobadas y 0 productos vendibles. `site-status` da 0 fallos y el foro sigue sin cambios.
-- **Reversión:** `publish_reference_batch` no retira fichas. Para retirarlas: `python manage.py retire_reference_catalog` (o una a una en el admin). Para volver al código anterior: `RELEASE=fbfea75`.
+- **Reversión:** `publish_reference_batch` no retira fichas. Para retirarlas: `python manage.py retire_reference_catalog --reviewer app --apply` (o una a una en el admin). Para volver al código anterior: `RELEASE=fbfea75`.
 
 ## Estado de la verificación (21/11/2026)
 
