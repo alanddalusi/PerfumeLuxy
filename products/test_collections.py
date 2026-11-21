@@ -104,6 +104,10 @@ class LegalPagesTests(TestCase):
             self.assertIn("Titular de prueba", notice)
             self.assertIn("00000000T", notice)
             self.assertIn("contacto@example.test", self.client.get("/contacto/").content.decode())
-            self.assertIn("Agencia Española de Protección de Datos", self.client.get("/politica-de-privacidad/").content.decode())
+            policy = self.client.get("/politica-de-privacidad/").content.decode()
+            self.assertIn("Agencia Española de Protección de Datos", policy)
+            self.assertIn("hash", policy)                                  # not "cifrada"
+            self.assertNotIn("cifrada", policy)
+            self.assertIn("un máximo de 30 días", policy)                  # server logs retention (Caddy roll_keep_for)
             self.assertIn('href="/aviso-legal/"', self.client.get("/").content.decode())
             self.assertIn("/politica-de-privacidad/", self.client.get("/sitemap.xml").content.decode())

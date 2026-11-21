@@ -1,5 +1,7 @@
 {% extends "includes/design/storefront.html" %}
 {% block content %}
+{# Every statement below was checked against the code and server configuration (21/11/2026). #}
+{# Change it whenever the processing changes (new e-mail provider, analytics, payments...). #}
 <article class="sf eo-wrap sf-section sf-about">
   <h1>Política de privacidad.</h1>
   <section class="sf-section">
@@ -7,21 +9,28 @@
     <p>{{ owner.name }} (NIF {{ owner.tax_id }}), con domicilio en {{ owner.address }}. Contacto: <a href="mailto:{{ owner.email }}">{{ owner.email }}</a>.</p>
   </section>
   <section class="sf-section">
-    <h2>Qué datos tratamos y para qué</h2>
+    <h2>Qué datos tratamos, para qué y con qué base legal</h2>
     <ul>
-      <li><strong>Cuenta de usuario:</strong> correo electrónico y contraseña cifrada, para iniciar sesión, guardar favoritos y solicitar avisos. Base legal: ejecución de la relación solicitada (art. 6.1.b RGPD).</li>
-      <li><strong>Avisos de lanzamiento y de disponibilidad:</strong> correo electrónico, fecha y versión del consentimiento. Base legal: consentimiento (art. 6.1.a RGPD), que puedes retirar en cualquier momento con el enlace de baja.</li>
-      <li><strong>Seguridad y funcionamiento:</strong> cookies técnicas de sesión y de protección de formularios. Son necesarias para el servicio y no requieren consentimiento.</li>
+      <li><strong>Cuenta de usuario.</strong> Nombre de usuario, correo electrónico y contraseña, que se guarda de forma irreversible (hash), no en texto legible. Si los añades en tu perfil, también el teléfono y la dirección de entrega. Sirven para iniciar sesión, guardar favoritos y gestionar los avisos que pidas. Base legal: la prestación del servicio que solicitas (art. 6.1.b RGPD).</li>
+      <li><strong>Avisos de lanzamiento y de disponibilidad.</strong> Correo electrónico, fechas de solicitud, confirmación y baja, y versión del texto de consentimiento aceptado. Base legal: tu consentimiento (art. 6.1.a RGPD), que puedes retirar en cualquier momento con el enlace de baja de cada aviso.</li>
+      <li><strong>Seguridad del sitio.</strong> El servidor registra las peticiones recibidas, incluida la dirección IP; los enlaces de un solo uso se guardan ocultos. Para evitar abusos en los formularios de avisos guardamos además un contador con la dirección IP transformada de forma irreversible. Base legal: el interés legítimo en proteger el servicio (art. 6.1.f RGPD).</li>
     </ul>
-    <p>No usamos cookies de analítica ni de publicidad, y no vendemos ni cedemos tus datos.</p>
+  </section>
+  <section class="sf-section">
+    <h2>Cookies</h2>
+    <p>Solo usamos cookies técnicas: la de sesión y la de protección de formularios. Son necesarias para el funcionamiento del sitio. No usamos cookies de analítica ni de publicidad, y las páginas no cargan recursos de otros sitios.</p>
   </section>
   <section class="sf-section">
     <h2>Conservación</h2>
-    <p>Los datos de la cuenta se conservan mientras la mantengas activa. Los de cada aviso, hasta que te des de baja o retires el consentimiento. Después se bloquean durante los plazos legales de prescripción y se suprimen.</p>
+    <ul>
+      <li>Datos de la cuenta: mientras la mantengas. Puedes pedir su supresión en cualquier momento.</li>
+      <li>Avisos: hasta que te des de baja. Las solicitudes que no se confirman se eliminan a los 30 días de caducar el enlace de confirmación.</li>
+      <li>Registros del servidor: un máximo de 30 días. Contador antiabuso: 48 horas.</li>
+    </ul>
   </section>
   <section class="sf-section">
     <h2>Encargados del tratamiento</h2>
-    <p>El sitio se aloja en servidores de OVHcloud en la Unión Europea.</p>
+    <p>El sitio se aloja en servidores de OVHcloud situados en la Unión Europea.{% if owner.email_provider %} Los correos de confirmación y de aviso se envían a través de {{ owner.email_provider }}.{% endif %}</p>
   </section>
   <section class="sf-section">
     <h2>Tus derechos</h2>

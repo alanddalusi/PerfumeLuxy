@@ -279,6 +279,7 @@ LEGAL_OWNER = {
     "email": os.environ.get("LEGAL_OWNER_EMAIL", "").strip(),         # correo de contacto
     "phone": os.environ.get("LEGAL_OWNER_PHONE", "").strip(),         # opcional
     "registry": os.environ.get("LEGAL_OWNER_REGISTRY", "").strip(),   # datos registrales (si es sociedad)
+    "email_provider": os.environ.get("LEGAL_EMAIL_PROVIDER", "").strip(),  # proveedor de envío de correo
 }
 LEGAL_REQUIRED_FIELDS = ("name", "tax_id", "address", "email")
 CATALOG_ASSET_ROOT = Path(os.environ.get("CATALOG_ASSET_ROOT") or BASE_DIR / "catalog_assets")

@@ -156,7 +156,8 @@ class PublicCatalogTests(TestCase):
         Product.objects.filter(pk=self.product.pk).update(publication_status=Product.Publication.APPROVED)
         response = self.client.get(url)
         self.assertContains(response, "Nuevo nombre")
-        self.assertContains(response, "?brand=marca-test")
+        self.assertNotContains(response, "?brand=")                 # breadcrumb uses the brand page
+        self.assertContains(response, "/products/marca/")
         self.assertContains(response, "?category=perfumes")
         self.assertNotContains(response, '"offers":')
         self.assertRedirects(

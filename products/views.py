@@ -217,15 +217,18 @@ def product_detail(request, slug):
         {'name': 'Inicio', 'url': '/'},
         {'name': 'Productos', 'url': '/products/'},
     ]
-    if product.gender:
+    # Clean collection URLs (indexable pages), not ?gender= / ?brand= filters (noindex).
+    gender_slug = {code: slug for slug, (code, _) in collections.GENDERS.items()}.get(
+        product.gender.db_name if product.gender else "")
+    if gender_slug:
         breadcrumb_items.append({
             'name': product.gender.get_friendly_name(),
-            'url': catalog_filter_url(gender=product.gender.db_name)
+            'url': reverse("products:gender_collection", args=[gender_slug]),
         })
     if product.brand:
         breadcrumb_items.append({
             'name': product.brand.name,
-            'url': catalog_filter_url(brand=product.brand.db_name)
+            'url': collections.brand_url(product.brand),
         })
     breadcrumb_items.append({'name': product.name, 'url': None})
     
