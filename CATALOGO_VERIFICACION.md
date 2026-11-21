@@ -41,7 +41,22 @@ python manage.py publish_reference_batch --reviewer <usuario> --apply   # public
   - Las fichas de referencia nunca se pueden comprar: aparecen como «Próximamente» y sin precio, también en el comparador y en el test olfativo.
 - **`reference_catalog_progress`.** Para cada producto indica si está completo, incompleto (y por qué) o listo para publicar. También el estado de la foto: `none` (sin archivo), `pending_rights` (archivo sin permiso registrado) o `approved`.
 
-## Estado (21/11/2026)
+## Publicación inicial (21/11/2026, 20:30 UTC)
+
+Publicadas las **30 fichas verificadas** en producción (`perfumeria-web:910bdcd`, revisor `app`), como «Próximamente», sin precios, compras ni fotos.
+
+- **Copias previas verificadas** con `restore.sh --verify`: `20261121T201234Z` y `20261121T202409Z`.
+- **Borradores intactos:** los otros 235 tienen la misma huella antes y después (`d67e7492961f1b7e`).
+- **Comprobación en el sitio real** con [`deploy/checks/check_published.py`](deploy/checks/check_published.py) por HTTPS: 30/30 sin problemas.
+  - Títulos y meta descripciones únicos, canonical y JSON-LD válido sin `offers`.
+  - Unos 100 palabras de contenido propio por ficha.
+  - Sin precio, compra ni foto.
+  - En el sitemap y permitidas por `robots.txt`.
+- **Sitemap:** las 33 URL que declara responden 200.
+- **Tienda:** el catálogo muestra 30 productos, `/checkout/` responde 403, hay 0 imágenes aprobadas y 0 productos vendibles. `site-status` da 0 fallos y el foro sigue sin cambios.
+- **Reversión:** `publish_reference_batch` no retira fichas. Para retirarlas: `python manage.py retire_reference_catalog` (o una a una en el admin). Para volver al código anterior: `RELEASE=fbfea75`.
+
+## Estado de la verificación (21/11/2026)
 
 | Estado | Fichas |
 |---|---|
