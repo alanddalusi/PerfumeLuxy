@@ -13,6 +13,8 @@ urlpatterns = [
          name="catalog_rendition_named"),   # before <variant>.webp, which would swallow it
     path("image/<int:image_id>/<str:variant>.webp", views.catalog_image, name="catalog_image"),
     path("api/search/", views.search_suggestions, name="search_suggestions"),
+    path("marca/<slug:slug>/", views.brand_collection, name="brand_collection"),
+    path("genero/<slug:slug>/", views.gender_collection, name="gender_collection"),
     path("families/", views.fragrance_families_guide, name="fragrance_families"),
     
     # Wishlist (mejorado)

@@ -139,3 +139,9 @@
 .sf-detail-media .sf-placeholder-mark { font-size: 2.6rem; }
 .sf .sf-badge { justify-self: start; display: inline-block; margin: 0 0 var(--eo-2, .5rem); padding: .2rem .6rem; border: 1px solid var(--eo-gold); border-radius: 999px; color: var(--eo-action-gold); background: var(--eo-white); font-size: .66rem; font-weight: 650; letter-spacing: .14em; text-transform: uppercase; }
 .sf-media--compact { width: min(100%, 12rem); margin-inline: auto; padding: .6rem; }
+
+/* Collection pages (brand / gender) */
+.sf-collection-intro { max-width: 62ch; margin: .75rem 0 0; color: var(--eo-muted, #5f5a52); line-height: 1.6; }
+.sf-collection-links { margin: 3rem 0 2rem; }
+.sf-collection-links h2 { font-size: 1.1rem; margin-bottom: .75rem; }
+.sf-collection-links ul { display: flex; flex-wrap: wrap; gap: .5rem 1.25rem; }

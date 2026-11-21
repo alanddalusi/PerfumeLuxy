@@ -36,4 +36,17 @@ class ProductSitemap(Sitemap):
         return obj.get_absolute_url()
 
 
-sitemaps = {"static": StaticViewSitemap, "products": ProductSitemap}
+class CollectionSitemap(Sitemap):
+    """Brand and gender pages with enough published products to be indexable."""
+    changefreq = "weekly"
+    priority = 0.8
+
+    def items(self):
+        from products.collections import sitemap_locations
+        return sitemap_locations()
+
+    def location(self, item):
+        return item
+
+
+sitemaps = {"static": StaticViewSitemap, "collections": CollectionSitemap, "products": ProductSitemap}

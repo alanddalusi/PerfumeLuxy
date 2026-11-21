@@ -1,0 +1,34 @@
+{% extends "includes/design/storefront.html" %}
+{% load static %}
+{% block page_interactions %}<script src="{% static 'js/storefront.js' %}" defer></script>{% endblock %}
+
+{% block content %}
+<div class="sf">
+  <header class="sf-page-intro">
+    <div class="eo-wrap">
+      {% include 'includes/design/breadcrumb.html' with breadcrumb_items=breadcrumb_items only %}
+      <div class="sf-section-heading">
+        <div><p class="sf-kicker">Perfumería El Buen Olor</p><h1>{{ heading }}</h1></div>
+        <p class="sf-muted">{{ products|length }} producto{{ products|length|pluralize }}</p>
+      </div>
+      <p class="sf-collection-intro">{{ intro }}</p>
+    </div>
+  </header>
+  <div class="eo-wrap">
+    <div class="sf-product-grid">
+      {% for product in products %}
+        {% include 'products/includes/perfume_card.html' with eager_image=forloop.first %}
+      {% empty %}
+        {% url 'products:products' as catalog_url %}
+        {% include 'includes/design/empty.html' with text="Todavía no hay perfumes publicados en esta sección." action_url=catalog_url action_label="Ver todo el catálogo" only %}
+      {% endfor %}
+    </div>
+    {% if related %}
+      <nav class="sf-collection-links" aria-label="Otras colecciones">
+        <h2>Explorar por marca</h2>
+        <ul class="eo-list">{% for name, url in related %}<li><a href="{{ url }}">{{ name }}</a></li>{% endfor %}</ul>
+      </nav>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

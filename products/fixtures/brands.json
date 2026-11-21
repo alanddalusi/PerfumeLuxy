@@ -62,7 +62,7 @@
   {
     "pk": 13,
     "model": "products.brand",
-    "fields": { "name": "Estee Lauder", "db_name": "estee_lauder" }
+    "fields": { "name": "Estée Lauder", "db_name": "estee_lauder" }
   },
   {
     "pk": 14,
@@ -112,7 +112,7 @@
   {
     "pk": 23,
     "model": "products.brand",
-    "fields": { "name": "Lancome", "db_name": "lancome" }
+    "fields": { "name": "Lancôme", "db_name": "lancome" }
   },
   {
     "pk": 24,

@@ -174,9 +174,8 @@ class SEOManager:
     def get_product_meta(self, product):
         """Genera meta tags específicos para productos"""
         # Construir título SEO optimizado
-        title = f"{product.name}"
-        if product.brand and product.brand.name:
-            title = f"{product.brand.name} {product.name}"
+        from products.naming import product_full_name
+        title = product_full_name(product)
         if product.concentration:
             title += f" {dict(product.CONCENTRATION_CHOICES).get(product.concentration, '').split(' (')[0]}"
         if product.size:

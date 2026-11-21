@@ -1,7 +1,7 @@
 <li><a href="{% url 'products:products' %}">Catálogo</a></li>
-<li><a href="{% url 'products:products' %}?gender=F">Mujer</a></li>
-<li><a href="{% url 'products:products' %}?gender=M">Hombre</a></li>
-<li><a href="{% url 'products:products' %}?gender=U">Unisex</a></li>
+<li><a href="{% url 'products:gender_collection' 'mujer' %}">Mujer</a></li>
+<li><a href="{% url 'products:gender_collection' 'hombre' %}">Hombre</a></li>
+<li><a href="{% url 'products:gender_collection' 'unisex' %}">Unisex</a></li>
 <li><a href="{% url 'products:products' %}?category=perfumes">Perfumes</a></li>
 <li><a href="{% url 'products:products' %}?category=candles">Velas</a></li>
 <li><a href="{% url 'products:fragrance_families' %}">Familias olfativas</a></li>

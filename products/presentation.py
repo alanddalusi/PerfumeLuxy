@@ -16,7 +16,8 @@ def _rendition_url(image, entry, slug=""):
 def product_alt(product):
     """Descriptive alt text: brand, name, concentration and size ("Frasco de Dior Sauvage
     Eau de Parfum 100 ml"). Used when the image has no alt of its own."""
-    parts = [product.brand.name if product.brand_id and product.brand else "", product.name]
+    from .naming import product_full_name
+    parts = [product_full_name(product)]
     if product.concentration:
         label = dict(product.CONCENTRATION_CHOICES).get(product.concentration, "")
         parts.append(label.split(" (")[0])

@@ -19,6 +19,7 @@ from .models import (
 from .catalog import catalog_filter_url, catalog_listing, normalize_search, search_products
 from .forms import ProductForm
 from .presentation import public_gallery, public_picture
+from . import collections
 
 
 def all_products(request):
@@ -249,7 +250,7 @@ def product_detail(request, slug):
         "seo_data": seo_data,
         "breadcrumb_items": breadcrumb_items,
         "product_schema": product_schema,
-        "brand_url": catalog_filter_url(brand=product.brand.db_name) if product.brand else "",
+        "brand_url": collections.brand_url(product.brand) if product.brand else "",
         "category_url": catalog_filter_url(category=product.category.db_name) if product.category else "",
         "breadcrumb_schema": breadcrumb_schema,
     }
@@ -551,3 +552,41 @@ def quiz_results(request):
     }
     
     return render(request, 'products/quiz_results.html', context)
+
+
+def _collection_page(request, products, heading, subject, url, crumb):
+    intro, meta = collections.describe(products, subject)
+    seo = SEOManager(request)
+    seo_data = seo.get_meta_tags(
+        title=f"{heading} | Perfumería El Buen Olor", description=meta, canonical=seo.get_canonical_url(url))
+    if len(products) < collections.MIN_INDEXABLE:
+        seo_data["robots"] = "noindex, follow"   # too small to be useful in search: no thin pages
+    for product in products:
+        product.storefront_image = public_picture(product)
+    related = [(brand.name, collections.brand_url(brand)) for brand, count in collections.published_brands()
+               if count >= collections.MIN_INDEXABLE and collections.brand_url(brand) != url]
+    return render(request, "products/collection.html", {
+        "products": products, "heading": heading, "intro": intro, "seo_data": seo_data, "related": related,
+        "breadcrumb_items": [{"name": "Inicio", "url": reverse("home:index")},
+                             {"name": "Catálogo", "url": reverse("products:products")}, {"name": crumb, "url": ""}],
+    })
+
+
+@require_safe
+def brand_collection(request, slug):
+    brand = collections.find_brand(slug)
+    if brand is None:
+        raise Http404
+    products = collections.collection_products(brand=brand)
+    return _collection_page(request, products, f"Perfumes de {brand.name}", f"de {brand.name}",
+                            collections.brand_url(brand), brand.name)
+
+
+@require_safe
+def gender_collection(request, slug):
+    if slug not in collections.GENDERS:
+        raise Http404
+    code, label = collections.GENDERS[slug]
+    products = collections.collection_products(gender__db_name=code)
+    return _collection_page(request, products, f"Perfumes {label}", label,
+                            reverse("products:gender_collection", args=[slug]), f"Perfumes {label}")

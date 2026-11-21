@@ -10,9 +10,9 @@
       <h2>Explorar</h2>
       <ul class="eo-list">
         <li><a href="{% url 'products:products' %}">Catálogo</a></li>
-        <li><a href="{% url 'products:products' %}?gender=F">Mujer</a></li>
-        <li><a href="{% url 'products:products' %}?gender=M">Hombre</a></li>
-        <li><a href="{% url 'products:products' %}?gender=U">Unisex</a></li>
+        <li><a href="{% url 'products:gender_collection' 'mujer' %}">Mujer</a></li>
+        <li><a href="{% url 'products:gender_collection' 'hombre' %}">Hombre</a></li>
+        <li><a href="{% url 'products:gender_collection' 'unisex' %}">Unisex</a></li>
         {% if not store_prelaunch %}<li><a href="{% url 'products:products' %}?special_offers=true">Ofertas especiales</a></li>{% endif %}
         <li><a href="{% url 'products:products' %}?new_arrivals=true">Novedades</a></li>
         <li><a href="{% url 'products:products' %}?sort=rating_desc">Más valorados</a></li>

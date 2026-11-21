@@ -16,10 +16,12 @@ from django.db import transaction
 from django.utils.text import slugify
 
 from .models import Gender, Product, PublicationDecision
+from .naming import full_name
 
 EVIDENCE_FILE = Path(__file__).resolve().parent / "verification" / "reference_evidence.csv"
 COLUMNS = ["sku", "status", "brand", "official_name", "concentration", "size", "gender",
-           "source_url", "sizes_seen", "notes", "checked_on", "description_es", "description_source"]
+           "source_url", "sizes_seen", "notes", "checked_on", "description_es", "description_source",
+           "field_sources"]
 STATUSES = {
     "verified": "datos comprobados en la web oficial",
     "ambiguous": "existe en varias concentraciones o versiones: hace falta elegir cuál es",
@@ -36,9 +38,9 @@ OFFICIAL_DOMAINS = {
     "Carolina Herrera": {"carolinaherrera"}, "Cartier": {"cartier"}, "Chanel": {"chanel"},
     "Diesel": {"diesel"}, "Dior": {"dior"}, "Dkny": {"dkny"}, "Dolce & Gabbana": {"dolcegabbana"},
     "Emporio Armani": {"armanibeauty", "armani"}, "Giorgio Armani": {"armanibeauty", "armani"},
-    "Estee Lauder": {"esteelauder"}, "Givenchy": {"givenchybeauty", "givenchy"}, "Gucci": {"gucci"},
+    "Estée Lauder": {"esteelauder"}, "Givenchy": {"givenchybeauty", "givenchy"}, "Gucci": {"gucci"},
     "Guerlain": {"guerlain"}, "Guess": {"guess"}, "Hugo Boss": {"hugoboss"},
-    "Jean Paul Gaultier": {"jeanpaulgaultier"}, "Lacoste": {"lacoste"}, "Lancome": {"lancome", "lancome-usa"},
+    "Jean Paul Gaultier": {"jeanpaulgaultier"}, "Lacoste": {"lacoste"}, "Lancôme": {"lancome", "lancome-usa"},
     "Montblanc": {"montblanc"}, "Paco Rabanne": {"rabanne", "pacorabanne"},
     "Roberto Cavalli": {"robertocavalli"}, "Tom Ford": {"tomfordbeauty", "tomford"},
     "Tommy Hilfiger": {"tommy"}, "Versace": {"versace"}, "Yves Saint Laurent": {"yslbeauty", "yslbeautyus", "ysl"},
@@ -67,6 +69,15 @@ def read_evidence(path=EVIDENCE_FILE):
         return [{k: (v or "").strip() for k, v in row.items()} for row in csv.DictReader(handle)]
 
 
+def field_sources(row):
+    """Optional per-field official sources: "gender=https://...|size=https://..."."""
+    out = {}
+    for part in filter(None, (row.get("field_sources") or "").split("|")):
+        key, _, url = part.partition("=")
+        out[key.strip()] = url.strip()
+    return out
+
+
 def row_problems(row, product):
     """Reasons a verified row cannot be applied (empty list when it can)."""
     problems = []
@@ -83,6 +94,9 @@ def row_problems(row, product):
         problems.append("gender must be M, F or U")
     if not is_official(row["source_url"], brand):
         problems.append("source_url must be https on the brand's official site")
+    for key, url in field_sources(row).items():
+        if key not in {"name", "brand", "concentration", "size", "gender"} or not is_official(url, brand):
+            problems.append(f"field_sources {key} must be a known field with an official https URL")
     if row.get("description_es") and not is_official(row.get("description_source", ""), brand):
         problems.append("description_source must be https on the brand's official site")
     return problems
@@ -101,7 +115,7 @@ def seo_slug(product, name, concentration):
 
 def meta_description(brand, name, concentration, size, gender):
     audience = {"M": "para hombre", "F": "para mujer", "U": "unisex"}[gender]
-    text = (f"{brand} {name} {CONCENTRATION_LABELS[concentration]} {size.replace('ml', ' ml')}, "
+    text = (f"{full_name(brand, name)} {CONCENTRATION_LABELS[concentration]} {size.replace('ml', ' ml')}, "
             f"perfume {audience}. Ficha informativa en Perfumería El Buen Olor: próximamente disponible.")
     return text[:160]
 
@@ -112,6 +126,7 @@ def apply_row(row, product, apply):
     gender = Gender.objects.filter(db_name=row["gender"]).first()
     description = row.get("description_es", "")
     sources = {"name": url, "brand": url, "concentration": url, "size": url, "gender": url}
+    sources.update(field_sources(row))
     if description:
         sources["description"] = row["description_source"]
     values = {

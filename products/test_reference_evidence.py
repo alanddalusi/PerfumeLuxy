@@ -44,7 +44,7 @@ class EvidenceFileTests(TestCase):
 
     def test_official_domain_check(self):
         self.assertTrue(is_official("https://www.dior.com/en_int/beauty/products/joy.html", "Dior"))
-        self.assertTrue(is_official("https://www.lancome.co.uk/perfume/x.html", "Lancome"))
+        self.assertTrue(is_official("https://www.lancome.co.uk/perfume/x.html", "Lancôme"))
         self.assertTrue(is_official("https://yslbeautyus.com/fragrance/x.html", "Yves Saint Laurent"))
         self.assertFalse(is_official("http://www.dior.com/x", "Dior"))                 # not https
         self.assertFalse(is_official("https://dior.example.com/x", "Dior"))            # not the brand's domain
@@ -115,6 +115,15 @@ class ApplyAndPublishTests(TestCase):
         bad = self.evidence([self.good_row(description_es=text, description_source="https://www.fragrantica.com/x")])
         self.assertIn("description_source must be https", self.run_apply(bad, "--apply"))
 
+    def test_apply_can_be_limited_to_published_products(self):
+        path = self.evidence([self.good_row(), self.good_row(sku="ER2", official_name="Good Girl Blush")])
+        Product.objects.filter(pk=self.twin.pk).update(publication_status=Product.Publication.APPROVED)
+        self.assertIn("1 updated", self.run_apply(path, "--apply", "--published-only"))
+        self.product.refresh_from_db()
+        self.assertIsNone(self.product.concentration)              # draft left untouched
+        self.twin.refresh_from_db()
+        self.assertEqual(self.twin.publication_status, Product.Publication.APPROVED)
+
     def test_rows_that_are_not_official_or_valid_are_rejected(self):
         path = self.evidence([self.good_row(source_url="https://www.notino.es/carolina-herrera/good-girl/"),
                               self.good_row(sku="ER2", size="85ml")])
@@ -177,3 +186,18 @@ class ApplyAndPublishTests(TestCase):
         self.assertIn("Bad Boy", html)
         self.assertNotIn("€89", html)
         self.assertNotIn("€77", html)
+
+
+class NamingTests(TestCase):
+    def test_brand_is_not_repeated_in_full_names(self):
+        from .naming import full_name
+        self.assertEqual(full_name("Hugo Boss", "Boss Bottled Night"), "Boss Bottled Night")
+        self.assertEqual(full_name("Hugo Boss", "Hugo Man"), "Hugo Man")
+        self.assertEqual(full_name("Calvin Klein", "CK One"), "Calvin Klein CK One")
+        self.assertEqual(full_name("Versace", "Pour Homme"), "Versace Pour Homme")
+        self.assertEqual(full_name("", "Pour Homme"), "Pour Homme")
+
+    def test_brand_spelling_migration_data(self):
+        brands = json.loads((Path(EVIDENCE_FILE).parents[1] / "fixtures" / "brands.json").read_text(encoding="utf-8"))
+        names = {b["fields"]["db_name"]: b["fields"]["name"] for b in brands}
+        self.assertEqual((names["lancome"], names["estee_lauder"]), ("Lancôme", "Estée Lauder"))
