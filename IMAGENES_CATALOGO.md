@@ -80,6 +80,22 @@ Consecuencias:
 
 Hoy no se publica ninguna foto, así que nada incorrecto ha llegado a la web.
 
+### Reconstrucción de la asociación
+
+- **Metadatos:** ni EXIF, ni XMP, ni IPTC identifican el perfume. Los comentarios JPEG son solo `gd-jpeg`. En el historial de Git solo hay renombrados `.jpg → .jpeg` sin cambio de contenido. El desfase ya venía en los datos del proyecto anterior.
+- **Regla encontrada por inspección visual:**
+
+  | Archivo | Producto real |
+  |---|---|
+  | Hasta `…0822` | El mismo SKU |
+  | `…0823`–`…0872` | SKU + 2 |
+  | `…0873`–`…0904` | SKU + 3 |
+
+  No hay archivos después de `…0904`, así que los productos posteriores a `…0907` no tienen foto.
+- **Propuesta:** `python deploy/checks/photo_remap_proposal.py` genera `auditorias/fotos-reasignacion.csv` (solo lectura).
+  - 124 archivos: 52 comprobados a ojo, 5 discrepancias (la foto muestra otra versión u otra marca) y 67 sin comprobar.
+  - Cada foto sigue necesitando confirmación visual y **derechos comerciales** antes de usarla. No se ha aprobado ninguna.
+
 ## Asignación progresiva de fotos (por SKU)
 
 La relación foto ↔ perfume ya existe: cada ficha de referencia apunta a `media/<SKU>.jpeg`. Hay **138 fotos emparejadas** con su marca y nombre; las 127 restantes apuntan a archivos que no existen.

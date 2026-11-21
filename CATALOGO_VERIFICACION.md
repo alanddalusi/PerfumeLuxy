@@ -67,6 +67,22 @@ Publicadas las **30 fichas verificadas** en producción (`perfumeria-web:910bdcd
 - **Comprobación en el sitio real:** 30/30 fichas correctas, 37 URL del sitemap con respuesta 200 y `site-status` sin fallos. El foro sigue sin cambios.
 - **17 perfumes nuevos verificados**, listos para la segunda publicación. Están verificados solo en el archivo de evidencias; los borradores de producción no se han tocado.
 
+## Segunda publicación (21/11/2026, 21:10 UTC)
+
+Publicados los **17 perfumes nuevos** (revisor `app`, misma versión `9beff7a`, sin despliegue de código).
+
+- **Copia previa verificada:** `20261121T205349Z`.
+- **Borradores intactos:** los 218 restantes tienen la misma huella antes y después (`1927164fcc31f50c`).
+- **Comprobación en el sitio real:** 47/47 fichas sin problemas.
+  - El catálogo muestra 47 productos y las 60 URL del sitemap responden 200.
+  - Colecciones indexables: Bvlgari, Carolina Herrera, Emporio Armani, Guerlain, Hugo Boss, Lancôme, Paco Rabanne, Versace, Mujer y Hombre.
+  - 0 precios, 0 fotos, 0 productos vendibles y `/checkout/` responde 403.
+- **Rendimiento móvil** ([`deploy/checks/mobile_perf.py`](deploy/checks/mobile_perf.py): Edge instalado y protocolo DevTools, sin paquetes nuevos). Condiciones: 390×844 a 3×, CPU 4× más lenta y red de 1,6 Mbps con 150 ms de latencia.
+  - LCP entre 0,5 y 1,1 s, CLS 0 y unos 17 KB por página, sin desplazamiento horizontal.
+  - El servidor responde en 0,07–0,13 s.
+
+**Después de publicar** se han verificado 4 más gracias a la foto heredada, que identifica la versión, y a la web oficial: Bleu de Chanel EDP, Obsession for Men EDT, 212 Men Sexy EDT y 212 VIP Men EDT. No están publicados y su evidencia solo está en el repositorio local.
+
 ## Estado de la verificación (21/11/2026)
 
 | Estado | Fichas |
