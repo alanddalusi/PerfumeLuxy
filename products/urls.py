@@ -9,6 +9,8 @@ urlpatterns = [
     path("", views.all_products, name="products"),
     # Numeric renditions first: "320.webp" would otherwise match the legacy web/thumb route.
     path("image/<int:image_id>/<int:box>.<str:fmt>", views.catalog_rendition, name="catalog_rendition"),
+    path("image/<int:image_id>/<slug:name>-<int:box>.<str:fmt>", views.catalog_rendition_named,
+         name="catalog_rendition_named"),   # before <variant>.webp, which would swallow it
     path("image/<int:image_id>/<str:variant>.webp", views.catalog_image, name="catalog_image"),
     path("api/search/", views.search_suggestions, name="search_suggestions"),
     path("families/", views.fragrance_families_guide, name="fragrance_families"),

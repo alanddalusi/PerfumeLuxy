@@ -177,7 +177,7 @@ class CatalogImageTests(TestCase):
         else:
             self.assertIn('loading="lazy"', block)
             self.assertNotIn("fetchpriority", block)
-        urls = set(re.findall(r'(/products/image/\d+/\d+\.(?:avif|webp))', block))
+        urls = set(re.findall(r'(/products/image/\d+/[a-z0-9-]+-\d+\.(?:avif|webp))', block))
         self.assertGreaterEqual(len(urls), 2)
         for url in urls:                                                         # no broken image
             self.assertEqual(self.status_of(url), 200, url)
@@ -273,3 +273,121 @@ class CatalogImageTests(TestCase):
             report = StringIO(); call_command("catalog_images_report", stdout=report)
         self.assertIn("square", report.getvalue())
         self.assertIn("Epsilon", report.getvalue())
+
+    # ------------------------------------------------------------------ SEO
+    def test_alt_text_and_descriptive_image_urls(self):
+        product, image = self.product_with_photo("Zeta", photo_bytes((700, 700)), "z.jpeg")
+        Product.objects.filter(pk=product.pk).update(concentration="edp", size="100ml")
+        product.refresh_from_db()
+        from .presentation import product_alt, public_picture
+        self.assertEqual(product_alt(product), "Frasco de Maison Test Zeta Eau de Parfum 100 ml")
+        picture = public_picture(product)
+        self.assertEqual(picture["alt"], "Frasco de Maison Test Zeta Eau de Parfum 100 ml")
+        self.assertIn(f"/products/image/{image.pk}/{product.slug}-700.webp", picture["src"])
+        for source in picture["sources"]:
+            for candidate in source["srcset"].split(", "):
+                url = candidate.split(" ")[0]
+                self.assertIn(product.slug, url)
+                self.assertEqual(self.status_of(url), 200, url)
+        CatalogImage.objects.filter(pk=image.pk).update(alt_text="Frasco azul de Zeta")
+        self.assertEqual(public_picture(product)["alt"], "Frasco azul de Zeta")
+
+    def test_product_page_and_sitemap_expose_only_approved_images(self):
+        product, image = self.product_with_photo("Eta", photo_bytes((900, 600)), "e.jpeg")
+        hidden, _ = self.product_with_photo("Theta", photo_bytes((600, 600)), "t.jpeg", publish=False)
+        html = self.client.get(product.get_absolute_url()).content.decode()
+        self.assertIn('<meta property="og:image" content="http://testserver/products/image/', html)
+        self.assertIn('<meta property="og:image:width" content="900">', html)
+        self.assertIn('<meta property="og:image:height" content="600">', html)
+        self.assertIn('<meta property="og:image:alt" content="Frasco de Maison Test Eta">', html)
+        self.assertIn('<meta name="twitter:image:alt"', html)
+        self.assertRegex(html, r'"image": \["http://testserver/products/image/\d+/maison-test-eta-900\.webp"\]')
+        xml = self.client.get("/sitemap.xml").content.decode()
+        self.assertIn('xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"', xml)
+        self.assertIn(f"<image:loc>http://testserver/products/image/{image.pk}/maison-test-eta-900.webp</image:loc>", xml)
+        self.assertNotIn(hidden.slug, xml)
+        self.assertEqual(xml.count("<image:image>"), 1)
+        CatalogImage.objects.filter(pk=image.pk).update(withdrawn_at="2026-01-01T00:00:00Z")
+        self.assertNotIn("<image:image>", self.client.get("/sitemap.xml").content.decode())
+        html = self.client.get(product.get_absolute_url()).content.decode()
+        self.assertNotIn("og:image", html)
+
+    # ------------------------------------------------------------------ progressive assignment
+    def legacy_product(self, name, sku, filename, size=(640, 640)):
+        product = Product.objects.create(name=name, brand=self.brand, description="x")
+        product.image.save(filename, ContentFile(photo_bytes(size)))
+        Product.objects.filter(pk=product.pk).update(sku=sku)
+        product.refresh_from_db()
+        return product
+
+    def manifest(self, rows):
+        path = Path(self.tmp.name) / "manifest.csv"
+        with open(path, "w", encoding="utf-8-sig", newline="") as handle:
+            import csv
+            writer = csv.writer(handle, delimiter=";")   # as Excel in Spanish saves it
+            writer.writerow(["sku", "file", "alt_text", "source_reference", "rights_reference", "mapping_confirmed"])
+            writer.writerows(rows)
+        return str(path)
+
+    def test_manifest_lists_mapping_with_brand_name_and_suggested_alt(self):
+        a = self.legacy_product("Iota", "SKU-A", "a.jpeg")
+        b = self.legacy_product("Kappa", "SKU-B", "b.jpeg")
+        Product.objects.filter(pk=b.pk).update(image="gone.jpeg")
+        out = Path(self.tmp.name) / "m.csv"
+        call_command("catalog_photo_manifest", "--output", str(out), "--source", "Origen X", stderr=StringIO())
+        text = out.read_text(encoding="utf-8-sig")
+        self.assertIn(f"SKU-A,Maison Test,Iota,,,{a.image.name},ok,640,640,white,Frasco de Maison Test Iota,Origen X,,,,", text)
+        self.assertNotIn("SKU-B", text)
+        call_command("catalog_photo_manifest", "--output", str(out), "--all", stderr=StringIO())
+        self.assertIn("SKU-B", out.read_text(encoding="utf-8-sig"))
+        self.assertIn("missing", out.read_text(encoding="utf-8-sig"))
+
+    def test_assignment_is_dry_run_by_default_and_never_publishes_without_rights(self):
+        a = self.legacy_product("Lambda", "SKU-L", "l.jpeg")
+        b = self.legacy_product("Mu", "SKU-M", "m.jpeg")
+        c = self.legacy_product("Nu", "SKU-N", "n.jpeg")
+        path = self.manifest([
+            ["SKU-L", a.image.name, "", "Origen", "", "sí"],                 # no rights -> pending
+            ["SKU-M", b.image.name, "Frasco de Mu", "Origen", "Licencia 7", "yes"],
+            ["SKU-N", c.image.name, "", "Origen", "Licencia 8", ""],          # not confirmed
+            ["SKU-L", b.image.name, "", "Origen", "Licencia", "yes"],         # wrong product photo
+            ["SKU-Z", "z.jpeg", "", "", "", "yes"],                           # unknown SKU
+        ])
+        out = StringIO(); call_command("assign_catalog_photos", path, stdout=out)
+        self.assertIn("DRY RUN", out.getvalue())
+        self.assertIn("2 created", out.getvalue())
+        self.assertIn("2 errors", out.getvalue())
+        self.assertFalse(CatalogImage.objects.exists())
+
+        out = StringIO(); call_command("assign_catalog_photos", path, "--apply", stdout=out)
+        self.assertIn("0 approved", out.getvalue())
+        pending = CatalogImage.objects.get(product=a)
+        self.assertEqual(pending.alt_text, "Frasco de Maison Test Lambda")
+        self.assertFalse(pending.is_public)
+        self.assertFalse(CatalogImage.objects.filter(product=c).exists())
+        self.assertFalse(any(i.is_public for i in CatalogImage.objects.all()))
+
+        clerk = get_user_model().objects.create_user(username="clerk")
+        with self.assertRaises(Exception):
+            call_command("assign_catalog_photos", path, "--apply", "--approve", "--reviewer", "clerk", stdout=StringIO())
+        out = StringIO()
+        call_command("assign_catalog_photos", path, "--apply", "--approve", "--reviewer", "reviewer", stdout=out)
+        self.assertIn("1 approved", out.getvalue())
+        approved = CatalogImage.objects.get(product=b)
+        self.assertTrue(approved.is_public)
+        self.assertEqual(approved.alt_text, "Frasco de Mu")
+        self.assertTrue(approved.renditions)
+        self.assertFalse(CatalogImage.objects.get(product=a).is_public)   # still no rights
+        b.refresh_from_db()
+        self.assertNotEqual(b.publication_status, Product.Publication.APPROVED)   # products untouched
+        self.assertIsNone(clerk.last_login)
+
+        # Re-running is idempotent; a withdrawn photo is not revived but re-opened for review.
+        out = StringIO(); call_command("assign_catalog_photos", path, "--apply", stdout=out)
+        self.assertIn("0 created", out.getvalue())
+        decide_image(approved, False, self.reviewer)
+        call_command("assign_catalog_photos", path, "--apply", stdout=StringIO())
+        records = list(CatalogImage.objects.filter(product=b).order_by("pk"))
+        self.assertEqual(len(records), 2)
+        self.assertIsNotNone(records[0].withdrawn_at)
+        self.assertFalse(records[1].is_public)

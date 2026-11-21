@@ -5,6 +5,9 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.views.decorators.http import require_safe
 
+from products.models import Product
+from products.presentation import seo_images
+
 from .sitemaps import sitemaps
 
 
@@ -30,6 +33,12 @@ def public_sitemap(request):
             continue
     if not urls:
         raise Http404
-    response = render(request, "sitemap.xml", {"urlset": urls}, content_type="application/xml")
+    for url in urls:   # image sitemap entries: only approved photos of published products
+        item = url.get("item")
+        url["images"] = (
+            [request.build_absolute_uri(image["url"]) for image in seo_images(item)]
+            if isinstance(item, Product) else []
+        )
+    response = render(request, "seo/sitemap.xml", {"urlset": urls}, content_type="application/xml")
     response["X-Robots-Tag"] = "noindex, follow"
     return response

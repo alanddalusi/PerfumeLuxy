@@ -68,8 +68,51 @@ Se sirven en `/products/image/<id>/<caja>.<avif|webp>`, solo si la imagen está 
 - reglas CSS (1:1, `contain`, sin `cover`, tope de tamaño);
 - galería, autocompletado y los dos comandos.
 
-## Para publicar fotos reales
+## Asignación progresiva de fotos (por SKU)
 
-1. Conseguir el permiso o la licencia de cada foto.
-2. En el admin, crear el `CatalogImage` con su procedencia y referencia de derechos, y aprobarlo.
-3. Los derivados se generan solos.
+La relación foto ↔ perfume ya existe: cada ficha de referencia apunta a `media/<SKU>.jpeg`. Hay **138 fotos emparejadas** con su marca y nombre; las 127 restantes apuntan a archivos que no existen.
+
+1. **Hoja de revisión** (solo lectura). Se abre en Excel:
+
+   ```bash
+   python manage.py catalog_photo_manifest --output auditorias/fotos-catalogo.csv        --source "Parfumo (vía proyecto Eau Royal) - pendiente de permiso"
+   ```
+
+   Contiene SKU, marca, nombre, concentración, tamaño, archivo, dimensiones, fondo, el `alt_text` sugerido, la procedencia y el estado actual. Se rellena por filas:
+   - `mapping_confirmed`: `sí` cuando la foto corresponde de verdad a ese perfume. El README advierte de que algunas no coinciden.
+   - `rights_reference`: el permiso o la licencia (contrato, correo de autorización, kit de prensa de la marca…).
+   - `alt_text`: se puede afinar, por ejemplo con el color del frasco.
+
+2. **Asignación.** Sin `--apply` es una simulación.
+
+   ```bash
+   python manage.py assign_catalog_photos auditorias/fotos-catalogo.csv            # simulación
+   python manage.py assign_catalog_photos auditorias/fotos-catalogo.csv --apply    # registra pendientes
+   python manage.py assign_catalog_photos auditorias/fotos-catalogo.csv --apply        --approve --reviewer <usuario>                                             # aprueba las que tienen permiso
+   ```
+
+   - Solo usa las filas confirmadas y comprueba que el archivo sea la portada o una variante de ese SKU.
+   - Crea un `CatalogImage` **pendiente** con el texto alternativo, la procedencia y los derechos.
+   - Con `--approve`, aprueba y genera los derivados únicamente de las filas que tienen procedencia **y** referencia de derechos. El revisor necesita `products.approve_catalogimage`.
+   - Se puede repetir a medida que se añaden filas, sin duplicar registros.
+   - Una foto retirada no se reactiva: vuelve a quedar pendiente en un registro nuevo.
+   - **Nunca publica fichas.** La foto solo se ve cuando su ficha también está aprobada, con la concentración y el formato verificados.
+
+Prueba local con todo el catálogo de referencia (copia de la base en el scratchpad): 138 filas, 0 errores de emparejamiento, 138 pendientes sin derechos y 0 aprobadas.
+
+## SEO de imágenes
+
+Solo intervienen las fotos aprobadas de fichas publicadas:
+
+- **Texto alternativo** descriptivo por defecto: «Frasco de *Marca Nombre Concentración Tamaño*» (por ejemplo, «Frasco de Dior Sauvage Eau de Parfum 100 ml»), o el `alt_text` propio de la imagen.
+- **URL con nombre descriptivo**: `/products/image/<id>/<marca-nombre>-<caja>.<avif|webp>`. El nombre es decorativo; el `id` decide qué se sirve. La ruta anterior sigue funcionando.
+- **Open Graph / Twitter**: `og:image` con `og:image:width`, `og:image:height` y `og:image:alt`, y `twitter:image:alt`.
+- **JSON-LD `Product`**: `image` con la lista de todas las fotos aprobadas, en URL absolutas.
+- **Sitemap de imágenes**: `/sitemap.xml` añade `<image:image>` a cada ficha con foto aprobada. Plantilla en `templates/seo/sitemap.xml`.
+
+## Subir a producción (cuando se decida)
+
+1. Desplegar el código.
+2. Copiar al volumen `media` del VPS **solo los originales autorizados**. Hoy los originales no están en el servidor.
+3. Ejecutar allí `assign_catalog_photos ... --apply --approve`.
+4. Aprobar las fichas verificadas.

@@ -7,7 +7,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 from checkout.store_mode import sales_enabled
-from products.presentation import public_cover
+from products.presentation import seo_images
 import json
 
 
@@ -60,9 +60,10 @@ class SEOManager:
             schema["sku"] = product.sku
         if product.brand and product.brand.name:
             schema["brand"] = {"@type": "Brand", "name": product.brand.name}
-        image = public_cover(product)
-        if image:
-            schema["image"] = self.request.build_absolute_uri(image)
+        images = seo_images(product)
+        if images:
+            # Every approved photo, largest rendition first-class (Google accepts a URL list).
+            schema["image"] = [self.request.build_absolute_uri(image["url"]) for image in images]
 
         # Añadir rating si existe
         if review_count > 0:
@@ -158,6 +159,9 @@ class SEOManager:
             'og_title': title,
             'og_description': description,
             'og_image': image,
+            'og_image_width': kwargs.get('image_width') if image else None,
+            'og_image_height': kwargs.get('image_height') if image else None,
+            'og_image_alt': kwargs.get('image_alt', '') if image else '',
             'og_url': canonical,
             'twitter_card': "summary_large_image" if image else "summary",
             'twitter_title': title,
@@ -191,15 +195,18 @@ class SEOManager:
             keywords += f"perfume {product.gender.get_friendly_name()}, "
         keywords += "comprar perfume online, perfume auténtico, fragancia lujo"
         
-        # Imagen
-        image = public_cover(product)
-        image = self.request.build_absolute_uri(image) if image else self.default_image
-        
+        # Imagen principal (solo si está aprobada y la ficha publicada)
+        images = seo_images(product)
+        cover = images[0] if images else None
+
         return self.get_meta_tags(
             title=title,
             description=description[:160],
             keywords=keywords,
-            image=image,
+            image=self.request.build_absolute_uri(cover["url"]) if cover else self.default_image,
+            image_width=cover["width"] if cover else None,
+            image_height=cover["height"] if cover else None,
+            image_alt=cover["alt"] if cover else "",
             type='product',
             canonical=self.get_canonical_url(product.get_absolute_url())
         )

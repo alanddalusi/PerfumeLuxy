@@ -108,6 +108,11 @@ def catalog_rendition(request, image_id, box, fmt):
     return response
 
 
+def catalog_rendition_named(request, image_id, name, box, fmt):
+    """Same file as catalog_rendition; the product slug in the name is only descriptive."""
+    return catalog_rendition(request, image_id, box, fmt)
+
+
 def suggestion_image(product):
     picture = public_picture(product)
     if picture is None:

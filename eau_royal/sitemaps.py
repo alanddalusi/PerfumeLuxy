@@ -26,7 +26,8 @@ class ProductSitemap(Sitemap):
     priority = 1.0
     
     def items(self):
-        return Product.objects.published().exclude(slug="").order_by("pk")
+        return (Product.objects.published().exclude(slug="").order_by("pk")
+                .select_related("brand").prefetch_related("catalog_images"))   # image entries
     
     def lastmod(self, obj):
         return obj.updated_at if obj.updated_at else obj.created_at
