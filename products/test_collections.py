@@ -50,3 +50,34 @@ class CollectionPageTests(TestCase):
         product = Product.objects.get(name="Bright Crystal")
         html = self.client.get(product.get_absolute_url()).content.decode()
         self.assertIn('href="/products/marca/versace/"', html)
+
+
+@override_settings(STORE_MODE="prelaunch")
+class SiteSeoTests(TestCase):
+    def test_home_title_keyword_default_share_image_and_faq(self):
+        html = self.client.get("/").content.decode()
+        self.assertIn("<title>Perfumes y fragancias verificadas | Perfumería El Buen Olor</title>", html)
+        self.assertIn('<meta property="og:image" content="http://testserver/static/img/og-default.png">', html)
+        self.assertIn('<meta property="og:image:width" content="1200">', html)
+        self.assertIn('<meta name="twitter:card" content="summary_large_image">', html)
+        self.assertIn("Preguntas frecuentes sobre perfumes.", html)
+        self.assertIn('href="/sobre-nosotros/"', html)
+
+    def test_about_page_is_indexable_and_in_sitemap(self):
+        response = self.client.get("/sobre-nosotros/")
+        self.assertEqual(response.status_code, 200)
+        html = response.content.decode()
+        self.assertIn("<h1>Sobre nosotros.</h1>", html)
+        self.assertNotIn("noindex", html)
+        self.assertIn('<link rel="canonical" href="http://testserver/sobre-nosotros/">', html)
+
+    def test_product_page_links_its_official_source(self):
+        brand = Brand.objects.create(db_name="ch", name="Carolina Herrera")
+        product = Product.objects.create(
+            name="Good Girl", brand=brand, concentration="edp", catalog_origin=Product.Origin.REFERENCE,
+            publication_status="approved",
+            verification_sources={"concentration": "https://www.carolinaherrera.com/x", "name": "https://www.carolinaherrera.com/x"})
+        html = self.client.get(product.get_absolute_url()).content.decode()
+        self.assertIn('href="https://www.carolinaherrera.com/x" rel="nofollow noopener" target="_blank">web oficial de Carolina Herrera</a>', html)
+        Product.objects.filter(pk=product.pk).update(verification_sources={"concentration": "javascript:alert(1)"})
+        self.assertNotIn("javascript:", self.client.get(product.get_absolute_url()).content.decode())

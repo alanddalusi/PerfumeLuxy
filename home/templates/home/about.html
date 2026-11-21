@@ -1,0 +1,27 @@
+{% extends "includes/design/storefront.html" %}
+{% block content %}
+<article class="sf eo-wrap sf-section sf-about">
+  <p class="sf-kicker">Perfumería El Buen Olor</p>
+  <h1>Sobre nosotros.</h1>
+  <p class="sf-lead">Perfumería El Buen Olor es un proyecto de perfumería online que está preparando su tienda. Mientras tanto publicamos un catálogo informativo de perfumes para que puedas conocerlos con calma antes de elegir.</p>
+  <section class="sf-section">
+    <h2>Cómo verificamos cada perfume</h2>
+    <ol>
+      <li>Buscamos el perfume en la <strong>web oficial de su marca</strong>; no usamos tiendas ni foros como fuente.</li>
+      <li>Comprobamos el nombre, la concentración (Eau de Parfum, Eau de Toilette o Parfum), el formato del frasco y a quién va dirigido, y guardamos la dirección de la página consultada.</li>
+      <li>Escribimos una descripción propia a partir de las notas olfativas que publica la marca.</li>
+      <li>Si un dato no se puede comprobar, o si un mismo nombre existe en varias versiones y no sabemos cuál es, la ficha <strong>no se publica</strong>.</li>
+    </ol>
+    <p>En cada ficha encontrarás el enlace a la página oficial que hemos usado.</p>
+  </section>
+  <section class="sf-section">
+    <h2>Fotografías</h2>
+    <p>Solo mostramos fotografías cuando tenemos permiso para usarlas. Hasta entonces verás una ilustración del frasco.</p>
+  </section>
+  <section class="sf-section">
+    <h2>La tienda</h2>
+    <p>Todavía no vendemos: no mostramos precios ni aceptamos pedidos. Si quieres, puedes pedirnos que te avisemos cuando abramos.</p>
+    <p><a class="sf-text-link" href="{% url 'products:products' %}">Ver los perfumes <span aria-hidden="true">↗</span></a></p>
+  </section>
+</article>
+{% endblock %}

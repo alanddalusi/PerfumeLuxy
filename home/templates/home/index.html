@@ -42,7 +42,7 @@
       <div><p class="sf-kicker">Perfumería El Buen Olor</p><h2 id="sobre-la-perfumeria">Descubre tu próxima fragancia.</h2></div>
     </div>
     <div class="sf-home-intro">
-      <p>En Perfumería El Buen Olor creemos que el arte de oler bien empieza por conocer bien cada perfume. Por eso cada ficha de nuestro catálogo recoge datos comprobados en la web oficial de la marca: la concentración (Eau de Parfum, Eau de Toilette o Parfum), el formato del frasco y las notas olfativas de salida, corazón y fondo.</p>
+      <p>En Perfumería El Buen Olor creemos que el arte de oler bien empieza por conocer bien cada perfume. Por eso cada ficha de perfumes de nuestro catálogo está verificada con los datos de la web oficial de la marca: la concentración (Eau de Parfum, Eau de Toilette o Parfum), el formato del frasco y las notas olfativas de salida, corazón y fondo.</p>
       <p>Hoy puedes consultar {{ published_count }} fragancia{{ published_count|pluralize }} de casas como Chanel, Dior, Carolina Herrera, Guerlain, Lancôme o Versace, ordenadas por marca y por perfumes para mujer, para hombre y unisex. Todavía no vendemos: estamos preparando la tienda y, mientras tanto, queremos que encuentres con calma el perfume que encaja contigo y descubras por qué una fragancia te resulta especial.</p>
     </div>
   </section>
@@ -69,6 +69,22 @@
     {% if not has_products %}
       {% include 'includes/design/empty.html' with text="Aún no hay productos publicados. Puedes apuntarte para recibir el aviso de lanzamiento." only %}
     {% endif %}
+  </section>
+  <section class="eo-wrap sf-section" aria-labelledby="preguntas">
+    <div class="sf-section-heading">
+      <div><p class="sf-kicker">Guía rápida</p><h2 id="preguntas">Preguntas frecuentes sobre perfumes.</h2></div>
+    </div>
+    <div class="sf-faq">
+      <details><summary>¿Qué diferencia hay entre Eau de Parfum, Eau de Toilette y Parfum?</summary>
+        <p>Es la concentración de esencias aromáticas. De forma orientativa, un Parfum suele tener entre un 20 y un 30 %, un Eau de Parfum entre un 15 y un 20 % y un Eau de Toilette entre un 5 y un 15 %. A más concentración, el perfume suele ser más intenso, aunque la duración depende también de la composición y de la piel.</p></details>
+      <details><summary>¿Qué son las notas de salida, de corazón y de fondo?</summary>
+        <p>Son las etapas en las que se percibe un perfume. Las notas de salida son las primeras que se huelen; las de corazón definen su carácter durante las horas siguientes, y las de fondo son las más persistentes. En cada ficha indicamos las notas que publica la marca.</p></details>
+      <details><summary>¿De dónde salen los datos de cada ficha?</summary>
+        <p>De la web oficial de cada marca. Comprobamos el nombre, la concentración, el formato y a quién va dirigido, guardamos la dirección de la página consultada y escribimos una descripción propia a partir de las notas oficiales. Si un dato no se puede comprobar, la ficha no se publica.</p></details>
+      <details><summary>¿Puedo comprar ya?</summary>
+        <p>Todavía no. Estamos preparando la tienda: por ahora el catálogo es informativo y no mostramos precios ni aceptamos pedidos.</p></details>
+    </div>
+    <p><a class="sf-text-link" href="{% url 'home:about' %}">Cómo trabajamos <span aria-hidden="true">↗</span></a></p>
   </section>
   <section class="sf-editorial" aria-labelledby="identidad">
     <div class="eo-wrap sf-editorial-grid">

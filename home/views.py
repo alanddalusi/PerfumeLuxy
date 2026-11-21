@@ -52,7 +52,7 @@ def index(request):
                         for brand, count in collections.published_brands() if count >= collections.MIN_INDEXABLE],
         "published_count": Product.objects.published().count(),
         "seo_data": seo.get_meta_tags(
-            title="Perfumería El Buen Olor | Descubre tu próxima fragancia",
+            title="Perfumes y fragancias verificadas | Perfumería El Buen Olor",
             description="Descubre tu próxima fragancia en Perfumería El Buen Olor: fichas de perfumes verificadas con su concentración, formato y notas olfativas.",
             canonical=seo.get_canonical_url(reverse("home:index")),
         ),
@@ -119,6 +119,15 @@ def unsubscribe_notice(request, kind, token):
     if pending.exists():
         return notice_response(request, "unsubscribe")
     return notice_response(request, "invalid", status=410)
+
+
+def about(request):
+    seo = SEOManager(request)
+    return render(request, "home/about.html", {"seo_data": seo.get_meta_tags(
+        title="Sobre nosotros: cómo verificamos cada perfume | Perfumería El Buen Olor",
+        description="Quiénes somos y cómo verificamos los perfumes de Perfumería El Buen Olor: datos de la web oficial de cada marca y textos propios.",
+        canonical=seo.get_canonical_url(reverse("home:about")),
+    )})
 
 
 def privacy(request):

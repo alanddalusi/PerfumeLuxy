@@ -24,7 +24,10 @@ class SEOManager:
     def __init__(self, request):
         self.request = request
         self.site_name = "Perfumería El Buen Olor"
-        self.default_image = ""
+        from django.templatetags.static import static
+        # Original brand card (1200x630) used when a page has no approved photograph.
+        self.default_image = request.build_absolute_uri(static("img/og-default.png"))
+        self.default_image_size = (1200, 630)
         self.default_description = "Descubre familias olfativas y perfumes en Perfumería El Buen Olor."
     
     def get_canonical_url(self, path=None):
@@ -161,9 +164,9 @@ class SEOManager:
             'og_title': title,
             'og_description': description,
             'og_image': image,
-            'og_image_width': kwargs.get('image_width') if image else None,
-            'og_image_height': kwargs.get('image_height') if image else None,
-            'og_image_alt': kwargs.get('image_alt', '') if image else '',
+            'og_image_width': (kwargs.get('image_width') or (self.default_image_size[0] if image == self.default_image else None)) if image else None,
+            'og_image_height': (kwargs.get('image_height') or (self.default_image_size[1] if image == self.default_image else None)) if image else None,
+            'og_image_alt': (kwargs.get('image_alt') or ('Perfumería El Buen Olor' if image == self.default_image else '')) if image else '',
             'og_url': canonical,
             'twitter_card': "summary_large_image" if image else "summary",
             'twitter_title': title,

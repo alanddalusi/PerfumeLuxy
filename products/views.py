@@ -114,6 +114,13 @@ def catalog_rendition_named(request, image_id, name, box, fmt):
     return catalog_rendition(request, image_id, box, fmt)
 
 
+def verification_url(product):
+    """Official page used to verify a published reference product (https only)."""
+    sources = product.verification_sources if isinstance(product.verification_sources, dict) else {}
+    url = sources.get("concentration") or sources.get("name") or ""
+    return url if product.is_reference and url.startswith("https://") else ""
+
+
 def suggestion_image(product):
     picture = public_picture(product)
     if picture is None:
@@ -252,6 +259,7 @@ def product_detail(request, slug):
         "product_schema": product_schema,
         "brand_url": collections.brand_url(product.brand) if product.brand else "",
         "category_url": catalog_filter_url(category=product.category.db_name) if product.category else "",
+        "verification_url": verification_url(product),
         "breadcrumb_schema": breadcrumb_schema,
     }
 

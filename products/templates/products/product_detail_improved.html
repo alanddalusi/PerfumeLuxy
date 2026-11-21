@@ -36,7 +36,8 @@
           </dl>
         {% endif %}
         {% if product.description %}<p class="sf-description">{{ product.description|linebreaksbr }}</p>{% endif %}
-        {% if product.category %}<a class="sf-text-link" href="{{ category_url }}">{{ product.category.name|default:product.category.db_name }} <span aria-hidden="true">↗</span></a>{% endif %}
+        {% if verification_url %}<p class="sf-source">Datos comprobados en la <a href="{{ verification_url }}" rel="nofollow noopener" target="_blank">web oficial de {{ product.brand.name }}</a>.</p>{% endif %}
+        {% if product.category %}<a class="sf-text-link" href="{{ category_url }}" rel="nofollow">{{ product.category.name|default:product.category.db_name }} <span aria-hidden="true">↗</span></a>{% endif %}
         {% if not store_prelaunch and not product.is_reference and product.in_stock and product.price is not None %}
           {% if not product.has_sizes or cart_sizes %}
             <form class="sf-live-form" method="post" action="{% url 'bag:add_to_bag' product.pk %}">

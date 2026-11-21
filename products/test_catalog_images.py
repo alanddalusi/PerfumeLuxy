@@ -311,7 +311,8 @@ class CatalogImageTests(TestCase):
         CatalogImage.objects.filter(pk=image.pk).update(withdrawn_at="2026-01-01T00:00:00Z")
         self.assertNotIn("<image:image>", self.client.get("/sitemap.xml").content.decode())
         html = self.client.get(product.get_absolute_url()).content.decode()
-        self.assertNotIn("og:image", html)
+        self.assertNotIn("/products/image/", html)          # no product photo once withdrawn
+        self.assertIn('<meta property="og:image" content="http://testserver/static/img/og-default.png">', html)
 
     # ------------------------------------------------------------------ progressive assignment
     def legacy_product(self, name, sku, filename, size=(640, 640)):
