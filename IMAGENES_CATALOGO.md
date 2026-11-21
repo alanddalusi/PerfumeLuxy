@@ -2,6 +2,8 @@
 
 Estado (20/11/2026, 16:50 UTC): **desplegado en producción** (`perfumeria-web:bfe1268`, migración `products.0012` aplicada) tras una copia verificada (`/srv/perfumeria/backups/20261120T164907Z`). No se ha descargado ninguna imagen nueva.
 
+Actualización (21/11/2026): **desplegado `perfumeria-web:57c896f`** (asignación progresiva de fotos y SEO de imágenes). Sin migraciones nuevas. Comprobación `site-status`: 0 fallos. Reversión: `RELEASE=bfe1268`. Siguen sin fotos aprobadas ni fichas publicadas, y los originales aún no están en el servidor.
+
 - **Reversión:** `RELEASE=f02f4a8` en `deploy/shared/.env.production` y `pc up -d perfumeria-web`. La migración `0012` solo añade un campo, así que el código anterior funciona con ella.
 
 ## Regla de derechos (sin cambios)
