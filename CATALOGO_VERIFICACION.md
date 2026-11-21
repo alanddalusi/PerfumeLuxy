@@ -56,6 +56,17 @@ Publicadas las **30 fichas verificadas** en producción (`perfumeria-web:910bdcd
 - **Tienda:** el catálogo muestra 30 productos, `/checkout/` responde 403, hay 0 imágenes aprobadas y 0 productos vendibles. `site-status` da 0 fallos y el foro sigue sin cambios.
 - **Reversión:** `publish_reference_batch` no retira fichas. Para retirarlas: `python manage.py retire_reference_catalog --reviewer app --apply` (o una a una en el admin). Para volver al código anterior: `RELEASE=fbfea75`.
 
+## Segunda ronda (21/11/2026, 21:00 UTC), desplegada `9beff7a`
+
+- **Marcas y títulos:** «Lancôme» y «Estée Lauder» (migración `0014`, reversible). Los títulos ya no repiten la marca («Boss Bottled Night Eau de Toilette 100 ml»). Se actualizaron solo las 30 publicadas (`--published-only`, 5 cambios); los 235 borradores siguen intactos (misma huella).
+- **Páginas de colección:** `/products/marca/<marca>/` y `/products/genero/<mujer|hombre|unisex>/`.
+  - Cada una tiene H1, texto y meta descripción propios, generados a partir de los datos verificados.
+  - Son indexables y entran en el sitemap solo con 3 o más fichas publicadas (hoy Versace, Paco Rabanne, Mujer y Hombre).
+  - Por debajo de 3 llevan `noindex`; una marca sin fichas publicadas devuelve 404.
+  - El menú y las fichas enlazan a estas páginas.
+- **Comprobación en el sitio real:** 30/30 fichas correctas, 37 URL del sitemap con respuesta 200 y `site-status` sin fallos. El foro sigue sin cambios.
+- **17 perfumes nuevos verificados**, listos para la segunda publicación. Están verificados solo en el archivo de evidencias; los borradores de producción no se han tocado.
+
 ## Estado de la verificación (21/11/2026)
 
 | Estado | Fichas |

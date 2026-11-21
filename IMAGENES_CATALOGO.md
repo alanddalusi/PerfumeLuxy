@@ -70,6 +70,16 @@ Se sirven en `/products/image/<id>/<caja>.<avif|webp>`, solo si la imagen está 
 - reglas CSS (1:1, `contain`, sin `cover`, tope de tamaño);
 - galería, autocompletado y los dos comandos.
 
+## Aviso: las fotos heredadas no corresponden a su SKU (21/11/2026)
+
+En una revisión visual de 9 fotos de perfumes ambiguos, **ninguna mostraba el perfume de su SKU**. Por ejemplo, `ER1173710852` («Dior Sauvage») muestra DKNY Be Delicious y `ER1173710844` («Bleu de Chanel») muestra Coco Mademoiselle. Los archivos parecen desplazados dos o tres posiciones respecto a los productos.
+
+Consecuencias:
+- Ninguna foto puede asignarse sin comprobarla visualmente. `mapping_confirmed` debe marcarse solo después de mirar la imagen.
+- Las fotos no sirven para decidir la versión de un perfume ambiguo.
+
+Hoy no se publica ninguna foto, así que nada incorrecto ha llegado a la web.
+
 ## Asignación progresiva de fotos (por SKU)
 
 La relación foto ↔ perfume ya existe: cada ficha de referencia apunta a `media/<SKU>.jpeg`. Hay **138 fotos emparejadas** con su marca y nombre; las 127 restantes apuntan a archivos que no existen.
