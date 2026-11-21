@@ -201,7 +201,8 @@ class CatalogImageTests(TestCase):
                 self.assertIn('alt=""', card)                 # the surrounding link already names it
             else:
                 self.assertNotIn("<picture", card)
-                self.assertIn("Fotografía en preparación", card)   # placeholder in the same frame
+                self.assertIn('class="sf-placeholder"', card)       # placeholder in the same frame
+                self.assertIn('<span class="eo-sr-only">Ver ficha de', card)   # link text = product
         self.assertIn("--img-max-w: 224px", by_name["Beta"])        # small photo never enlarged
 
         results = self.client.get(reverse("products:products"), {"q": "Beta"}).content.decode()

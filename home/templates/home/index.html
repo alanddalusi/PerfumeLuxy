@@ -9,7 +9,7 @@
         <h1>El arte de<br><em>oler bien.</em></h1>
         <p class="sf-lead">Descubre el universo de las fragancias a través de sus familias, sus notas y los matices que hacen tuyo un perfume.</p>
         <div class="sf-actions">
-          <a class="eo-button eo-button--primary" href="{% url 'products:products' %}">Explorar el catálogo <span aria-hidden="true">↗</span></a>
+          <a class="eo-button eo-button--primary" href="{% url 'products:products' %}">Explorar los perfumes <span aria-hidden="true">↗</span></a>
           <a class="sf-text-link" href="#descubrir">Descubrir familias</a>
         </div>
       </div>
@@ -27,7 +27,7 @@
     {% if families %}
       <div class="sf-discovery">
         {% for family, url in families %}
-          <a class="sf-discovery-item" href="{{ url }}">
+          <a class="sf-discovery-item" href="{{ url }}" rel="nofollow">
             <h3>{{ family.name }}</h3><span aria-hidden="true">↗</span>
             {% if family.description %}<p>{{ family.description|truncatewords:17 }}</p>{% endif %}
           </a>
@@ -37,16 +37,35 @@
       {% include 'includes/design/empty.html' with text="Estamos preparando las familias olfativas del escaparate." only %}
     {% endif %}
   </section>
+  <section class="eo-wrap sf-section" aria-labelledby="sobre-la-perfumeria">
+    <div class="sf-section-heading">
+      <div><p class="sf-kicker">Perfumería El Buen Olor</p><h2 id="sobre-la-perfumeria">Descubre tu próxima fragancia.</h2></div>
+    </div>
+    <div class="sf-home-intro">
+      <p>En Perfumería El Buen Olor creemos que el arte de oler bien empieza por conocer bien cada perfume. Por eso cada ficha de nuestro catálogo recoge datos comprobados en la web oficial de la marca: la concentración (Eau de Parfum, Eau de Toilette o Parfum), el formato del frasco y las notas olfativas de salida, corazón y fondo.</p>
+      <p>Hoy puedes consultar {{ published_count }} fragancia{{ published_count|pluralize }} de casas como Chanel, Dior, Carolina Herrera, Guerlain, Lancôme o Versace, ordenadas por marca y por perfumes para mujer, para hombre y unisex. Todavía no vendemos: estamos preparando la tienda y, mientras tanto, queremos que encuentres con calma el perfume que encaja contigo y descubras por qué una fragancia te resulta especial.</p>
+    </div>
+  </section>
+  {% if featured %}
+  <section class="eo-wrap sf-section" aria-labelledby="destacados">
+    <div class="sf-section-heading">
+      <div><p class="sf-kicker">Escaparate</p><h2 id="destacados">Perfumes recién incorporados.</h2></div>
+      <a class="sf-text-link" href="{% url 'products:products' %}">Todos los perfumes <span aria-hidden="true">↗</span></a>
+    </div>
+    <div class="sf-product-grid">
+      {% for product in featured %}{% include 'products/includes/perfume_card.html' with eager_image=False %}{% endfor %}
+    </div>
+  </section>
+  {% endif %}
   <section class="eo-wrap sf-section sf-categories" aria-labelledby="categorias">
     <div class="sf-section-heading">
-      <div><p class="sf-kicker">Explorar</p><h2 id="categorias">Por categoría.</h2></div>
-      <a class="sf-text-link" href="{% url 'products:products' %}">Ver catálogo <span aria-hidden="true">↗</span></a>
+      <div><p class="sf-kicker">Explorar</p><h2 id="categorias">Por marca y por estilo.</h2></div>
     </div>
-    {% if categories %}
-      <ul class="sf-category-links">
-        {% for name, url in categories %}<li><a href="{{ url }}">{{ name }} <span aria-hidden="true">↗</span></a></li>{% endfor %}
-      </ul>
-    {% endif %}
+    <ul class="sf-category-links">
+      <li><a href="{% url 'products:gender_collection' 'mujer' %}">Perfumes para mujer <span aria-hidden="true">↗</span></a></li>
+      <li><a href="{% url 'products:gender_collection' 'hombre' %}">Perfumes para hombre <span aria-hidden="true">↗</span></a></li>
+      {% for name, url, count in brand_links %}<li><a href="{{ url }}">Perfumes de {{ name }} <span aria-hidden="true">↗</span></a></li>{% endfor %}
+    </ul>
     {% if not has_products %}
       {% include 'includes/design/empty.html' with text="Aún no hay productos publicados. Puedes apuntarte para recibir el aviso de lanzamiento." only %}
     {% endif %}

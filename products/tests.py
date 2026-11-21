@@ -248,7 +248,11 @@ class PremiumStorefrontTests(TestCase):
         home = reverse("home:index")
         form = self.client.get(home)
         self.assertContains(form, "?fragrance_family=Amaderada")
-        self.assertContains(form, "?category=perfumes")
+        self.assertNotContains(form, "?category=")                       # no dynamic category links
+        self.assertContains(form, 'href="/products/genero/mujer/"')       # clean collection URLs
+        self.assertContains(form, "Descubre tu próxima fragancia.")       # title words in the content
+        self.assertContains(form, "el arte de oler bien")                 # H1 words in the content
+        self.assertNotContains(form, 'href="https://www.instagram.com"')  # no placeholder social links
         self.assertContains(form, 'name="consent" required')
         self.assertNotContains(form, "Env\u00edo gratis")
         Subscriber.objects.create(email="legacy@example.test")

@@ -1,7 +1,7 @@
 {# Premium stand-in used until a photograph with confirmed usage rights is approved. #}
 <span class="sf-placeholder" aria-hidden="true">
   <span class="sf-placeholder-cap"></span>
-  <span class="sf-placeholder-bottle"><span class="sf-placeholder-mark">{% if product.brand.name %}{{ product.brand.name|slice:":1"|upper }}{% else %}EO{% endif %}</span></span>
+  <span class="sf-placeholder-bottle"><span class="sf-placeholder-mark" data-initial="{% if product.brand.name %}{{ product.brand.name|slice:":1"|upper }}{% else %}EO{% endif %}"></span></span>
   {% if product.fragrance_family %}<span class="sf-placeholder-family">{{ product.fragrance_family.name }}</span>{% endif %}
 </span>
-<span class="sf-media-caption">Fotografía en preparación</span>
+{% if not no_caption %}<span class="sf-media-caption">Fotografía en preparación</span>{% endif %}

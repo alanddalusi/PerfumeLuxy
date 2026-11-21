@@ -1,4 +1,6 @@
 from django.conf import settings
+
+from products import collections
 from django.shortcuts import render, redirect, reverse
 from django.http import Http404
 from django.utils import timezone
@@ -8,7 +10,7 @@ from django.contrib import messages
 from .forms import LAUNCH_CONSENT_VERSION, SubscribeForm
 from .models import Subscriber
 from .notices import confirmation_queryset, rate_allowed, request_confirmation, withdrawal_queryset
-from products.models import Category, FragranceFamily, Product, StockAlert
+from products.models import FragranceFamily, Product, StockAlert
 from products.catalog import catalog_filter_url
 from eau_royal.seo import SEOManager
 
@@ -45,18 +47,27 @@ def index(request):
             (family, catalog_filter_url(fragrance_family=family.name))
             for family in FragranceFamily.objects.order_by("name")[:6]
         ],
-        "categories": [
-            (category.name or category.db_name, catalog_filter_url(category=category.db_name))
-            for category in Category.objects.order_by("name", "pk")[:6]
-        ],
+        "featured": featured_products(),
+        "brand_links": [(brand.name, collections.brand_url(brand), count)
+                        for brand, count in collections.published_brands() if count >= collections.MIN_INDEXABLE],
+        "published_count": Product.objects.published().count(),
         "seo_data": seo.get_meta_tags(
             title="Perfumería El Buen Olor | Descubre tu próxima fragancia",
-            description="Explora perfumes por familias olfativas y conoce las notas que definen cada fragancia. Apúntate para recibir el aviso de lanzamiento.",
+            description="Descubre tu próxima fragancia en Perfumería El Buen Olor: fichas de perfumes verificadas con su concentración, formato y notas olfativas.",
             canonical=seo.get_canonical_url(reverse("home:index")),
         ),
         "organization_schema": seo.generate_organization_schema(),
         "website_schema": seo.generate_website_schema(),
     })
+
+
+def featured_products(limit=8):
+    from products.presentation import public_picture
+    products = list(Product.objects.published().select_related("brand", "fragrance_family")
+                    .prefetch_related("catalog_images").order_by("-pk")[:limit])
+    for product in products:
+        product.storefront_image = public_picture(product)
+    return products
 
 
 def error_404(request, exception):

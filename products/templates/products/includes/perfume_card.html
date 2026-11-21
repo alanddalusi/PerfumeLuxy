@@ -1,9 +1,10 @@
 <article class="sf-card eo-perfume-card">
-  <a class="sf-card-media sf-media" href="{{ product.get_absolute_url }}" aria-label="Ver ficha de {{ product.name }}">
+  <a class="sf-card-media sf-media" href="{{ product.get_absolute_url }}">
+    <span class="eo-sr-only">Ver ficha de {{ product.name }}</span>
     {% if product.storefront_image %}
       {% include 'products/includes/product_picture.html' with picture=product.storefront_image priority=eager_image decorative=True only %}
     {% else %}
-      {% include 'products/includes/media_placeholder.html' %}
+      {% include 'products/includes/media_placeholder.html' with no_caption=True %}
     {% endif %}
   </a>
   <div class="sf-card-info">

@@ -145,3 +145,8 @@
 .sf-collection-links { margin: 3rem 0 2rem; }
 .sf-collection-links h2 { font-size: 1.1rem; margin-bottom: .75rem; }
 .sf-collection-links ul { display: flex; flex-wrap: wrap; gap: .5rem 1.25rem; }
+
+/* Home intro text */
+.sf-home-intro { max-width: 68ch; display: grid; gap: 1rem; line-height: 1.7; }
+
+.sf-placeholder-mark::before { content: attr(data-initial); }
