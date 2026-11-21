@@ -81,3 +81,29 @@ class SiteSeoTests(TestCase):
         self.assertIn('href="https://www.carolinaherrera.com/x" rel="nofollow noopener" target="_blank">web oficial de Carolina Herrera</a>', html)
         Product.objects.filter(pk=product.pk).update(verification_sources={"concentration": "javascript:alert(1)"})
         self.assertNotIn("javascript:", self.client.get(product.get_absolute_url()).content.decode())
+
+
+
+class LegalPagesTests(TestCase):
+    OWNER = {"name": "Titular de prueba", "tax_id": "00000000T", "address": "Calle de prueba 1, Ciudad",
+             "email": "contacto@example.test", "phone": "", "registry": ""}
+
+    def test_hidden_without_real_owner_data(self):
+        with self.settings(LEGAL_OWNER={"name": "", "tax_id": "", "address": "", "email": ""}):
+            for url in ("/aviso-legal/", "/politica-de-privacidad/", "/contacto/"):
+                self.assertEqual(self.client.get(url).status_code, 404, url)
+            home = self.client.get("/").content.decode()
+            self.assertNotIn("/aviso-legal/", home)
+            self.assertNotIn("/aviso-legal/", self.client.get("/sitemap.xml").content.decode())
+        with self.settings(LEGAL_OWNER={**self.OWNER, "tax_id": ""}):   # one required field missing
+            self.assertEqual(self.client.get("/aviso-legal/").status_code, 404)
+
+    def test_published_with_complete_owner_data(self):
+        with self.settings(LEGAL_OWNER=self.OWNER):
+            notice = self.client.get("/aviso-legal/").content.decode()
+            self.assertIn("Titular de prueba", notice)
+            self.assertIn("00000000T", notice)
+            self.assertIn("contacto@example.test", self.client.get("/contacto/").content.decode())
+            self.assertIn("Agencia Española de Protección de Datos", self.client.get("/politica-de-privacidad/").content.decode())
+            self.assertIn('href="/aviso-legal/"', self.client.get("/").content.decode())
+            self.assertIn("/politica-de-privacidad/", self.client.get("/sitemap.xml").content.decode())

@@ -128,6 +128,7 @@ TEMPLATES = [
                 "django.contrib.messages.context_processors.messages",
                 "bag.contexts.bag_contents",
                 "checkout.store_mode.store_mode_context",
+                "home.legal.legal_context",
                 "home.context.mail_context",
                 "eau_royal.seo.seo_context",
             ],
@@ -267,6 +268,19 @@ if SERVE_STATIC:
     WHITENOISE_MAX_AGE = 86400
 
 STORE_MODE = os.environ.get("STORE_MODE", "prelaunch").strip().lower()
+
+# Legal identity of the site owner (LSSI-CE art. 10, RGPD art. 13). Only real data, set on the server.
+# Until every required value is present, /aviso-legal/, /politica-de-privacidad/ and /contacto/
+# answer 404 and are not linked or listed in the sitemap: nothing is published with invented data.
+LEGAL_OWNER = {
+    "name": os.environ.get("LEGAL_OWNER_NAME", "").strip(),           # nombre completo o razón social
+    "tax_id": os.environ.get("LEGAL_OWNER_TAX_ID", "").strip(),       # NIF / CIF
+    "address": os.environ.get("LEGAL_OWNER_ADDRESS", "").strip(),     # domicilio completo
+    "email": os.environ.get("LEGAL_OWNER_EMAIL", "").strip(),         # correo de contacto
+    "phone": os.environ.get("LEGAL_OWNER_PHONE", "").strip(),         # opcional
+    "registry": os.environ.get("LEGAL_OWNER_REGISTRY", "").strip(),   # datos registrales (si es sociedad)
+}
+LEGAL_REQUIRED_FIELDS = ("name", "tax_id", "address", "email")
 CATALOG_ASSET_ROOT = Path(os.environ.get("CATALOG_ASSET_ROOT") or BASE_DIR / "catalog_assets")
 STORAGES["catalog_assets"] = {
     "BACKEND": "django.core.files.storage.FileSystemStorage",

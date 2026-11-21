@@ -22,6 +22,9 @@
       <ul class="eo-list">
         <li><a href="{% url 'products:fragrance_families' %}">Guía de familias olfativas</a></li>
         <li><a href="{% url 'home:about' %}">Sobre nosotros</a></li>
+        {% if legal_pages_ready %}<li><a href="{% url 'home:contact' %}">Contacto</a></li>
+        <li><a href="{% url 'home:legal_notice' %}">Aviso legal</a></li>
+        <li><a href="{% url 'home:privacy_policy' %}">Política de privacidad</a></li>{% endif %}
         <li><a href="{% url 'bag:view_bag' %}">Carrito</a></li>
         <li><a href="{% url 'profiles:profile' %}">Mi perfil</a></li>
         <li><a href="{% url 'products:view_wishlist' %}">Favoritos</a></li>

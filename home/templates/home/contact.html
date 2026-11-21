@@ -1,0 +1,13 @@
+{% extends "includes/design/storefront.html" %}
+{% block content %}
+<article class="sf eo-wrap sf-section sf-about">
+  <h1>Contacto.</h1>
+  <p class="sf-lead">Para cualquier consulta sobre el catálogo, una ficha o tus datos, escríbenos.</p>
+  <ul>
+    <li><strong>Correo electrónico:</strong> <a href="mailto:{{ owner.email }}">{{ owner.email }}</a></li>
+    {% if owner.phone %}<li><strong>Teléfono:</strong> {{ owner.phone }}</li>{% endif %}
+    <li><strong>Titular:</strong> {{ owner.name }}</li>
+  </ul>
+  <p>Si ves un dato incorrecto en una ficha, indícanos el perfume y la página oficial donde aparece el dato correcto.</p>
+</article>
+{% endblock %}

@@ -13,7 +13,9 @@ class StaticViewSitemap(Sitemap):
     changefreq = 'weekly'
 
     def items(self):
-        return ['home:index', 'products:products', 'products:fragrance_families', 'home:about']
+        from home.legal import legal_ready
+        pages = ['home:index', 'products:products', 'products:fragrance_families', 'home:about']
+        return pages + (['home:contact', 'home:legal_notice', 'home:privacy_policy'] if legal_ready() else [])
 
     def location(self, item):
         return reverse(item)

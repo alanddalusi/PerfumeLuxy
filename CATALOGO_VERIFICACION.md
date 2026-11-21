@@ -100,6 +100,25 @@ Publicados los **17 perfumes nuevos** (revisor `app`, misma versión `9beff7a`, 
   - La redirección HTTP→HTTPS es un 308 del Caddy compartido, que no se modifica. Es una redirección permanente válida.
   - La longitud del dominio y los backlinks dependen de acciones externas.
 
+## SEO, segunda ronda (21/11/2026, 22:25 UTC), versión `17dc5ee`
+
+- **Copia previa verificada:** `20261121T222419Z`. Los 214 borradores tienen la misma huella y siguen publicadas 51 fichas.
+- **Portada:**
+  - título «Perfumes y fragancias verificadas | Perfumería El Buen Olor»;
+  - `og:image` propia de 1200×630 (`static/img/og-default.png`) y `summary_large_image`;
+  - 4 preguntas frecuentes.
+- **Nueva página `/sobre-nosotros/`:** indexable, con canonical y en el sitemap.
+- **Fichas:** enlace a la web oficial usada para verificarlas (`nofollow noopener`).
+- **Comprobaciones:**
+  - 51/51 fichas correctas y 66 URL del sitemap con respuesta 200;
+  - `robots.txt` sin cambios;
+  - el pago responde 403 y no se muestra ningún precio;
+  - `site-status` sin fallos y el foro sin cambios;
+  - en el registro solo aparecen los 403 intencionados del pago.
+- **Rendimiento móvil:** LCP de 0,6 a 1,2 s y CLS 0.
+
+**Páginas legales preparadas, sin publicar:** `/aviso-legal/`, `/politica-de-privacidad/` y `/contacto/`. Responden 404 y no se enlazan mientras falten en el servidor `LEGAL_OWNER_NAME`, `LEGAL_OWNER_TAX_ID`, `LEGAL_OWNER_ADDRESS` y `LEGAL_OWNER_EMAIL`. Los textos están pendientes de revisión legal.
+
 ## Estado de la verificación (21/11/2026)
 
 | Estado | Fichas |

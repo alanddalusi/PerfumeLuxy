@@ -121,6 +121,33 @@ def unsubscribe_notice(request, kind, token):
     return notice_response(request, "invalid", status=410)
 
 
+def _legal_page(request, template, title, description, url_name):
+    from .legal import legal_owner, legal_ready
+    if not legal_ready():
+        raise Http404   # never published with missing or invented owner data
+    seo = SEOManager(request)
+    return render(request, template, {"owner": legal_owner(), "seo_data": seo.get_meta_tags(
+        title=f"{title} | Perfumería El Buen Olor", description=description,
+        canonical=seo.get_canonical_url(reverse(url_name)))})
+
+
+def legal_notice(request):
+    return _legal_page(request, "home/legal_notice.html", "Aviso legal",
+                       "Aviso legal de Perfumería El Buen Olor: titular del sitio web, condiciones de uso y propiedad intelectual.",
+                       "home:legal_notice")
+
+
+def privacy_policy(request):
+    return _legal_page(request, "home/privacy_policy.html", "Política de privacidad",
+                       "Política de privacidad de Perfumería El Buen Olor: responsable, finalidades, base legal, conservación y derechos.",
+                       "home:privacy_policy")
+
+
+def contact(request):
+    return _legal_page(request, "home/contact.html", "Contacto",
+                       "Cómo contactar con Perfumería El Buen Olor.", "home:contact")
+
+
 def about(request):
     seo = SEOManager(request)
     return render(request, "home/about.html", {"seo_data": seo.get_meta_tags(
