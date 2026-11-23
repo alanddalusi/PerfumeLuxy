@@ -1,0 +1,19 @@
+{% extends "includes/design/storefront.html" %}
+{% block content %}
+<article class="sf eo-wrap sf-section sf-about">
+  <h1>Garantía de autenticidad.</h1>
+  <p class="sf-lead">Todos los perfumes que vendemos son originales, de la marca que figura en la ficha.</p>
+  <section class="sf-section">
+    <h2>De dónde proceden</h2>
+    <p>Los pedidos los prepara y envía nuestro proveedor, que cuenta con autorización para distribuir estos productos. Los perfumes proceden de {{ policy.goods_origin }}, con su embalaje original precintado.</p>
+  </section>
+  <section class="sf-section">
+    <h2>La versión exacta</h2>
+    <p>Cada ficha indica la concentración y el formato comprobados en la web oficial de la marca, con el enlace a esa página. Recibirás exactamente la versión que aparece en la ficha.</p>
+  </section>
+  <section class="sf-section">
+    <h2>Si tienes cualquier duda</h2>
+    <p>Escríbenos a <a href="mailto:{{ owner.email }}">{{ owner.email }}</a> con tu número de pedido. Si el producto no es el que pediste, lo resolvemos sin coste para ti.</p>
+  </section>
+</article>
+{% endblock %}

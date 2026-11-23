@@ -65,9 +65,29 @@ def collection_products(**filters):
                 .select_related("brand", "fragrance_family").prefetch_related("catalog_images").order_by("name"))
 
 
+def note_slug(name):
+    return slugify(name)
+
+
+def note_url(name):
+    return reverse("products:note_collection", args=[note_slug(name)])
+
+
+def published_notes():
+    """{slug: (display name, published product count)} across top/heart/base levels."""
+    from .models import FragranceNote
+    out = {}
+    for note in FragranceNote.objects.filter(products__publication_status=Product.Publication.APPROVED).distinct():
+        slug = note_slug(note.name)
+        count = Product.objects.published().filter(fragrance_notes__name=note.name).distinct().count()
+        out[slug] = (note.name, count)
+    return out
+
+
 def sitemap_locations():
     """URLs of the indexable collections."""
     urls = [brand_url(brand) for brand, count in published_brands() if count >= MIN_INDEXABLE]
+    urls += [note_url(name) for name, count in published_notes().values() if count >= MIN_INDEXABLE]
     for slug, (code, _) in GENDERS.items():
         if Product.objects.published().filter(gender__db_name=code).count() >= MIN_INDEXABLE:
             urls.append(reverse("products:gender_collection", args=[slug]))

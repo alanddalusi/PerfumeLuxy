@@ -282,6 +282,20 @@ LEGAL_OWNER = {
     "email_provider": os.environ.get("LEGAL_EMAIL_PROVIDER", "").strip(),  # proveedor de envío de correo
 }
 LEGAL_REQUIRED_FIELDS = ("name", "tax_id", "address", "email")
+
+# Shop policy agreed with the dropshipping supplier. Only real, agreed values; until the required
+# ones exist (and the legal data too), /garantia-de-autenticidad/ and /envios-y-devoluciones/ are 404.
+SHOP_POLICY = {
+    "supplier_authorized": env_flag("SHOP_SUPPLIER_AUTHORIZED"),            # written authorisation on file
+    "goods_origin": os.environ.get("SHOP_GOODS_ORIGIN", "").strip(),         # e.g. "Unión Europea"
+    "delivery_days": os.environ.get("SHOP_DELIVERY_DAYS", "").strip(),       # e.g. "2-4"
+    "carrier": os.environ.get("SHOP_CARRIER", "").strip(),                   # optional
+    "shipping_cost": os.environ.get("SHOP_SHIPPING_COST", "").strip(),       # e.g. "4,95 €"
+    "free_shipping_from": os.environ.get("SHOP_FREE_SHIPPING_FROM", "").strip(),  # optional
+    "return_days": os.environ.get("SHOP_RETURN_DAYS", "").strip(),           # at least 14 (law)
+    "samples_included": env_flag("SHOP_SAMPLES_INCLUDED"),                   # only if the supplier does it
+}
+SHOP_POLICY_REQUIRED = ("goods_origin", "delivery_days", "shipping_cost", "return_days")
 CATALOG_ASSET_ROOT = Path(os.environ.get("CATALOG_ASSET_ROOT") or BASE_DIR / "catalog_assets")
 STORAGES["catalog_assets"] = {
     "BACKEND": "django.core.files.storage.FileSystemStorage",

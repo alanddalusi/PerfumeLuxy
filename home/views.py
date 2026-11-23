@@ -131,6 +131,28 @@ def _legal_page(request, template, title, description, url_name):
         canonical=seo.get_canonical_url(reverse(url_name)))})
 
 
+def _shop_page(request, template, title, description, url_name):
+    from .legal import legal_owner, shop_pages_ready, shop_policy
+    if not shop_pages_ready():
+        raise Http404   # never published without the real, agreed shop policy
+    seo = SEOManager(request)
+    return render(request, template, {"owner": legal_owner(), "policy": shop_policy(), "seo_data": seo.get_meta_tags(
+        title=f"{title} | Perfumería El Buen Olor", description=description,
+        canonical=seo.get_canonical_url(reverse(url_name)))})
+
+
+def authenticity(request):
+    return _shop_page(request, "home/authenticity.html", "Garantía de autenticidad",
+                      "Perfumes originales: de dónde proceden, cómo se envían y qué hacer si tienes cualquier duda.",
+                      "home:authenticity")
+
+
+def shipping_returns(request):
+    return _shop_page(request, "home/shipping_returns.html", "Envíos y devoluciones",
+                      "Plazos y gastos de envío, seguimiento del pedido y devoluciones en Perfumería El Buen Olor.",
+                      "home:shipping_returns")
+
+
 def legal_notice(request):
     return _legal_page(request, "home/legal_notice.html", "Aviso legal",
                        "Aviso legal de Perfumería El Buen Olor: titular del sitio web, condiciones de uso y propiedad intelectual.",

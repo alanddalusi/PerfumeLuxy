@@ -1,0 +1,21 @@
+{% extends "includes/design/storefront.html" %}
+{% block content %}
+<article class="sf eo-wrap sf-section sf-about">
+  <h1>Envíos y devoluciones.</h1>
+  <section class="sf-section">
+    <h2>Envíos</h2>
+    <ul>
+      <li><strong>Plazo de entrega:</strong> {{ policy.delivery_days }} días laborables desde la confirmación del pedido.</li>
+      <li><strong>Gastos de envío:</strong> {{ policy.shipping_cost }}{% if policy.free_shipping_from %}; gratis a partir de {{ policy.free_shipping_from }}{% endif %}.</li>
+      {% if policy.carrier %}<li><strong>Transportista:</strong> {{ policy.carrier }}.</li>{% endif %}
+      <li><strong>Seguimiento:</strong> recibirás el número de seguimiento por correo cuando el pedido salga.</li>
+      {% if policy.samples_included %}<li>Cada pedido incluye muestras de regalo.</li>{% endif %}
+    </ul>
+  </section>
+  <section class="sf-section">
+    <h2>Devoluciones y desistimiento</h2>
+    <p>Tienes {{ policy.return_days }} días naturales desde que recibes el pedido para desistir de la compra sin indicar el motivo. Por higiene, el perfume debe devolverse sin abrir y con su precinto. Escríbenos a <a href="mailto:{{ owner.email }}">{{ owner.email }}</a> y te indicaremos cómo hacerlo; reembolsamos el importe por el mismo medio de pago en un máximo de 14 días.</p>
+    <p>Si el producto llega dañado o no es el que pediste, no tendrás ningún coste.</p>
+  </section>
+</article>
+{% endblock %}

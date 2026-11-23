@@ -15,13 +15,14 @@ from urllib.parse import urlsplit
 from django.db import transaction
 from django.utils.text import slugify
 
-from .models import Gender, Product, PublicationDecision
+from .models import FragranceNote, Gender, Product, PublicationDecision
 from .naming import full_name
 
 EVIDENCE_FILE = Path(__file__).resolve().parent / "verification" / "reference_evidence.csv"
 COLUMNS = ["sku", "status", "brand", "official_name", "concentration", "size", "gender",
            "source_url", "sizes_seen", "notes", "checked_on", "description_es", "description_source",
-           "field_sources"]
+           "field_sources", "notes_pyramid"]
+NOTE_LEVELS = ("top", "heart", "base")
 STATUSES = {
     "verified": "datos comprobados en la web oficial",
     "ambiguous": "existe en varias concentraciones o versiones: hace falta elegir cuál es",
@@ -78,6 +79,16 @@ def field_sources(row):
     return out
 
 
+def note_pyramid(row):
+    """"top=Bergamota,Pera;heart=Rosa;base=Vainilla" -> [("top", "Bergamota"), ...]."""
+    pairs = []
+    for part in filter(None, (row.get("notes_pyramid") or "").split(";")):
+        level, _, names = part.partition("=")
+        for name in filter(None, (n.strip() for n in names.split(","))):
+            pairs.append((level.strip(), name))
+    return pairs
+
+
 def row_problems(row, product):
     """Reasons a verified row cannot be applied (empty list when it can)."""
     problems = []
@@ -99,6 +110,10 @@ def row_problems(row, product):
             problems.append(f"field_sources {key} must be a known field with an official https URL")
     if row.get("description_es") and not is_official(row.get("description_source", ""), brand):
         problems.append("description_source must be https on the brand's official site")
+    pyramid = note_pyramid(row)
+    if pyramid and (any(level not in NOTE_LEVELS for level, _ in pyramid)
+                    or not is_official(row.get("description_source", ""), brand)):
+        problems.append("notes_pyramid needs top/heart/base levels and an official description_source")
     return problems
 
 
@@ -141,7 +156,13 @@ def apply_row(row, product, apply):
         "meta_description": meta_description(row["brand"], row["official_name"], row["concentration"],
                                              row["size"], row["gender"]),
     }
+    pyramid = note_pyramid(row)
+    if pyramid:
+        sources["notes"] = row["description_source"]   # the same official page lists the notes
     changed = [field for field, value in values.items() if getattr(product, field) != value]
+    current_notes = {(n.note_type, n.name) for n in product.fragrance_notes.all()}
+    if current_notes != set(pyramid):
+        changed.append("notes")
     never_published = not PublicationDecision.objects.filter(product=product).exists()
     slug = seo_slug(product, values["name"], values["concentration"]) if never_published else product.slug
     if slug != product.slug:
@@ -150,6 +171,10 @@ def apply_row(row, product, apply):
         values["slug"] = slug
         # queryset update: keeps publication_status untouched (Product.save would demote it)
         Product.objects.filter(pk=product.pk).update(**values)
+        if "notes" in changed:
+            # M2M only: no Product.save(), so the publication status is untouched
+            product.fragrance_notes.set([FragranceNote.objects.get_or_create(name=name, note_type=level)[0]
+                                         for level, name in pyramid])
     return changed
 
 

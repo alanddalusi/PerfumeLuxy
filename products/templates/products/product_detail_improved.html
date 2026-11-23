@@ -26,6 +26,9 @@
         {% if product.brand.name %}<p class="sf-kicker"><a href="{{ brand_url }}">{{ product.brand.name }}</a></p>{% endif %}
         <h1>{{ product.name }}</h1>
         {% if store_prelaunch %}<p class="sf-badge">Próximamente · catálogo informativo</p>{% endif %}
+        {% if verification_url and product.concentration and product.size %}
+          <p class="sf-verified"><span aria-hidden="true">✓</span> Versión exacta: {{ product.get_concentration_display|cut:" (15-20%)"|cut:" (5-15%)"|cut:" (20-30%)"|cut:" (2-5%)" }} · {{ product.get_size_display }}, comprobada en la web oficial de {{ product.brand.name }}.</p>
+        {% endif %}
         {% if product.concentration or product.fragrance_family or sizes or product.size %}
           <dl class="sf-facts">
             {% if product.concentration %}<div><dt>Concentración</dt><dd>{{ product.get_concentration_display }}</dd></div>{% endif %}
@@ -91,7 +94,7 @@
             {% if notes %}
               <div><h3>{{ label }}</h3>
                 <ul class="sf-category-links">
-                  {% for note in notes %}<li>{{ note.name }}</li>{% endfor %}
+                  {% for note in notes %}<li><a href="{% url 'products:note_collection' note.name|slugify %}">{{ note.name }}</a></li>{% endfor %}
                 </ul>
               </div>
             {% endif %}

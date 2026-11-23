@@ -111,3 +111,92 @@ class LegalPagesTests(TestCase):
             self.assertIn("un máximo de 30 días", policy)                  # server logs retention (Caddy roll_keep_for)
             self.assertIn('href="/aviso-legal/"', self.client.get("/").content.decode())
             self.assertIn("/politica-de-privacidad/", self.client.get("/sitemap.xml").content.decode())
+
+
+@override_settings(STORE_MODE="prelaunch")
+class NotesAndTrustTests(TestCase):
+    URL = "https://www.versace.com/x"
+
+    def setUp(self):
+        from .models import Gender
+        Gender.objects.create(db_name="F", name="Mujer")
+        self.brand = Brand.objects.create(db_name="versace", name="Versace")
+        self.products = []
+        for i, name in enumerate(("Bright Crystal", "Yellow Diamond", "Eros Pour Femme")):
+            self.products.append(Product.objects.create(
+                name=name, brand=self.brand, sku=f"V{i}", catalog_origin=Product.Origin.REFERENCE,
+                publication_status="approved"))
+
+    def apply(self, sku, name, pyramid):
+        from .reference_evidence import apply_evidence
+        row = {"sku": sku, "status": "verified", "brand": "Versace", "official_name": name, "concentration": "edt",
+               "size": "90ml", "gender": "F", "source_url": self.URL, "description_es": "Texto propio " * 12,
+               "description_source": self.URL, "notes_pyramid": pyramid, "field_sources": ""}
+        return apply_evidence([row], apply=True)
+
+    def test_notes_are_applied_with_evidence_and_keep_publication(self):
+        self.assertEqual(self.apply("V0", "Bright Crystal", "top=Yuzu,Granada;heart=Peonía;base=Almizcle")["V0"][0], "updated")
+        product = Product.objects.get(sku="V0")
+        self.assertEqual(sorted((n.note_type, n.name) for n in product.fragrance_notes.all()),
+                         [("base", "Almizcle"), ("heart", "Peonía"), ("top", "Granada"), ("top", "Yuzu")])
+        self.assertEqual(product.verification_sources["notes"], self.URL)
+        # Changing the notes of a published product sends it back to review (signals.py) ...
+        self.assertEqual(product.publication_status, "draft")
+        # ... and re-approval checks the evidence again, notes included.
+        from django.contrib.auth import get_user_model
+        from .publication import decide_product
+        decide_product(product, "approved", get_user_model().objects.create_superuser(username="r"))
+        product.refresh_from_db()
+        self.assertEqual(product.publication_status, "approved")
+        self.assertEqual(self.apply("V0", "Bright Crystal", "top=Yuzu,Granada;heart=Peonía;base=Almizcle")["V0"][0], "unchanged")
+        bad = self.apply("V1", "Yellow Diamond", "middle=Rosa")
+        self.assertEqual(bad["V1"][0], "error")
+
+    def republish(self):
+        Product.objects.filter(sku__startswith="V").update(publication_status="approved")
+
+    def test_note_pages_indexable_from_three_products(self):
+        self.apply("V0", "Bright Crystal", "base=Almizcle")
+        self.apply("V1", "Yellow Diamond", "base=Almizcle;heart=Fresia")
+        self.republish()
+        html = self.client.get("/products/nota/almizcle/").content.decode()
+        self.assertIn("<h1>Perfumes con notas de almizcle</h1>", html)
+        self.assertIn('content="noindex, follow"', html)          # only 2 products
+        self.apply("V2", "Eros Pour Femme", "base=Almizcle")
+        self.republish()
+        html = self.client.get("/products/nota/almizcle/").content.decode()
+        self.assertNotIn("noindex", html)
+        self.assertIn("/products/nota/almizcle/", self.client.get("/sitemap.xml").content.decode())
+        self.assertEqual(self.client.get("/products/nota/no-existe/").status_code, 404)
+        detail = self.client.get(Product.objects.get(sku="V1").get_absolute_url()).content.decode()
+        self.assertIn('href="/products/nota/fresia/"', detail)
+        self.assertIn("Versión exacta: Eau de Toilette · 90ml, comprobada en la web oficial de Versace.", detail)
+
+    def test_shop_pages_hidden_without_real_policy(self):
+        owner = {"name": "T", "tax_id": "1", "address": "A", "email": "a@example.test"}
+        policy = {"supplier_authorized": True, "goods_origin": "Unión Europea", "delivery_days": "2-4",
+                  "shipping_cost": "4,95 €", "return_days": "14", "carrier": "", "free_shipping_from": "",
+                  "samples_included": False}
+        for url in ("/garantia-de-autenticidad/", "/envios-y-devoluciones/"):
+            self.assertEqual(self.client.get(url).status_code, 404)
+            with self.settings(LEGAL_OWNER=owner, SHOP_POLICY={**policy, "return_days": "7"}):   # below legal minimum
+                self.assertEqual(self.client.get(url).status_code, 404)
+            with self.settings(LEGAL_OWNER=owner, SHOP_POLICY={**policy, "supplier_authorized": False}):
+                self.assertEqual(self.client.get(url).status_code, 404)
+        with self.settings(LEGAL_OWNER=owner, SHOP_POLICY=policy):
+            page = self.client.get("/envios-y-devoluciones/").content.decode()
+            self.assertIn("2-4 días laborables", page)
+            self.assertNotIn("muestras de regalo", page)
+            self.assertIn("Unión Europea", self.client.get("/garantia-de-autenticidad/").content.decode())
+            self.assertIn('href="/envios-y-devoluciones/"', self.client.get("/").content.decode())
+
+
+class ErrorPageTests(TestCase):
+    def test_404_is_spanish_and_has_no_third_party_resources(self):
+        response = self.client.get("/no-existe-esta-pagina/")
+        self.assertEqual(response.status_code, 404)
+        html = response.content.decode()
+        self.assertIn("No encontramos esta página.", html)
+        self.assertNotIn("instaud", html)
+        self.assertNotIn("<iframe", html)
+        self.assertIsNone(__import__("re").search(r'(?:src|href)="https?://(?!testserver)', html))

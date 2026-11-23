@@ -594,6 +594,18 @@ def brand_collection(request, slug):
 
 
 @require_safe
+def note_collection(request, slug):
+    note = collections.published_notes().get(slug)
+    if note is None:
+        raise Http404
+    name = note[0]
+    products = list(Product.objects.published().filter(fragrance_notes__name=name).distinct()
+                    .select_related("brand", "fragrance_family").prefetch_related("catalog_images").order_by("name"))
+    return _collection_page(request, products, f"Perfumes con notas de {name.lower()}", f"con notas de {name.lower()}",
+                            collections.note_url(name), f"Notas de {name.lower()}")
+
+
+@require_safe
 def gender_collection(request, slug):
     if slug not in collections.GENDERS:
         raise Http404

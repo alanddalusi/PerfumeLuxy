@@ -11,5 +11,7 @@ urlpatterns = [
     path("aviso-legal/", views.legal_notice, name="legal_notice"),
     path("politica-de-privacidad/", views.privacy_policy, name="privacy_policy"),
     path("contacto/", views.contact, name="contact"),
+    path("garantia-de-autenticidad/", views.authenticity, name="authenticity"),
+    path("envios-y-devoluciones/", views.shipping_returns, name="shipping_returns"),
     path("", views.index, name="index"),
 ]
