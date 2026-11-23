@@ -156,6 +156,19 @@ Publicados los **17 perfumes nuevos** (revisor `app`, misma versión `9beff7a`, 
 - **Guías:** `/guias/` con 4 guías originales (concentraciones y «colonia», pirámide de notas, familias y duración), con JSON-LD `Article` y en el sitemap.
 - **Comprobaciones:** 54/54 fichas correctas, 109 URL en el sitemap, ningún enlace roto, `site-status` sin fallos. El pago responde 403 y no se muestra ningún precio.
 
+## Quinta publicación: perfumes famosos (23/11/2026, 10:10 UTC), versión `bfb659c`
+
+- **Copia previa verificada:** `20261123T100604Z`. Los 196 borradores restantes tienen la misma huella antes y después (`06c8e33c5e90e060`).
+- **Publicadas 15 fichas**, en total 69, con la versión estándar (la original de cada línea) autorizada por el titular:
+  - Hombre: Sauvage EDT, Eros EDT, Acqua di Giò EDT, Legend EDT, Dylan Blue Pour Homme, Mr. Burberry EDT, L.12.12 Blanc EDT, L'Homme Idéal EDT y Habit Rouge EDT.
+  - Mujer: Libre EDP, Coco Mademoiselle EDP, L'Interdit EDP, Chance Eau Tendre EDT, Light Blue EDT y Crystal Noir EDT.
+
+  Cada fila del archivo de evidencias anota las otras versiones.
+- **Pendientes:**
+  - Euphoria: la EDP original ya no figura en la web oficial.
+  - Armani Code EDT: la web oficial no muestra un frasco suelto con tamaño.
+- **Comprobaciones:** 69/69 fichas correctas, 135 URL en el sitemap, ningún enlace roto, sin recursos de terceros y `site-status` sin fallos. El pago responde 403 y no se muestra ningún precio.
+
 ## Estado de la verificación (21/11/2026)
 
 | Estado | Fichas |
