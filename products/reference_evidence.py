@@ -15,13 +15,14 @@ from urllib.parse import urlsplit
 from django.db import transaction
 from django.utils.text import slugify
 
-from .models import FragranceNote, Gender, Product, PublicationDecision
+from .models import FragranceFamily, FragranceNote, Gender, Product, PublicationDecision
 from .naming import full_name
 
 EVIDENCE_FILE = Path(__file__).resolve().parent / "verification" / "reference_evidence.csv"
 COLUMNS = ["sku", "status", "brand", "official_name", "concentration", "size", "gender",
            "source_url", "sizes_seen", "notes", "checked_on", "description_es", "description_source",
-           "field_sources", "notes_pyramid"]
+           "field_sources", "notes_pyramid", "family"]
+FAMILY_DESCRIPTIONS = {'Floral': 'Las fragancias florales giran en torno a flores como la rosa, el jazmín, el nardo o la peonía. Es la familia más amplia: va de los florales frescos y luminosos a los más empolvados o sensuales.', 'Amaderada': 'Las fragancias amaderadas se construyen sobre maderas como el cedro, el sándalo, el vetiver o el guayaco. Suelen ser cálidas y secas, y a menudo se combinan con notas aromáticas o especiadas.', 'Ambarada': 'La familia ambarada, antes llamada oriental, reúne fragancias cálidas y envolventes, con notas como la vainilla, las resinas, el haba tonka o las especias.', 'Aromática': 'Las fragancias aromáticas se basan en hierbas como la lavanda, la salvia, el romero o la menta, a menudo acompañadas de cítricos y maderas. Son muy habituales en la perfumería masculina.', 'Fougère': 'Fougère, «helecho» en francés, es una estructura clásica que combina lavanda, notas herbales y un fondo de musgo o haba tonka. Muchas fragancias masculinas modernas parten de ella.', 'Cítrica': 'Las fragancias cítricas destacan notas de bergamota, limón, mandarina o pomelo. Son frescas y ligeras, y muy apreciadas en verano.', 'Chipre': 'La estructura chipre contrasta notas frescas de salida con un fondo de musgo y pachulí.', 'Gourmand': 'Las fragancias gourmand evocan notas comestibles como la vainilla, el praliné, el caramelo o el cacao.', 'Afrutada': 'Las fragancias afrutadas destacan frutas como la frambuesa, la pera o el melocotón.'}
 NOTE_LEVELS = ("top", "heart", "base")
 STATUSES = {
     "verified": "datos comprobados en la web oficial",
@@ -114,6 +115,9 @@ def row_problems(row, product):
     if pyramid and (any(level not in NOTE_LEVELS for level, _ in pyramid)
                     or not is_official(row.get("description_source", ""), brand)):
         problems.append("notes_pyramid needs top/heart/base levels and an official description_source")
+    if row.get("family") and (row["family"] not in FAMILY_DESCRIPTIONS
+                              or not is_official(row.get("description_source", ""), brand)):
+        problems.append("family must be a known family classified on the official description_source")
     return problems
 
 
@@ -159,7 +163,16 @@ def apply_row(row, product, apply):
     pyramid = note_pyramid(row)
     if pyramid:
         sources["notes"] = row["description_source"]   # the same official page lists the notes
+    family = None
+    if row.get("family"):
+        sources["family"] = row["description_source"]  # classification published on that page
+        family = FragranceFamily.objects.filter(name=row["family"]).first()
+        if family is None and apply:
+            family = FragranceFamily.objects.create(name=row["family"], description=FAMILY_DESCRIPTIONS[row["family"]])
+    values_family = family.pk if family else None
     changed = [field for field, value in values.items() if getattr(product, field) != value]
+    if product.fragrance_family_id != values_family and (row.get("family") or product.fragrance_family_id):
+        changed.append("family")
     current_notes = {(n.note_type, n.name) for n in product.fragrance_notes.all()}
     if current_notes != set(pyramid):
         changed.append("notes")
@@ -169,6 +182,7 @@ def apply_row(row, product, apply):
         changed.append("slug")
     if changed and apply:
         values["slug"] = slug
+        values["fragrance_family_id"] = values_family
         # queryset update: keeps publication_status untouched (Product.save would demote it)
         Product.objects.filter(pk=product.pk).update(**values)
         if "notes" in changed:

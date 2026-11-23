@@ -27,7 +27,7 @@
     {% if families %}
       <div class="sf-discovery">
         {% for family, url in families %}
-          <a class="sf-discovery-item" href="{{ url }}" rel="nofollow">
+          <a class="sf-discovery-item" href="{{ url }}">
             <h3>{{ family.name }}</h3><span aria-hidden="true">↗</span>
             {% if family.description %}<p>{{ family.description|truncatewords:17 }}</p>{% endif %}
           </a>
@@ -43,7 +43,7 @@
     </div>
     <div class="sf-home-intro">
       <p>En Perfumería El Buen Olor creemos que el arte de oler bien empieza por conocer bien cada perfume. Por eso cada ficha de perfumes de nuestro catálogo está verificada con los datos de la web oficial de la marca: la concentración (Eau de Parfum, Eau de Toilette o Parfum), el formato del frasco y las notas olfativas de salida, corazón y fondo.</p>
-      <p>Hoy puedes consultar {{ published_count }} fragancia{{ published_count|pluralize }} de casas como Chanel, Dior, Carolina Herrera, Guerlain, Lancôme o Versace, ordenadas por marca y por perfumes para mujer, para hombre y unisex. Todavía no vendemos: estamos preparando la tienda y, mientras tanto, queremos que encuentres con calma el perfume que encaja contigo y descubras por qué una fragancia te resulta especial.</p>
+      <p>Hoy puedes consultar {{ published_count }} perfumes y colonias de casas como Chanel, Dior, Carolina Herrera, Guerlain, Lancôme o Versace, ordenadas por marca y por perfumes para mujer, para hombre y unisex. Todavía no vendemos: estamos preparando la tienda y, mientras tanto, queremos que encuentres con calma el perfume que encaja contigo y descubras por qué una fragancia te resulta especial.</p>
     </div>
   </section>
   {% if featured %}
@@ -84,7 +84,7 @@
       <details><summary>¿Puedo comprar ya?</summary>
         <p>Todavía no. Estamos preparando la tienda: por ahora el catálogo es informativo y no mostramos precios ni aceptamos pedidos.</p></details>
     </div>
-    <p><a class="sf-text-link" href="{% url 'home:about' %}">Cómo trabajamos <span aria-hidden="true">↗</span></a></p>
+    <p><a class="sf-text-link" href="{% url 'home:guides' %}">Guías de perfumería <span aria-hidden="true">↗</span></a> · <a class="sf-text-link" href="{% url 'home:about' %}">Cómo trabajamos <span aria-hidden="true">↗</span></a></p>
   </section>
   <section class="sf-editorial" aria-labelledby="identidad">
     <div class="eo-wrap sf-editorial-grid">

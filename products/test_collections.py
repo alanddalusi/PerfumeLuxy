@@ -21,8 +21,8 @@ class CollectionPageTests(TestCase):
 
     def test_indexable_brand_page_with_unique_text(self):
         html = self.client.get("/products/marca/versace/").content.decode()
-        self.assertIn("<h1>Perfumes de Versace</h1>", html)
-        self.assertIn("<title>Perfumes de Versace | Perfumería El Buen Olor</title>", html)
+        self.assertIn("<h1>Perfumes y colonias de Versace</h1>", html)
+        self.assertIn("<title>Perfumes y colonias de Versace | Perfumería El Buen Olor</title>", html)
         self.assertIn('<link rel="canonical" href="http://testserver/products/marca/versace/">', html)
         self.assertNotIn("noindex", html)
         self.assertIn("3 perfumes de Versace con ficha verificada", html)
@@ -200,3 +200,64 @@ class ErrorPageTests(TestCase):
         self.assertNotIn("instaud", html)
         self.assertNotIn("<iframe", html)
         self.assertIsNone(__import__("re").search(r'(?:src|href)="https?://(?!testserver)', html))
+
+
+@override_settings(STORE_MODE="prelaunch")
+class FamiliesGuidesKeywordsTests(TestCase):
+    URL = "https://www.versace.com/x"
+
+    def setUp(self):
+        from .models import Gender
+        Gender.objects.create(db_name="M", name="Hombre")
+        self.brand = Brand.objects.create(db_name="versace", name="Versace")
+        for i, name in enumerate(("Pour Homme", "Eau Fraîche", "Dylan Blue")):
+            Product.objects.create(name=name, brand=self.brand, sku=f"F{i}", catalog_origin=Product.Origin.REFERENCE,
+                                   publication_status="approved")
+
+    def apply(self, sku, name, family):
+        from .reference_evidence import apply_evidence
+        row = {"sku": sku, "status": "verified", "brand": "Versace", "official_name": name, "concentration": "edt",
+               "size": "100ml", "gender": "M", "source_url": self.URL, "description_es": "Texto propio " * 12,
+               "description_source": self.URL, "notes_pyramid": "", "field_sources": "", "family": family}
+        return apply_evidence([row], apply=True)
+
+    def test_family_applied_with_evidence_and_family_pages(self):
+        self.assertEqual(self.apply("F0", "Pour Homme", "Aromática")["F0"][0], "updated")
+        product = Product.objects.get(sku="F0")
+        self.assertEqual(product.fragrance_family.name, "Aromática")
+        self.assertEqual(product.verification_sources["family"], self.URL)
+        self.assertIn("hierbas", product.fragrance_family.description)
+        self.assertEqual(self.apply("F1", "Eau Fraîche", "Inventada")["F1"][0], "error")   # unknown family
+        html = self.client.get("/products/familia/aromatica/").content.decode()
+        self.assertIn("<h1>Perfumes de la familia aromática</h1>", html)
+        self.assertIn("Las fragancias aromáticas se basan en hierbas", html)
+        self.assertIn('content="noindex, follow"', html)                 # 1 product only
+        for sku, name in (("F1", "Eau Fraîche"), ("F2", "Dylan Blue")):
+            self.apply(sku, name, "Aromática")
+        self.assertNotIn("noindex", self.client.get("/products/familia/aromatica/").content.decode())
+        self.assertIn("/products/familia/aromatica/", self.client.get("/sitemap.xml").content.decode())
+        self.assertIn('href="/products/familia/aromatica/"', self.client.get("/products/families/").content.decode())
+
+    def test_guides_are_indexable_linked_and_structured(self):
+        from home.guides import GUIDES
+        index = self.client.get("/guias/").content.decode()
+        sitemap = self.client.get("/sitemap.xml").content.decode()
+        for guide in GUIDES:
+            url = f"/guias/{guide['slug']}/"
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 200, url)
+            html = response.content.decode()
+            self.assertIn(f"<h1>{guide['title']}</h1>", html)
+            self.assertIn('"@type": "Article"', html)
+            self.assertIn(f'<link rel="canonical" href="http://testserver{url}">', html)
+            self.assertIn(url, index)
+            self.assertIn(url, sitemap)
+        self.assertIn("/guias/", sitemap)
+        self.assertEqual(self.client.get("/guias/no-existe/").status_code, 404)
+        self.assertIn('href="/guias/"', self.client.get("/").content.decode())
+
+    def test_colonias_keyword_on_collection_and_catalog_pages(self):
+        self.assertIn("<h1>Perfumes y colonias para hombre</h1>", self.client.get("/products/genero/hombre/").content.decode())
+        self.assertIn("<title>Catálogo de perfumes y colonias | Perfumería El Buen Olor</title>",
+                      self.client.get("/products/").content.decode())
+        self.assertIn("perfumes y colonias", self.client.get("/").content.decode())

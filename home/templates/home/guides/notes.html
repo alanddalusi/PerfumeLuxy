@@ -1,0 +1,23 @@
+{% extends "home/guides/base_guide.html" %}
+{% block guide_body %}
+<section class="sf-section">
+  <h2>La pirámide olfativa</h2>
+  <p>Un perfume no huele igual en el primer minuto que horas después. Los perfumistas describen esa evolución en tres niveles, la llamada pirámide olfativa:</p>
+  <ul>
+    <li><strong>Notas de salida:</strong> las primeras que percibes. Suelen ser ligeras y volátiles, como los cítricos o las notas verdes, y se desvanecen en poco tiempo.</li>
+    <li><strong>Notas de corazón:</strong> aparecen cuando se apaga la salida y definen el carácter del perfume durante varias horas. Aquí suelen estar las flores y las especias.</li>
+    <li><strong>Notas de fondo:</strong> las más persistentes. Maderas, ámbar, vainilla, almizcle o pachulí sostienen el perfume y son las que quedan al final del día.</li>
+  </ul>
+</section>
+<section class="sf-section">
+  <h2>Cómo usarla para elegir</h2>
+  <p>No te quedes solo con la primera impresión: la salida dura poco. Fíjate sobre todo en el corazón y el fondo, que son los que vas a llevar la mayor parte del tiempo. Si un perfume que te gusta tiene, por ejemplo, vainilla y ámbar en el fondo, probablemente te gusten otros con notas parecidas.</p>
+  <p>En cada ficha de nuestro catálogo indicamos las notas que publica la marca en su web oficial, ordenadas por niveles.</p>
+</section>
+{% if top_notes %}
+<section class="sf-section">
+  <h2>Explora por notas</h2>
+  <ul class="sf-category-links">{% for name, url in top_notes %}<li><a href="{{ url }}">Perfumes con {{ name|lower }} <span aria-hidden="true">↗</span></a></li>{% endfor %}</ul>
+</section>
+{% endif %}
+{% endblock %}

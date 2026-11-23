@@ -1,0 +1,20 @@
+{% extends "includes/design/storefront.html" %}
+{% block content %}
+<article class="sf eo-wrap sf-section sf-about sf-guide">
+  <nav aria-label="Migas de pan" class="eo-breadcrumb"><ol class="eo-list">
+    <li><a href="{% url 'home:index' %}">Inicio</a></li>
+    <li><a href="{% url 'home:guides' %}">Guías</a></li>
+    <li aria-current="page">{{ guide.title }}</li>
+  </ol></nav>
+  <p class="sf-kicker">Guía de perfumería</p>
+  <h1>{{ guide.title }}</h1>
+  <p class="sf-lead">{{ guide.description }}</p>
+  {% block guide_body %}{% endblock %}
+  <section class="sf-section">
+    <h2>Otras guías</h2>
+    <ul class="sf-category-links">
+      {% for other in others %}<li><a href="{% url 'home:guide' other.slug %}">{{ other.title }} <span aria-hidden="true">↗</span></a></li>{% endfor %}
+    </ul>
+  </section>
+</article>
+{% endblock %}

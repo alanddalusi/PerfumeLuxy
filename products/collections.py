@@ -55,7 +55,7 @@ def describe(products, subject):
         + (f" Incluye {_join(names)}{' y más' if count > len(names) else ''}." if names else "")
         + " Próximamente disponibles en Perfumería El Buen Olor."
     )
-    meta = (f"Perfumes {subject}: {_join(names[:3])}. Fichas verificadas con concentración y formato oficiales."
+    meta = (f"Perfumes y colonias {subject}: {_join(names[:3])}. Fichas verificadas con concentración y formato oficiales."
             if names else f"Perfumes {subject} en Perfumería El Buen Olor.")
     return intro, meta[:160]
 
@@ -84,10 +84,24 @@ def published_notes():
     return out
 
 
+def family_url(family):
+    return reverse("products:family_collection", args=[slugify(family.name)])
+
+
+def published_families():
+    """[(family, published product count)] for families with at least one published product."""
+    from .models import FragranceFamily
+    families = FragranceFamily.objects.annotate(
+        published=Count("products", filter=Q(products__publication_status=Product.Publication.APPROVED))
+    ).filter(published__gt=0).order_by("-published", "name")
+    return [(family, family.published) for family in families]
+
+
 def sitemap_locations():
     """URLs of the indexable collections."""
     urls = [brand_url(brand) for brand, count in published_brands() if count >= MIN_INDEXABLE]
     urls += [note_url(name) for name, count in published_notes().values() if count >= MIN_INDEXABLE]
+    urls += [family_url(family) for family, count in published_families() if count >= MIN_INDEXABLE]
     for slug, (code, _) in GENDERS.items():
         if Product.objects.published().filter(gender__db_name=code).count() >= MIN_INDEXABLE:
             urls.append(reverse("products:gender_collection", args=[slug]))

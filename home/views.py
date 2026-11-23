@@ -44,8 +44,8 @@ def index(request):
         "form": form,
         "has_products": Product.objects.published().exists(),
         "families": [
-            (family, catalog_filter_url(fragrance_family=family.name))
-            for family in FragranceFamily.objects.order_by("name")[:6]
+            (family, collections.family_url(family))
+            for family, _ in collections.published_families()[:6]
         ],
         "featured": featured_products(),
         "brand_links": [(brand.name, collections.brand_url(brand), count)
@@ -168,6 +168,46 @@ def privacy_policy(request):
 def contact(request):
     return _legal_page(request, "home/contact.html", "Contacto",
                        "Cómo contactar con Perfumería El Buen Olor.", "home:contact")
+
+
+def guides_index(request):
+    from .guides import GUIDES
+    seo = SEOManager(request)
+    return render(request, "home/guides/index.html", {"guides": GUIDES, "seo_data": seo.get_meta_tags(
+        title="Guías de perfumería | Perfumería El Buen Olor",
+        description="Guías para elegir perfume: concentraciones, notas olfativas, familias y consejos para que dure más.",
+        canonical=seo.get_canonical_url(reverse("home:guides")))})
+
+
+def guide(request, slug):
+    import json
+    from django.utils.safestring import mark_safe
+    from products.models import FragranceNote
+    from products.naming import product_full_name
+    from .guides import BY_SLUG, GUIDES
+    page = BY_SLUG.get(slug)
+    if page is None:
+        raise Http404
+    seo = SEOManager(request)
+    url = reverse("home:guide", args=[slug])
+    published = Product.objects.published().select_related("brand")
+    schema = {"@context": "https://schema.org", "@type": "Article", "headline": page["title"],
+              "description": page["description"], "inLanguage": "es",
+              "mainEntityOfPage": seo.get_canonical_url(url),
+              "publisher": {"@type": "Organization", "name": "Perfumería El Buen Olor", "url": seo.get_canonical_url("/")}}
+    note_counts = {}
+    for name in FragranceNote.objects.filter(products__publication_status=Product.Publication.APPROVED).values_list("name", flat=True):
+        note_counts[name] = note_counts.get(name, 0) + 1
+    return render(request, page["template"], {
+        "guide": page, "others": [g for g in GUIDES if g["slug"] != slug],
+        "edp": [(product_full_name(p), p.get_absolute_url()) for p in published.filter(concentration="edp").order_by("name")[:4]],
+        "edt": [(product_full_name(p), p.get_absolute_url()) for p in published.filter(concentration="edt").order_by("name")[:4]],
+        "top_notes": [(n, collections.note_url(n)) for n, _ in sorted(note_counts.items(), key=lambda x: -x[1])[:12]],
+        "families": [(f, collections.family_url(f), c) for f, c in collections.published_families()],
+        "article_schema": mark_safe('<script type="application/ld+json">' + json.dumps(schema, ensure_ascii=False).replace("</", "<\\/") + "</script>"),
+        "seo_data": seo.get_meta_tags(title=f"{page['title']} | Perfumería El Buen Olor",
+                                      description=page["description"], canonical=seo.get_canonical_url(url)),
+    })
 
 
 def about(request):

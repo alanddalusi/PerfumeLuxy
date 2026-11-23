@@ -1,0 +1,17 @@
+{% extends "home/guides/base_guide.html" %}
+{% block guide_body %}
+<section class="sf-section">
+  <h2>Qué es una familia olfativa</h2>
+  <p>Las familias olfativas agrupan los perfumes según su carácter dominante. Sirven como mapa: si te gusta un perfume floral, es probable que otros florales también encajen contigo. Muchos perfumes combinan dos familias (un floral afrutado, un amaderado aromático); en nuestras fichas usamos la familia principal que indica la propia marca.</p>
+</section>
+{% if families %}
+<section class="sf-section">
+  <h2>Las familias de nuestro catálogo</h2>
+  {% for family, url, count in families %}
+    <h3><a href="{{ url }}">{{ family.name }}</a></h3>
+    {% if family.description %}<p>{{ family.description }}</p>{% endif %}
+    <p><a class="sf-text-link" href="{{ url }}">Ver {{ count }} perfume{{ count|pluralize }} de la familia {{ family.name|lower }} <span aria-hidden="true">↗</span></a></p>
+  {% endfor %}
+</section>
+{% endif %}
+{% endblock %}

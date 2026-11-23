@@ -1,3 +1,4 @@
+from django.utils.text import slugify
 from django.shortcuts import render, redirect, reverse, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -40,7 +41,7 @@ def all_products(request):
     canonical_params = {"page": page.number} if page.number > 1 else {}
     catalog_url = catalog_filter_url(**canonical_params) if canonical_params else reverse("products:products")
     catalog_metadata = seo.get_meta_tags(
-        title="Catálogo de perfumes | Perfumería El Buen Olor",
+        title="Catálogo de perfumes y colonias | Perfumería El Buen Olor",
         description="Explora el catálogo de perfumes por marca, familia olfativa y concentración.",
         canonical=seo.get_canonical_url(catalog_url),
     )
@@ -153,7 +154,7 @@ def fragrance_families_guide(request):
     # Obtener todas las familias con conteo de productos
     fragrance_families = FragranceFamily.objects.annotate(
         product_count=Count('products', filter=Q(products__publication_status=Product.Publication.APPROVED))
-    ).order_by('name')
+    ).filter(product_count__gt=0).order_by('-product_count', 'name')
     
     context = {
         "fragrance_families": fragrance_families,
@@ -565,8 +566,10 @@ def quiz_results(request):
     return render(request, 'products/quiz_results.html', context)
 
 
-def _collection_page(request, products, heading, subject, url, crumb):
+def _collection_page(request, products, heading, subject, url, crumb, lead=""):
     intro, meta = collections.describe(products, subject)
+    if lead:
+        intro = f"{lead} {intro}"
     seo = SEOManager(request)
     seo_data = seo.get_meta_tags(
         title=f"{heading} | Perfumería El Buen Olor", description=meta, canonical=seo.get_canonical_url(url))
@@ -589,8 +592,20 @@ def brand_collection(request, slug):
     if brand is None:
         raise Http404
     products = collections.collection_products(brand=brand)
-    return _collection_page(request, products, f"Perfumes de {brand.name}", f"de {brand.name}",
+    return _collection_page(request, products, f"Perfumes y colonias de {brand.name}", f"de {brand.name}",
                             collections.brand_url(brand), brand.name)
+
+
+@require_safe
+def family_collection(request, slug):
+    family = next((f for f, _ in collections.published_families() if slugify(f.name) == slug), None)
+    if family is None:
+        raise Http404
+    products = collections.collection_products(fragrance_family=family)
+    name = family.name.lower()
+    response = _collection_page(request, products, f"Perfumes de la familia {name}", f"de la familia {name}",
+                                collections.family_url(family), f"Familia {name}", lead=family.description or "")
+    return response
 
 
 @require_safe
@@ -611,5 +626,5 @@ def gender_collection(request, slug):
         raise Http404
     code, label = collections.GENDERS[slug]
     products = collections.collection_products(gender__db_name=code)
-    return _collection_page(request, products, f"Perfumes {label}", label,
+    return _collection_page(request, products, f"Perfumes y colonias {label}", label,
                             reverse("products:gender_collection", args=[slug]), f"Perfumes {label}")

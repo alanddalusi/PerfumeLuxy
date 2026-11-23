@@ -14,12 +14,16 @@ class StaticViewSitemap(Sitemap):
 
     def items(self):
         from home.legal import legal_ready
-        pages = ['home:index', 'products:products', 'products:fragrance_families', 'home:about']
+        pages = ['home:index', 'products:products', 'products:fragrance_families', 'home:about', 'home:guides']
+        from home.guides import GUIDES
+        pages += [("home:guide", guide["slug"]) for guide in GUIDES]
         from home.legal import shop_pages_ready
         pages += ['home:contact', 'home:legal_notice', 'home:privacy_policy'] if legal_ready() else []
         return pages + (['home:shipping_returns', 'home:authenticity'] if shop_pages_ready() else [])
 
     def location(self, item):
+        if isinstance(item, tuple):
+            return reverse(item[0], args=item[1:])
         return reverse(item)
     
 

@@ -16,6 +16,7 @@ urlpatterns = [
     path("marca/<slug:slug>/", views.brand_collection, name="brand_collection"),
     path("genero/<slug:slug>/", views.gender_collection, name="gender_collection"),
     path("nota/<slug:slug>/", views.note_collection, name="note_collection"),
+    path("familia/<slug:slug>/", views.family_collection, name="family_collection"),
     path("families/", views.fragrance_families_guide, name="fragrance_families"),
     
     # Wishlist (mejorado)

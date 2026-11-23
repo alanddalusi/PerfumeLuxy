@@ -1,0 +1,28 @@
+{% extends "home/guides/base_guide.html" %}
+{% block guide_body %}
+<section class="sf-section">
+  <h2>Qué indica la concentración</h2>
+  <p>La concentración es la proporción de esencias aromáticas disueltas en alcohol. No es una medida exacta de calidad, pero sí orienta sobre la intensidad y la duración. Los porcentajes varían según la marca; estos son los rangos orientativos más habituales:</p>
+  <ul>
+    <li><strong>Parfum o Extrait:</strong> entre un 20 y un 30 %. Es la forma más concentrada; se aplica en poca cantidad.</li>
+    <li><strong>Eau de Parfum (EDP):</strong> entre un 15 y un 20 %. Suele ser más intensa y duradera que la Eau de Toilette.</li>
+    <li><strong>Eau de Toilette (EDT):</strong> entre un 5 y un 15 %. Más ligera y fresca; muy habitual en perfumería masculina y para el día a día.</li>
+    <li><strong>Eau de Cologne:</strong> entre un 2 y un 5 %. Muy ligera, normalmente cítrica.</li>
+  </ul>
+</section>
+<section class="sf-section">
+  <h2>¿Y qué es una colonia?</h2>
+  <p>En España se llama «colonia» a casi cualquier perfume, sobre todo a los masculinos: cuando alguien busca «colonia de hombre» suele referirse a una Eau de Toilette o a una Eau de Parfum. En sentido estricto, la colonia es la Eau de Cologne, la concentración más baja. En nuestro catálogo indicamos siempre la concentración exacta que publica la marca.</p>
+</section>
+<section class="sf-section">
+  <h2>Eau de Parfum o Eau de Toilette: cómo elegir</h2>
+  <p>El mismo nombre puede existir en las dos versiones, y no siempre huelen igual: muchas marcas ajustan la composición, no solo la proporción. Si buscas más presencia y duración, empieza por la Eau de Parfum; si prefieres algo más ligero para el día o para el calor, por la Eau de Toilette. La duración real depende también de la composición (las notas de fondo amaderadas o ambaradas suelen durar más que las cítricas) y de tu piel.</p>
+</section>
+{% if edp or edt %}
+<section class="sf-section">
+  <h2>Ejemplos de nuestro catálogo</h2>
+  {% if edp %}<h3>Eau de Parfum</h3><ul>{% for name, url in edp %}<li><a href="{{ url }}">{{ name }}</a></li>{% endfor %}</ul>{% endif %}
+  {% if edt %}<h3>Eau de Toilette</h3><ul>{% for name, url in edt %}<li><a href="{{ url }}">{{ name }}</a></li>{% endfor %}</ul>{% endif %}
+</section>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends "includes/design/storefront.html" %}
+{% block content %}
+<article class="sf eo-wrap sf-section sf-about">
+  <p class="sf-kicker">Perfumería El Buen Olor</p>
+  <h1>Guías de perfumería.</h1>
+  <p class="sf-lead">Todo lo que ayuda a elegir bien un perfume o una colonia: qué significa cada concentración, cómo se leen las notas, qué son las familias olfativas y cómo hacer que dure más.</p>
+  <div class="sf-discovery">
+    {% for guide in guides %}
+      <a class="sf-discovery-item" href="{% url 'home:guide' guide.slug %}">
+        <h2>{{ guide.title }}</h2><span aria-hidden="true">↗</span>
+        <p>{{ guide.description }}</p>
+      </a>
+    {% endfor %}
+  </div>
+</article>
+{% endblock %}

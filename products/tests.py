@@ -248,7 +248,7 @@ class PremiumStorefrontTests(TestCase):
     def test_home_discovery_and_explicit_idempotent_consent(self):
         home = reverse("home:index")
         form = self.client.get(home)
-        self.assertContains(form, "?fragrance_family=Amaderada")
+        self.assertContains(form, "/products/familia/amaderada/")      # clean family page link
         self.assertNotContains(form, "?category=")                       # no dynamic category links
         self.assertContains(form, 'href="/products/genero/mujer/"')       # clean collection URLs
         self.assertContains(form, "Descubre tu próxima fragancia.")       # title words in the content

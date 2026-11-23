@@ -11,7 +11,7 @@
     {% if fragrance_families %}
       <div class="sf-discovery">
         {% for family in fragrance_families %}
-          <a class="sf-discovery-item" href="{% url 'products:products' %}?fragrance_family={{ family.name|urlencode:'' }}">
+          <a class="sf-discovery-item" href="{% url 'products:family_collection' family.name|slugify %}">
             <h3>{{ family.name }}</h3><span aria-hidden="true">↗</span>
             <p>{{ family.product_count }} ficha{{ family.product_count|pluralize }} publicada{{ family.product_count|pluralize }}.</p>
           </a>
