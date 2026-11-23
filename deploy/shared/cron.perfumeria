@@ -1,0 +1,6 @@
+# Perfumeria El Buen Olor: only this project (compose project perfumeria-production).
+# Times in UTC, after the forum backup (03:15 UTC). Install as /etc/cron.d/perfumeria (root, 644).
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+10 4 * * * root cd /srv/perfumeria/app/deploy && PERFUMERIA_ENV_FILE=shared/.env.production ./backup/backup.sh >> /srv/perfumeria/backup.log 2>&1
+35 4 * * * root cd /srv/perfumeria/app/deploy && docker compose -p perfumeria-production -f shared/compose.yaml --env-file shared/.env.production exec -T perfumeria-web python manage.py purge_notice_data --apply >> /srv/perfumeria/maintenance.log 2>&1

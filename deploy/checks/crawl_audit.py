@@ -64,6 +64,8 @@ for target, sources in sorted(links.items()):
     noindex = re.search(r'<meta name="robots" content="[^"]*noindex', page) or "noindex" in headers.get("X-Robots-Tag", "")
     if noindex and not robots.can_fetch("Googlebot", target):
         continue   # blocked area (account, bag...): not crawled anyway
+    if noindex and urlsplit(target).path.startswith(("/products/marca/", "/products/genero/")):
+        continue   # small collections: noindex,follow by design (useful to visitors, links still followed)
     if noindex and any(not nofollow for nofollow, _ in sources):
         followed_noindex += 1
         if followed_noindex <= 8:

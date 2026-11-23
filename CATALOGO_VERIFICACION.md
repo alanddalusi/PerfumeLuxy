@@ -119,6 +119,21 @@ Publicados los **17 perfumes nuevos** (revisor `app`, misma versión `9beff7a`, 
 
 **Páginas legales preparadas, sin publicar:** `/aviso-legal/`, `/politica-de-privacidad/` y `/contacto/`. Responden 404 y no se enlazan mientras falten en el servidor `LEGAL_OWNER_NAME`, `LEGAL_OWNER_TAX_ID`, `LEGAL_OWNER_ADDRESS` y `LEGAL_OWNER_EMAIL`. Los textos están pendientes de revisión legal.
 
+## Cuarta publicación y mantenimiento (23/11/2026, 07:15 UTC), versión `8b841bd`
+
+- **Copia previa verificada:** `20261123T071217Z`. Los 211 borradores restantes tienen la misma huella antes y después (`a0d5a9337eb82b0b`).
+- **Publicadas 3 fichas más**, en total 54: My Burberry Blush, Goldea The Roman Night Absolute y L.12.12 Rouge.
+- **Miga de pan:** enlaza a las páginas de marca y de género, ya sin filtros `?brand=`.
+- **Páginas legales:** el código está desplegado, pero sin datos del titular responden 404 y no se enlazan.
+- **Tareas programadas** en `/etc/cron.d/perfumeria` (copia en [`deploy/shared/cron.perfumeria`](deploy/shared/cron.perfumeria)), en UTC y después de la copia del foro (03:15):
+  - 04:10, copia de seguridad (retención de 14 días);
+  - 04:35, `purge_notice_data --apply`.
+- **Comprobaciones:**
+  - 54/54 fichas correctas;
+  - las 70 URL del sitemap responden 200, con canonical propio y sin `noindex`;
+  - ningún enlace roto; `site-status` sin fallos;
+  - el pago responde 403 y no se muestra ningún precio.
+
 ## Estado de la verificación (21/11/2026)
 
 | Estado | Fichas |
