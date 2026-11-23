@@ -145,6 +145,17 @@ Publicados los **17 perfumes nuevos** (revisor `app`, misma versión `9beff7a`, 
 - **Páginas preparadas y ocultas** (404) hasta tener los datos legales y la política real del proveedor (`SHOP_*`): `/garantia-de-autenticidad/` y `/envios-y-devoluciones/`.
 - **Comprobaciones:** 54/54 fichas correctas, 99 URL del sitemap con respuesta 200, ningún enlace roto y `site-status` sin fallos.
 
+## Palabras clave: colonias, familias y guías (23/11/2026, 08:05 UTC), versión `c6c3198`
+
+- **Copia previa verificada:** `20261123T080147Z`. Los 211 borradores tienen la misma huella y siguen publicadas 54 fichas.
+- **«Perfumes y colonias»:** en los títulos y H1 de marcas y géneros, en el título del catálogo y en el texto de la portada.
+- **Familias olfativas:** 35 fichas tienen su familia principal según la clasificación de la web oficial (evidencia `family`).
+  - Páginas `/products/familia/<familia>/` con un texto introductorio propio.
+  - Indexables: Floral, Amaderada, Ambarada, Aromática y Fougère.
+  - La guía de familias y la portada enlazan a estas páginas, sin parámetros.
+- **Guías:** `/guias/` con 4 guías originales (concentraciones y «colonia», pirámide de notas, familias y duración), con JSON-LD `Article` y en el sitemap.
+- **Comprobaciones:** 54/54 fichas correctas, 109 URL en el sitemap, ningún enlace roto, `site-status` sin fallos. El pago responde 403 y no se muestra ningún precio.
+
 ## Estado de la verificación (21/11/2026)
 
 | Estado | Fichas |
