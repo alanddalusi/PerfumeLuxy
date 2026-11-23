@@ -134,6 +134,17 @@ Publicados los **17 perfumes nuevos** (revisor `app`, misma versión `9beff7a`, 
   - ningún enlace roto; `site-status` sin fallos;
   - el pago responde 403 y no se muestra ningún precio.
 
+## Mejoras de la investigación en foros (23/11/2026, 07:35 UTC), versión `0049f20`
+
+- **Copia previa verificada:** `20261123T073328Z`. Los 211 borradores tienen la misma huella antes y después.
+- **Ficha:** muestra «Versión exacta: <concentración> · <formato>, comprobada en la web oficial de <marca>».
+- **Notas olfativas:** 39 fichas tienen ya la pirámide oficial, con la misma fuente que la descripción como evidencia.
+  - Al cambiar las notas, una ficha publicada vuelve a revisión. Por eso las 39 se aprobaron de nuevo con `publish_reference_batch --reviewer app --sku <los 54>`.
+- **Páginas por nota:** `/products/nota/<nota>/`, con 29 indexables y en el sitemap (3 perfumes o más). Ejemplos: almizcle, jazmín, ámbar, pachulí, bergamota, vainilla y rosa.
+- **Páginas de error:** la 404 y la 500 están en español y sin recursos externos. La 404 heredada cargaba un audio de instaud.io.
+- **Páginas preparadas y ocultas** (404) hasta tener los datos legales y la política real del proveedor (`SHOP_*`): `/garantia-de-autenticidad/` y `/envios-y-devoluciones/`.
+- **Comprobaciones:** 54/54 fichas correctas, 99 URL del sitemap con respuesta 200, ningún enlace roto y `site-status` sin fallos.
+
 ## Estado de la verificación (21/11/2026)
 
 | Estado | Fichas |
